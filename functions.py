@@ -1,21 +1,21 @@
-#identifier
-
+#Determine if identifier
 def isIdentifier(identifier):
-    
+    #Convert all value to lower case
     identifier = identifier.lower()
-
+    #Check if identifier is empty string
     if not identifier:
         return False
-
+    #Check if the the beginning of identifier is a letter
     if not identifier[0].isalpha():
         return False
-    
+    #Check if all elements in identifier are letters,numbers, or underscore
     for s in identifier:
         if not (s.isalnum() or s == '_'):
             return False
-        
+    
     return True
 
+# Determine if integer
 def isInteger(integer):
     if not integer:
         return False
