@@ -4,6 +4,11 @@ from components.lexcical_analyzer import tokenize
 
 
 def main():
+    KEYWORDS = {'function', 'integer','boolean', 'real', 'if' 'endif', 'else', 'return', 'print',
+                'scan','while', 'endwhile', 'true', 'false'}
+    SEPARATORS= {'$', '(', ')', ',', '{', '}'}
+    OPERATORS = {'==', '!=', '>', '<', '<=', '=>', '*', '/'}
+    
     word = "hello_wore3d"
     num = "00123g45"
     print(word)
