@@ -8,3 +8,4 @@ class TokenType(Enum):
     INTEGER = 4
     OPERATOR = 5
     SEPARATOR = 6
+    UNKNOWN = 7
