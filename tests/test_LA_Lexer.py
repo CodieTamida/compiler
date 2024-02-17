@@ -28,18 +28,23 @@ class LexerTestCase(unittest.TestCase):
         if os.path.exists(self.SAMPLE_FILE_PATH):
             os.remove(self.SAMPLE_FILE_PATH)
 
-    def test_open_file(self):
+    def test_1(self):
         # Arrange
+        expected = 36
 
         # Act
         lexer = Lexer(self.SAMPLE_FILE_PATH)
-        print(lexer.content)
-        for i in range(38):
+        tokens = []
+
+        while lexer.has_token():
             token = lexer.next_token()
-            print(token.lexeme, token.token_type)
-        
+            tokens.append(token)
+            print(f"{token.token_type.name.lower():<20} {token.lexeme:<10}")
+
+        actual = len(tokens)
+
         # Assert
-        self.assertEqual(1, 1)
+        self.assertEqual(actual, expected)
 
 
 if __name__ == '__main__':
