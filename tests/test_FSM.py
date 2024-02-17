@@ -133,7 +133,7 @@ class FSMTestCase(unittest.TestCase):
                             ['E', 'E']]
         input_string = "$#"
         actual_path = None
-        expected_path = ['A']
+        expected_path = ['A', "NULL"]
 
         # Act
         fsm = FSM(sigma, states, initial_state,
