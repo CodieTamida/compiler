@@ -192,6 +192,7 @@ class FSM:
                 path.append(current_state)
         except Exception as e:
             print(e)
+            path.append("NULL")
 
         return path
 

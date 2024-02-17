@@ -143,6 +143,25 @@ class FSMTestCase(unittest.TestCase):
         # Assert
         self.assertEqual(actual_path, expected_path)
 
+    def test_traceDFSM_invalid_integer(self):
+        # Arrange
+        sigma = ['d']
+        states = ['A', 'B']
+        initial_state = 'A'
+        accepting_states = ['B']
+        transition_table = [['B'],
+                            ['B']]
+        input_string = ".d"
+        actual = None
+        expected = False
+
+        # Act
+        fsm = FSM(sigma, states, initial_state,
+                  accepting_states, transition_table)
+        actual = fsm.validate(input_string)
+
+        # Assert
+        self.assertEqual(actual, expected)
 
 if __name__ == '__main__':
     unittest.main()
