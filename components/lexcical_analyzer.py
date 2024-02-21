@@ -142,3 +142,73 @@ class Lexer:
         new_set.update({' ', '\n'})
 
         return new_set
+
+
+class FSM:
+    def __init__(self, sigma: list, states: list, initial_state: str, accepting_states: list, transition_table):
+        """
+        Initializes a Finite State Machine (FSM) object with the given parameters.
+
+        Parameters:
+        - sigma (list): The alphabet (input symbols) of the FSM.
+        - states (list): The set of states in the FSM.
+        - initial_states (list): The initial state(s) of the FSM.
+        - transition_table (dict): The transition table of the FSM. 
+        - accepting_states (list): The set of accepting states in the FSM.
+        """
+        if len(sigma) != len(set(sigma)):
+            raise ValueError("Duplicate elements found in the Sigma list.")
+        
+        if len(states) != len(set(states)):
+            raise ValueError("Duplicate elements found in the States list.")
+        
+        if len(accepting_states) != len(set(accepting_states)):
+            raise ValueError("Duplicate elements found in the AcceptingStates list.")
+
+        self.sigma = sigma
+        self.states = states
+        self.initial_state = initial_state
+        self.transition_table = transition_table
+        self.accepting_states = accepting_states
+
+    def traceDFSM(self, input_string):
+        """
+        Traces the input string through the FSM and returns the final state reached.
+
+        Parameters:
+        - input_string (str): The input string to be traced through the FSM.
+
+        Returns:
+        - list: The list of final states reached after tracing the input string through the FSM.
+        """
+        current_state = self.initial_state
+        path = [current_state]
+        
+        try:
+            for char in input_string:
+                row = self.states.index(current_state)
+                col = self.sigma.index(char)
+                current_state = self.transition_table[row][col]
+                path.append(current_state)
+        except Exception as e:
+            print(e)
+            path.append("NULL")
+
+        return path
+
+    def validate(self, input_string):
+        """
+        Checks if the input string is accepted by the FSM.
+
+        Parameters:
+        - input_string (str): The input string to be checked for acceptance.
+
+        Returns:
+        - bool: True if the input string is accepted by the FSM, False otherwise.
+        """
+
+        path = self.traceDFSM(input_string)
+        return path[-1] in self.accepting_states
+
+def tokenize(inputstring):
+    raise NotImplementedError()
