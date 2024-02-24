@@ -15,3 +15,21 @@ def print_tokens(tokens: tuple):
 
     # return result.getvalue()
     print(result.getvalue())
+
+class FileStream:
+    def __init__(self, file_path):
+        self.file = open(file_path, 'r')
+        self.buffer = list()
+
+    def read(self, num_chars):
+        buffered_chars = ''.join(self.buffer[:num_chars])
+        del self.buffer[:num_chars]
+        remaining_chars = num_chars - len(buffered_chars)
+        file_chars = self.file.read(remaining_chars)
+        return buffered_chars + file_chars
+
+    def unread(self, char):
+        self.buffer.insert(0, char)
+
+    def close(self):
+        self.file.close()
