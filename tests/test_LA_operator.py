@@ -10,35 +10,28 @@ class OperatorTestCase(unittest.TestCase):
     SIMPLE_OPERATORS = {'>', '<', '=', '+', '-', '*', '/'}
     COMPOUND_OPERATORS = {'==', '!=', '<=', '=>'}
 
-    def setUp(self):
-        if os.path.exists(self.SAMPLE_FILE_PATH):
-            os.remove(self.SAMPLE_FILE_PATH)
-
-        str1 = ' '.join(self.SIMPLE_OPERATORS)
-        str2 = ' '.join(self.COMPOUND_OPERATORS)
-        string_to_write = str1 + str2
-
-        with open(self.SAMPLE_FILE_PATH, 'w') as file:
-            file.write(string_to_write)
-
     def tearDown(self):
         if os.path.exists(self.SAMPLE_FILE_PATH):
             os.remove(self.SAMPLE_FILE_PATH)
 
     def test_operators(self):
-        # Arrange
-        lexer = Lexer(self.SAMPLE_FILE_PATH)
-        expected_len = len(self.SIMPLE_OPERATORS) + \
-            len(self.COMPOUND_OPERATORS)
+        operators = self.SIMPLE_OPERATORS | self.COMPOUND_OPERATORS
 
-        # Act & Assert
-        actual_len = 0
-        while lexer.has_token():
-            token = lexer.next_token()
-            actual_len += 1
-            self.assertEqual(token.token_type, TokenType.OPERATOR)
+        for op in operators:
+            # Arrange
+            expected_lexeme = op
+            expected_tokentype = TokenType.OPERATOR
 
-        self.assertEqual(actual_len, expected_len)
+            with open(self.SAMPLE_FILE_PATH, 'w') as file:
+                file.write(op)
+
+             # Act
+            lexer = Lexer(self.SAMPLE_FILE_PATH)
+            actual = lexer.tokens[0]
+
+            # Assert
+            self.assertEqual(actual.lexeme, expected_lexeme)
+            self.assertEqual(actual.token_type, expected_tokentype)
 
 
 if __name__ == '__main__':

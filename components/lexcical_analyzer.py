@@ -1,8 +1,8 @@
 from common.enums import TokenType
-from common.reserved_words_symbols import KEYWORDS, SEPARATORS, SIMPLE_OPERATORS, COMPOUND_OPERATORS, OPERATORS
+from common.reserved_words_symbols import KEYWORDS, SEPARATORS, SIMPLE_OPERATORS, COMPOUND_OPERATORS, DECIMAL_SEPARATOR
 from dataclasses import dataclass
-import re
-
+from components.FSM import FSM
+from common.helpers import FileStream
 
 @dataclass
 class Token:
@@ -30,105 +30,104 @@ class Lexer:
             FileNotFoundError: If the specified file_path does not exist.
             IOError: If an error occurs while attempting to read the file.
         """
-        self.content = ""
-        self.current_pos = 0
-        self.file_length = 0
+        # Create Finite State Machines for IntegerReal and Identifier
+        self.int_real_FSM = self.__build_int_real_FSM()
+        self.identifier_FSM = self.__build_identifier_FSM()
+
+        # Stop signs
         self.stop_signs = self.__get_stop_signs()
+        
+        self.tokens = list()
+        # Open the file in read mode
+        self.filestream = FileStream(file_path)
+        self.current_char = None
+
+        buffer = str()
 
         try:
-            with open(file_path, 'r') as file:
-                self.content = file.read()
-                self.file_length = len(self.content)
-        except Exception as e:
-            raise e
+            # Read the first character
+            char = self.filestream.read(1)
 
-    def eof(self):
-        """
-        Checks whether the current position in the file has reached End of File.
 
-        Returns:
-            bool: True if the current position is at End of File, False otherwise.
-        """
-        return self.current_pos >= self.file_length
+            # Loop until the end of file
+            while char:
+                done = False
 
-    def has_token(self):
-        end_pos = self.__next_start_index()
-        return end_pos < self.file_length
+                # ****************************************
+                # ********** IGNORE WHITESPACES **********
+                # ****************************************
+                if char == ' ' or char == '\n':
+                    done = True
 
-    def next_token(self):
-        """
-        Retrieves the next token from the content.
+                # ****************************************
+                # *********** INT OR REAL Check **********
+                # ****************************************
+                elif char.isdigit() or char == DECIMAL_SEPARATOR:
+                    # Call FSM
+                    result = self.int_real_FSM.traceDFSM(char, self.filestream, self.stop_signs)
 
-        Returns:
-            str or Token: The next token extracted from the content.
-                        If the end of the content is reached, returns a Token object with type 'EOF' and value None.
-        """
-        token_type = TokenType.UNKNOWN
+                    if result.accepted and result.accepted_states[0] == 'B':
+                        self.tokens.append(Token(result.lexeme, TokenType.INTEGER))
+                    elif result.accepted and result.accepted_states[0] == 'D':
+                        self.tokens.append(Token(result.lexeme, TokenType.REAL))
+                    else:
+                        self.tokens.append(Token(result.lexeme, TokenType.UNKNOWN))
 
-        # Update the current position to the next start index
-        self.current_pos = self.__next_start_index()
+                    done = True
 
-        # Check if the current position is beyond the end of the content
-        if self.current_pos >= self.file_length:
-            raise EOFError("End of file reached.")
+                # ****************************************
+                # *********** IDENTIFIER CHECK ***********
+                # ****************************************
+                elif char.isalpha():
+                    # Call FSM
+                    result = self.identifier_FSM.traceDFSM(char, self.filestream, self.stop_signs)
 
-        # ****************************************
-        # *********** SEPARATORS Check ***********
-        # ****************************************
-        elif self.content[self.current_pos] in SEPARATORS:
-            end_pos = self.current_pos + 1
-            token_type = TokenType.SEPARATOR
+                    if result.accepted and result.lexeme in KEYWORDS:
+                        self.tokens.append(Token(result.lexeme, TokenType.KEYWORD))
+                    elif result.accepted:
+                        self.tokens.append(Token(result.lexeme, TokenType.IDENTIFIER))
+                    else:
+                        self.tokens.append(Token(result.lexeme, TokenType.UNKNOWN))
 
-        # ****************************************
-        # ******* COMPOUND_OPERATORS Check *******
-        # ****************************************
-        elif self.content.startswith(tuple(COMPOUND_OPERATORS), self.current_pos):
-            end_pos = self.current_pos + 2
-            token_type = TokenType.OPERATOR
+                    done = True
 
-        # ****************************************
-        # ******** SIMPLE_OPERATORS Check ********
-        # ****************************************
-        elif self.content[self.current_pos] in SIMPLE_OPERATORS:
-            end_pos = self.current_pos + 1
-            token_type = TokenType.OPERATOR
+                # ****************************************
+                # *********** SEPARATORS Check ***********
+                # ****************************************
+                elif char in SEPARATORS:
+                    self.tokens.append(Token(char, TokenType.SEPARATOR))
+                    done = True
 
-        else:
-            # Determine the end position of the next token
-            end_pos = self.__next_stop_index()
+                # ****************************************
+                # ******* COMPOUND_OPERATORS Check *******
+                # ****************************************
+                if not done:
+                    peek = self.filestream.read(1)
+                    buffer = char + peek
+                    if buffer in COMPOUND_OPERATORS:
+                        self.tokens.append(Token(buffer, TokenType.OPERATOR))
+                        done = True
+                    else:
+                        self.filestream.unread(peek)
 
-        # Extract the next token from the content
-        lexeme = self.content[self.current_pos:end_pos]
+                # ****************************************
+                # ******** SIMPLE_OPERATORS Check ********
+                # ****************************************
+                if not done and char in SIMPLE_OPERATORS:
+                    self.tokens.append(Token(char, TokenType.OPERATOR))
+                    done = True
 
-        # Update the current position to the end position of the token
-        self.current_pos = end_pos
+                if not done:
+                    self.tokens.append(Token(char, TokenType.UNKNOWN))
+                    done = True
 
-        # ****************************************
-        # ************ KEYWORDS Check ************
-        # ****************************************
-        if lexeme in KEYWORDS:
-            token_type = TokenType.KEYWORD
 
-        ########################################################
-        # Pass the lexeme to Integer, Real, and Identifier FSM #
-        ########################################################
-
-        return Token(lexeme, token_type)  # Return the extracted token
-
-    def __next_start_index(self):
-        i = self.current_pos
-        while i < self.file_length and (self.content[i] == ' ' or self.content[i] == '\n'):
-            i += 1
-        return i
-
-    def __next_stop_index(self):
-        i = self.current_pos
-
-        while i < self.file_length and self.content[i] not in self.stop_signs:
-            i += 1
-
-        return i
-
+                # Read the next character
+                char = self.filestream.read(1)
+        finally:
+            # Close the file
+            self.filestream.close()
+        
     def __get_stop_signs(self):
         new_set = set()
 
@@ -136,79 +135,77 @@ class Lexer:
         new_set.update({item[0] for item in SEPARATORS})
 
         # Extract the first character of each operator
-        new_set.update({item[0] for item in OPERATORS})
+        new_set.update({item[0] for item in SIMPLE_OPERATORS})
+
+        # Extract the first character of each operator
+        new_set.update({item[0] for item in COMPOUND_OPERATORS})
 
         # Add a space character and newline character
         new_set.update({' ', '\n'})
 
         return new_set
 
+    def __build_int_real_FSM(self):
+        # FSM Configurations
+        sigma = ['d', '.']
+        states = ['A', 'B', 'C', 'D', 'E']
+        initial_state = 'A'
+        accepting_states = ['B', 'D']  # B: Integer, D: Real
+        transition_table = [['B', 'E'],
+                            ['B', 'C'],
+                            ['D', 'E'],
+                            ['D', 'E'],
+                            ['E', 'E']]
 
-class FSM:
-    def __init__(self, sigma: list, states: list, initial_state: str, accepting_states: list, transition_table):
-        """
-        Initializes a Finite State Machine (FSM) object with the given parameters.
+        # Mapping function
+        def char_to_symbol(char):
+            if char.isdigit():
+                return 'd'
+            elif char.isalpha():
+                return 'l'
+            else:
+                return char
 
-        Parameters:
-        - sigma (list): The alphabet (input symbols) of the FSM.
-        - states (list): The set of states in the FSM.
-        - initial_states (list): The initial state(s) of the FSM.
-        - transition_table (dict): The transition table of the FSM. 
-        - accepting_states (list): The set of accepting states in the FSM.
-        """
-        if len(sigma) != len(set(sigma)):
-            raise ValueError("Duplicate elements found in the Sigma list.")
-        
-        if len(states) != len(set(states)):
-            raise ValueError("Duplicate elements found in the States list.")
-        
-        if len(accepting_states) != len(set(accepting_states)):
-            raise ValueError("Duplicate elements found in the AcceptingStates list.")
+        # Create an FSM instance
+        fsm = FSM(sigma, states, initial_state,
+                  accepting_states, transition_table, char_to_symbol)
 
-        self.sigma = sigma
-        self.states = states
-        self.initial_state = initial_state
-        self.transition_table = transition_table
-        self.accepting_states = accepting_states
+        return fsm
 
-    def traceDFSM(self, input_string):
-        """
-        Traces the input string through the FSM and returns the final state reached.
+    def __build_identifier_FSM(self):
+        # FSM Configurations
+        sigma = ['l', 'd', '_']
+        states = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L']
+        initial_state = 'A'
+        accepting_states = ['B', 'D', 'E', 'F']
+        transition_table = [['B', 'C', 'C'],
+                            ['D', 'E', 'F'],
+                            ['C', 'C', 'C'],
+                            ['D', 'E', 'F'],
+                            ['D', 'E', 'F'],
+                            ['D', 'E', 'F'],
+                            ['D', 'E', 'F'],
+                            ['D', 'C', 'C'],
+                            ['C', 'E', 'C'],
+                            ['C', 'C', 'F'],
+                            ['D', 'E', 'F'],
+                            ['C', 'C', 'C']]
 
-        Parameters:
-        - input_string (str): The input string to be traced through the FSM.
+        # Mapping function
+        def char_to_symbol(char):
+            if char.isdigit():
+                return 'd'
+            elif char.isalpha():
+                return 'l'
+            else:
+                return char
 
-        Returns:
-        - list: The list of final states reached after tracing the input string through the FSM.
-        """
-        current_state = self.initial_state
-        path = [current_state]
-        
-        try:
-            for char in input_string:
-                row = self.states.index(current_state)
-                col = self.sigma.index(char)
-                current_state = self.transition_table[row][col]
-                path.append(current_state)
-        except Exception as e:
-            print(e)
-            path.append("NULL")
+        # Create an FSM instance
+        fsm = FSM(sigma, states, initial_state,
+                  accepting_states, transition_table, char_to_symbol)
 
-        return path
+        return fsm
 
-    def validate(self, input_string):
-        """
-        Checks if the input string is accepted by the FSM.
-
-        Parameters:
-        - input_string (str): The input string to be checked for acceptance.
-
-        Returns:
-        - bool: True if the input string is accepted by the FSM, False otherwise.
-        """
-
-        path = self.traceDFSM(input_string)
-        return path[-1] in self.accepting_states
 
 def tokenize(inputstring):
     raise NotImplementedError()
