@@ -1,5 +1,6 @@
 import argparse
 from functions import *
+from common.helpers import print_tokens
 from components.lexcical_analyzer import Lexer
 
 
@@ -25,16 +26,10 @@ def main(input_file, output_file):
         # Create a Lexer instance
         lexer = Lexer(input_file)
 
-        # Loop through each token in the file
-        while lexer.has_token():
-            # Get token
-            token = lexer.next_token()
-
-            # Write to file & Print to console
+        for token in lexer.tokens:
             text = f"{token.token_type.name.lower():<20} {token.lexeme}\n"
             file.write(text)
             print(text, end='')
-
 
 if __name__ == '__main__':
     # Parses command-line arguments using argparse
