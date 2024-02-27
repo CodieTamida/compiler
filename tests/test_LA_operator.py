@@ -33,6 +33,31 @@ class OperatorTestCase(unittest.TestCase):
             self.assertEqual(actual.lexeme, expected_lexeme)
             self.assertEqual(actual.token_type, expected_tokentype)
 
+    def test_math_equation(self):
+        # Arrange
+        input_string = "a+b  -c*   d=e"
+        expected_tokens = [
+            Token("a", TokenType.IDENTIFIER),
+            Token("+", TokenType.OPERATOR),
+            Token("b", TokenType.IDENTIFIER),
+            Token("-", TokenType.OPERATOR),
+            Token("c", TokenType.IDENTIFIER),
+            Token("*", TokenType.OPERATOR),
+            Token("d", TokenType.IDENTIFIER),
+            Token("=", TokenType.OPERATOR),
+            Token("e", TokenType.IDENTIFIER)
+        ]
+
+        with open(self.SAMPLE_FILE_PATH, 'w') as file:
+            file.write(input_string)
+
+        # Act
+        lexer = Lexer(self.SAMPLE_FILE_PATH)
+        actual_tokens = lexer.tokens
+
+        # Assert
+        self.assertListEqual(actual_tokens, expected_tokens)
+
     def test_illegal_operators(self):
         # Arrange
         input_string = "?% !% !!% ! % ###"

@@ -41,11 +41,12 @@ class IdentifierTestCase(unittest.TestCase):
 
     def test_illegal_identifiers(self):
         # Arrange
-        input_string = "1index #index _index _ __"
+        input_string = "1index _index #index @index _ __"
         expected_tokens = [
             Token("1index", TokenType.UNKNOWN),
-            Token("#index", TokenType.UNKNOWN),
             Token("_index", TokenType.UNKNOWN),
+            Token("#index", TokenType.UNKNOWN),
+            Token("@index", TokenType.UNKNOWN),
             Token("_", TokenType.UNKNOWN),
             Token("__", TokenType.UNKNOWN)
         ]
