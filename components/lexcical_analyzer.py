@@ -1,5 +1,5 @@
 from common.enums import TokenType
-from common.reserved_words_symbols import KEYWORDS, SEPARATORS, SIMPLE_OPERATORS, COMPOUND_OPERATORS, DECIMAL_SEPARATOR
+from common.reserved_words_symbols import KEYWORDS, SEPARATORS, SIMPLE_OPERATORS, COMPOUND_OPERATORS, DECIMAL_SEPARATOR, COMMENT_DELIMITER_BEGIN, COMMENT_DELIMITER_END
 from dataclasses import dataclass
 from components.FSM import FSM
 from common.helpers import FileStream
@@ -31,102 +31,129 @@ class Lexer:
             IOError: If an error occurs while attempting to read the file.
         """
         # Create Finite State Machines for IntegerReal and Identifier
-        self.int_real_FSM = self.__build_int_real_FSM()
-        self.identifier_FSM = self.__build_identifier_FSM()
+        int_real_FSM = self.__build_int_real_FSM()
+        identifier_FSM = self.__build_identifier_FSM()
 
         # Stop signs
-        self.stop_signs = self.__get_stop_signs()
+        stop_signs = self.__get_stop_signs()
         
-        self.tokens = list()
-        # Open the file in read mode
-        self.filestream = FileStream(file_path)
-        self.current_char = None
+        self.tokens = list() # Store extracted tokens
 
-        buffer = str()
+        # Open the file in read mode
+        filestream = FileStream(file_path)
+        inside_comment = False # keeps track of whether we are currently inside a comment block
 
         try:
             # Read the first character
-            char = self.filestream.read(1)
-
+            current_char = filestream.read(1)
 
             # Loop until the end of file
-            while char:
-                done = False
+            while current_char:
 
                 # ****************************************
-                # ********** IGNORE WHITESPACES **********
+                # ***** COMMENT BLOCK BEGIN Checking *****
                 # ****************************************
-                if char == ' ' or char == '\n':
-                    done = True
+                if not inside_comment and current_char == COMMENT_DELIMITER_BEGIN[0]:
+                    next_char = filestream.read(1)
+                    if next_char == COMMENT_DELIMITER_BEGIN[1]:
+                        inside_comment = True
+                    else:
+                        filestream.unread(current_char)
 
                 # ****************************************
-                # *********** INT OR REAL Check **********
+                # ******* COMMENT BLOCK END Checking *****
                 # ****************************************
-                elif char.isdigit() or char == DECIMAL_SEPARATOR:
+                elif inside_comment and current_char == COMMENT_DELIMITER_END[0]:
+                    next_char = filestream.read(1)
+
+                    if next_char == COMMENT_DELIMITER_END[1]:
+                        inside_comment = False
+                    else:
+                        filestream.unread(next_char)
+                
+                # ****************************************
+                # **** IGNORE WHITESPACES & COMMENTS *****
+                # ****************************************
+                elif current_char == ' ' or current_char == '\n' or inside_comment:
+                    pass
+
+                # ****************************************
+                # ********* INT OR REAL Checking *********
+                # ****************************************
+                elif current_char.isdigit() or current_char == DECIMAL_SEPARATOR:
                     # Call FSM
-                    result = self.int_real_FSM.traceDFSM(char, self.filestream, self.stop_signs)
+                    result = int_real_FSM.traceDFSM(current_char, filestream, stop_signs)
 
-                    if result.accepted and result.accepted_states[0] == 'B':
+                    if not result.accepted :
+                        self.tokens.append(Token(result.lexeme, TokenType.UNKNOWN))
+                    elif result.accepted_states[0] == 'B':
                         self.tokens.append(Token(result.lexeme, TokenType.INTEGER))
-                    elif result.accepted and result.accepted_states[0] == 'D':
+                    elif result.accepted_states[0] == 'D':
                         self.tokens.append(Token(result.lexeme, TokenType.REAL))
-                    else:
-                        self.tokens.append(Token(result.lexeme, TokenType.UNKNOWN))
-
-                    done = True
 
                 # ****************************************
-                # *********** IDENTIFIER CHECK ***********
+                # ********** IDENTIFIER Checking *********
                 # ****************************************
-                elif char.isalpha():
+                elif current_char.isalpha():
                     # Call FSM
-                    result = self.identifier_FSM.traceDFSM(char, self.filestream, self.stop_signs)
+                    result = identifier_FSM.traceDFSM(current_char, filestream, stop_signs)
 
-                    if result.accepted and result.lexeme in KEYWORDS:
-                        self.tokens.append(Token(result.lexeme, TokenType.KEYWORD))
-                    elif result.accepted:
-                        self.tokens.append(Token(result.lexeme, TokenType.IDENTIFIER))
-                    else:
+                    if not result.accepted:
                         self.tokens.append(Token(result.lexeme, TokenType.UNKNOWN))
-
-                    done = True
-
-                # ****************************************
-                # *********** SEPARATORS Check ***********
-                # ****************************************
-                elif char in SEPARATORS:
-                    self.tokens.append(Token(char, TokenType.SEPARATOR))
-                    done = True
+                    elif result.lexeme in KEYWORDS:
+                        self.tokens.append(Token(result.lexeme, TokenType.KEYWORD))
+                    else:
+                        self.tokens.append(Token(result.lexeme, TokenType.IDENTIFIER))
 
                 # ****************************************
-                # ******* COMPOUND_OPERATORS Check *******
+                # ********* SEPARATOR Checking ***********
                 # ****************************************
-                if not done:
-                    peek = self.filestream.read(1)
-                    buffer = char + peek
+                elif current_char in SEPARATORS:
+                    self.tokens.append(Token(current_char, TokenType.SEPARATOR))
+                
+                # ****************************************
+                # ********** OPERATOR Checking ***********
+                # ****************************************
+                elif current_char in stop_signs:
+                    # ----- COMPOUND_OPERATORS -----
+                    next_char = filestream.read(1)
+                    buffer = current_char + next_char
                     if buffer in COMPOUND_OPERATORS:
                         self.tokens.append(Token(buffer, TokenType.OPERATOR))
-                        done = True
+                    
+                    # ----- SIMPLE_OPERATORS -----
+                    elif current_char in SIMPLE_OPERATORS:
+                        self.tokens.append(Token(current_char, TokenType.OPERATOR))
+                        filestream.unread(next_char)
                     else:
-                        self.filestream.unread(peek)
+                        filestream.unread(next_char)
+                        
+                        # Create a copy of the list of stop signs
+                        new_stop_signs = stop_signs.copy()
 
-                # ****************************************
-                # ******** SIMPLE_OPERATORS Check ********
-                # ****************************************
-                if not done and char in SIMPLE_OPERATORS:
-                    self.tokens.append(Token(char, TokenType.OPERATOR))
-                    done = True
+                        # Remove the current character from the list of stop signs
+                        new_stop_signs.remove(current_char)
 
-                if not done:
-                    self.tokens.append(Token(char, TokenType.UNKNOWN))
-                    done = True
+                        # Call the Finite State Machine (FSM) function to consume the remaining characters
+                        result = identifier_FSM.traceDFSM(current_char, filestream, new_stop_signs)
+
+                        self.tokens.append(Token(result.lexeme, TokenType.UNKNOWN))
+                
+                # ****************************************
+                # *************** ILLEGAL ****************
+                # ****************************************
+                else:
+                    # Call the Finite State Machine (FSM) function to consume the remaining characters
+                    result = identifier_FSM.traceDFSM(current_char, filestream, stop_signs)
+
+                    self.tokens.append(Token(result.lexeme, TokenType.UNKNOWN))
 
 
                 # Read the next character
-                char = self.filestream.read(1)
+                current_char = filestream.read(1)
         finally:
             # Close the file
-            self.filestream.close()
+            filestream.close()
         
     def __get_stop_signs(self):
         new_set = set()
@@ -141,12 +168,12 @@ class Lexer:
         new_set.update({item[0] for item in COMPOUND_OPERATORS})
 
         # Add a space character and newline character
-        new_set.update({' ', '\n'})
+        new_set.update({' ', '\n', COMMENT_DELIMITER_BEGIN[0]})
 
         return new_set
 
     def __build_int_real_FSM(self):
-        # FSM Configurations
+        # FSM Configuratio ns
         sigma = ['d', '.']
         states = ['A', 'B', 'C', 'D', 'E']
         initial_state = 'A'
