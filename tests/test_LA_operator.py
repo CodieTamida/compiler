@@ -1,7 +1,7 @@
 import unittest
 import os
 from common.enums import TokenType
-from components.lexcical_analyzer import Lexer
+from components.lexcical_analyzer import Lexer, Token
 
 
 class OperatorTestCase(unittest.TestCase):
@@ -33,6 +33,26 @@ class OperatorTestCase(unittest.TestCase):
             self.assertEqual(actual.lexeme, expected_lexeme)
             self.assertEqual(actual.token_type, expected_tokentype)
 
+    def test_illegal_operators(self):
+        # Arrange
+        input_string = "?% !% !!% ! % ###"
+        expected_tokens = [
+            Token("?%", TokenType.UNKNOWN),
+            Token("!%", TokenType.UNKNOWN),
+            Token("!!%", TokenType.UNKNOWN),
+            Token("!", TokenType.UNKNOWN),
+            Token("%", TokenType.UNKNOWN),
+            Token("###", TokenType.UNKNOWN)
+        ]
 
+        with open(self.SAMPLE_FILE_PATH, 'w') as file:
+            file.write(input_string)
+
+        # Act
+        lexer = Lexer(self.SAMPLE_FILE_PATH)
+        actual_tokens = lexer.tokens
+
+        # Assert
+        self.assertListEqual(actual_tokens, expected_tokens)
 if __name__ == '__main__':
     unittest.main()

@@ -127,12 +127,26 @@ class Lexer:
                         filestream.unread(next_char)
                     else:
                         filestream.unread(next_char)
+                        
+                        # Create a copy of the list of stop signs
+                        new_stop_signs = stop_signs.copy()
 
+                        # Remove the current character from the list of stop signs
+                        new_stop_signs.remove(current_char)
+
+                        # Call the Finite State Machine (FSM) function to consume the remaining characters
+                        result = identifier_FSM.traceDFSM(current_char, filestream, new_stop_signs)
+
+                        self.tokens.append(Token(result.lexeme, TokenType.UNKNOWN))
+                
                 # ****************************************
                 # *************** ILLEGAL ****************
                 # ****************************************
                 else:
-                    self.tokens.append(Token(current_char, TokenType.UNKNOWN))
+                    # Call the Finite State Machine (FSM) function to consume the remaining characters
+                    result = identifier_FSM.traceDFSM(current_char, filestream, stop_signs)
+
+                    self.tokens.append(Token(result.lexeme, TokenType.UNKNOWN))
 
 
                 # Read the next character
