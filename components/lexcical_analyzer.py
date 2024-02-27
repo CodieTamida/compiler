@@ -59,6 +59,7 @@ class Lexer:
                         inside_comment = True
                     else:
                         filestream.unread(next_char)
+                        self.tokens.append(Token(current_char, TokenType.UNKNOWN))
 
                 # ****************************************
                 # ******* COMMENT BLOCK END Checking *****
