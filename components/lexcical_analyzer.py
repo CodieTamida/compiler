@@ -58,7 +58,7 @@ class Lexer:
                     if next_char == COMMENT_DELIMITER_BEGIN[1]:
                         inside_comment = True
                     else:
-                        filestream.unread(current_char)
+                        filestream.unread(next_char)
 
                 # ****************************************
                 # ******* COMMENT BLOCK END Checking *****
