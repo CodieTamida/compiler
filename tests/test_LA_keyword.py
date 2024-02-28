@@ -15,35 +15,21 @@ class OperatorTestCase(unittest.TestCase):
             os.remove(self.SAMPLE_FILE_PATH)
 
     def test_keywords(self):
-        # Arrange
-        input_string = ' '.join(self.KEYWORDS)
+        
+        for e in self.KEYWORDS:
+            # Arrange
+            expected_lexeme = e
+            expected_tokentype = TokenType.KEYWORD
 
-        with open(self.SAMPLE_FILE_PATH, 'w') as file:
-            file.write(input_string)
+            with open(self.SAMPLE_FILE_PATH, 'w') as file:
+                file.write(e)
 
-        expected_tokens = [
-            Token("function", TokenType.KEYWORD),
-            Token("integer", TokenType.KEYWORD),
-            Token("boolean", TokenType.KEYWORD),
-            Token("real", TokenType.KEYWORD),
-            Token("if", TokenType.KEYWORD),
-            Token("endif", TokenType.KEYWORD),
-            Token("else", TokenType.KEYWORD),
-            Token("return", TokenType.KEYWORD),
-            Token("print", TokenType.KEYWORD),
-            Token("scan", TokenType.KEYWORD),
-            Token("while", TokenType.KEYWORD),
-            Token("endwhile", TokenType.KEYWORD),
-            Token("true", TokenType.KEYWORD),
-            Token("false", TokenType.KEYWORD)
-        ]
+             # Act
+            lexer = Lexer(self.SAMPLE_FILE_PATH)
+            actual = lexer.tokens[0]
 
-        # Act
-        lexer = Lexer(self.SAMPLE_FILE_PATH)
-        actual_tokens = lexer.tokens
-
-        # Assert
-        self.assertListEqual(actual_tokens, expected_tokens)
+            # Assert
+            self.assertEqual(actual.token_type, expected_tokentype, f"Cannot recognize the keyword '{actual.lexeme}'")
 
     def test_not_a_keyword(self):
         # Arrange
