@@ -1,5 +1,5 @@
     
-KEYWORDS = {'function', 'integer','boolean', 'real', 'if' 'endif', 'else', 'return', 'print',
+KEYWORDS = {'function', 'integer','boolean', 'real', 'if', 'endif', 'else', 'return', 'print',
                 'scan','while', 'endwhile', 'true', 'false'}
 SEPARATORS= {'$', '(', ')', ',', '{', '}', ',', ';'}
 DECIMAL_SEPARATOR = '.'
