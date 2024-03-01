@@ -13,10 +13,13 @@ function (                                        a, b) {
     b = 1289347120934871203
 }
 oneLongIdentifierToTestStringLengthForIdentifyingIdentifiersForThePurposeOfThisTestCase
+integer
+real
 
+else /return
 
 83 + .      (
     45
-                                                T_111
+                                                T_111 scan
 16
 int)
