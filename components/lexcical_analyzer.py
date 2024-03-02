@@ -203,21 +203,15 @@ class Lexer:
     def __build_identifier_FSM(self):
         # FSM Configurations
         sigma = ['l', 'd', '_']
-        states = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L']
+        states = ['A', 'B', 'C', 'D', 'E', 'F']
         initial_state = 'A'
-        accepting_states = ['B', 'D', 'E', 'F']
-        transition_table = [['B', 'C', 'C'],
-                            ['D', 'E', 'F'],
-                            ['C', 'C', 'C'],
-                            ['D', 'E', 'F'],
-                            ['D', 'E', 'F'],
-                            ['D', 'E', 'F'],
-                            ['D', 'E', 'F'],
-                            ['D', 'C', 'C'],
-                            ['C', 'E', 'C'],
-                            ['C', 'C', 'F'],
-                            ['D', 'E', 'F'],
-                            ['C', 'C', 'C']]
+        accepting_states = ['B', 'C', 'D', 'E']
+        transition_table = [['B', 'F', 'F'],
+                            ['C', 'D', 'E'],
+                            ['C', 'D', 'E'],
+                            ['C', 'D', 'E'],
+                            ['C', 'D', 'E'],
+                            ['F', 'F', 'F']]
 
         # Mapping function
         def char_to_symbol(char):
@@ -233,7 +227,3 @@ class Lexer:
                   accepting_states, transition_table, char_to_symbol)
 
         return fsm
-
-
-def tokenize(inputstring):
-    raise NotImplementedError()
