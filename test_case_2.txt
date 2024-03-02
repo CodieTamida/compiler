@@ -7,7 +7,12 @@ function twoSum(self, nums: List[int], target: int) -> List[int]:
             if diff in prevMap:
                 return [prevMap[diff], i]
             prevMap[n] = i
-
+[*
+Multiple
+lines
+of
+comments
+*]
 
 
 

@@ -42,7 +42,7 @@ operator             =
 identifier           target
 operator             -
 identifier           n
-identifier           if
+keyword              if
 identifier           diff
 identifier           in
 unknown              prevMap:
@@ -58,7 +58,3 @@ unknown              [
 unknown              n]
 operator             =
 identifier           i
-separator            (
-identifier           int
-identifier           int
-separator            )
