@@ -1,6 +1,4 @@
 import argparse
-from functions import *
-from common.helpers import print_tokens
 from components.lexcical_analyzer import Lexer
 
 
