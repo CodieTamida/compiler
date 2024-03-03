@@ -174,7 +174,16 @@ class Lexer:
         return new_set
 
     def __build_int_real_FSM(self):
-        # FSM Configuratio ns
+        """
+        Builds a Finite State Machine (FSM) to recognize integer and real numbers.
+
+        Regular Expression: d+ | (d+.d+)
+
+        Returns:
+            FSM: A Finite State Machine instance configured to recognize integer and real numbers.
+        """
+
+        # FSM Configurations
         sigma = ['d', '.']
         states = ['A', 'B', 'C', 'D', 'E']
         initial_state = 'A'
@@ -201,6 +210,16 @@ class Lexer:
         return fsm
 
     def __build_identifier_FSM(self):
+        """
+        Builds a Finite State Machine (FSM) to recognize identifiers.
+
+        Regular Expression: l(l|d|_)*
+        Where 'l' represents a letter, 'd' represents a digit, and '_' represents an underscore.
+
+        Returns:
+            FSM: A Finite State Machine instance configured to recognize identifiers.
+
+        """
         # FSM Configurations
         sigma = ['l', 'd', '_']
         states = ['A', 'B', 'C', 'D', 'E', 'F']
