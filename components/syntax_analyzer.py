@@ -63,7 +63,7 @@ class Parser:
             bool: True if parsing is successful, False otherwise.
         """
         try:
-            self.r1_Rat24S()  # Apply grammar rules
+            self.__r1_Rat24S()  # Apply grammar rules
             self.debug_print_current_token()
             self.__match("$")  # Check if input ends with '$' symbol
             return True  # Parsing successful
@@ -71,7 +71,7 @@ class Parser:
             print(err)
             return False  # Parsing failed
 
-    def r1_Rat24S(self):
+    def __r1_Rat24S(self):
         """
         Applies the production rule 1:
         <Rat24S> -> $ 
@@ -99,54 +99,54 @@ class Parser:
         # Statement
         self.debug_print("<Rat24S> -> <Statement List>")
         self.debug_print_current_token()
-        self.r14_statement_list()
+        self.__r14_statement_list()
 
-    def r2_optional_function_definitions(self):
+    def __r2_optional_function_definitions(self):
         raise NotImplementedError("Must implement this method!")
 
-    def r3_function_definitions(self):
+    def __r3_function_definitions(self):
         raise NotImplementedError("Must implement this method!")
 
-    def r4_function(self):
+    def __r4_function(self):
         raise NotImplementedError("Must implement this method!")
 
-    def r5_optional_parameter_list(self):
+    def __r5_optional_parameter_list(self):
         raise NotImplementedError("Must implement this method!")
 
-    def r6_parameter_list(self):
+    def __r6_parameter_list(self):
         raise NotImplementedError("Must implement this method!")
 
-    def r7_parameter(self):
+    def __r7_parameter(self):
         raise NotImplementedError("Must implement this method!")
 
-    def r8_qualifier(self):
+    def __r8_qualifier(self):
         raise NotImplementedError("Must implement this method!")
 
-    def r9_body(self):
+    def __r9_body(self):
         raise NotImplementedError("Must implement this method!")
 
-    def r10_optional_declaration_list(self):
+    def __r10_optional_declaration_list(self):
         raise NotImplementedError("Must implement this method!")
 
-    def r11_declaration_list(self):
+    def __r11_declaration_list(self):
         raise NotImplementedError("Must implement this method!")
 
-    def r12_declaration(self):
+    def __r12_declaration(self):
         raise NotImplementedError("Must implement this method!")
 
-    def r13_ids(self):
+    def __r13_ids(self):
         raise NotImplementedError("Must implement this method!")
 
-    def r14_statement_list(self):
+    def __r14_statement_list(self):
         """
         Applies the production rule 14:
         <Statement List> -> <Statement> | 
                             <Statement> <Statement List>
         """
         # self.debug_print("<Statement List> -> <Statement>")
-        self.r15_statement()
+        self.__r15_statement()
 
-    def r15_statement(self):
+    def __r15_statement(self):
         """
         Applies the production rule 15:
         <Statement> -> <Compound> | <Assign> | 
@@ -156,33 +156,33 @@ class Parser:
         lexeme = self.__current_token.lexeme.lower()
         #  Check if the current token is an opening brace for a compound statement
         if lexeme == "{":
-            self.r16_compound()
+            self.__r16_compound()
         # Check if the current token is an identifier for an assignment statement
         elif self.__current_token.token_type == TokenType.IDENTIFIER:
             self.debug_print("<Statement> -> <Assign>")
             self.__match(self.__current_token.lexeme)  # Move to the next token
-            self.r17_assign()
+            self.__r17_assign()
         # Check if the current token is the "if" keyword for an if statement
         elif lexeme == "if":
-            self.r18_if()
+            self.__r18_if()
         elif lexeme == "return":
-            self.r19_return()
+            self.__r19_return()
         elif lexeme == "print":
-            self.r20_print()
+            self.__r20_print()
         elif lexeme == "scan":
-            self.r21_scan()
+            self.__r21_scan()
         elif lexeme == "while":
-            self.r22_while()
-            
-        #  Check if there are more statements to process 
+            self.__r22_while()
+
+        #  Check if there are more statements to process
         # (not reached the end of input)
         if self.__current_token.lexeme != "$":
-            self.r14_statement_list()
+            self.__r14_statement_list()
 
-    def r16_compound(self):
+    def __r16_compound(self):
         raise NotImplementedError("Must implement this method!")
 
-    def r17_assign(self):
+    def __r17_assign(self):
         """
         Applies the production rule 17:
         <Assign> -> <Identifier> = <Expression> ;
@@ -193,30 +193,30 @@ class Parser:
 
         if self.__current_token.lexeme == "=":
             self.__match(self.__current_token.lexeme)  # Move to the next token
-            self.r25a_expression()
+            self.__r25a_expression()
 
-    def r18_if(self):
+    def __r18_if(self):
         raise NotImplementedError("Must implement this method!")
 
-    def r19_return(self):
+    def __r19_return(self):
         raise NotImplementedError("Must implement this method!")
 
-    def r20_print(self):
+    def __r20_print(self):
         raise NotImplementedError("Must implement this method!")
 
-    def r21_scan(self):
+    def __r21_scan(self):
         raise NotImplementedError("Must implement this method!")
 
-    def r22_while(self):
+    def __r22_while(self):
         raise NotImplementedError("Must implement this method!")
 
-    def r23_condition(self):
+    def __r23_condition(self):
         raise NotImplementedError("Must implement this method!")
 
-    def r24_relop(self):
+    def __r24_relop(self):
         raise NotImplementedError("Must implement this method!")
 
-    def r25a_expression(self):
+    def __r25a_expression(self):
         """
         Applies the production rule 25a: 
         E -> TE'
@@ -230,10 +230,10 @@ class Parser:
         self.debug_print_current_token()
         self.debug_print("<Expression> -> <Term> <Expression Prime>")
 
-        self.r26a_term()
-        self.r25b_expression_prime()
+        self.__r26a_term()
+        self.__r25b_expression_prime()
 
-    def r25b_expression_prime(self):
+    def __r25b_expression_prime(self):
         """
         Applies the production rule 25b: 
         E' -> +TE' | -TE' | ε
@@ -248,14 +248,14 @@ class Parser:
                 f"<Expression Prime> -> {self.__current_token.lexeme} <Term> <Expression Prime>")
             self.__match(self.__current_token.lexeme)  # Move to the next token
             self.debug_print_current_token()
-            self.r26a_term()
-            self.r25b_expression_prime()
+            self.__r26a_term()
+            self.__r25b_expression_prime()
         # Handle Epsilon case
         else:
             self.__match(self.__current_token.lexeme)  # Move to the next token
             self.debug_print("<Expression Prime> -> ε")
 
-    def r26a_term(self):
+    def __r26a_term(self):
         """
         Applies the production rule 26a:
         T -> FT'
@@ -267,10 +267,10 @@ class Parser:
         """
         self.debug_print("<Term> -> <Factor> <Term Prime>")
 
-        self.r27_factor()
-        self.r26b_term_prime()
+        self.__r27_factor()
+        self.__r26b_term_prime()
 
-    def r26b_term_prime(self):
+    def __r26b_term_prime(self):
         """
         Applies the production rule 26b:
         T' -> *FT' | /FT' | F
@@ -294,13 +294,13 @@ class Parser:
             self.debug_print_current_token()
 
             # Apply production rules for Factor and Term Prime recursively
-            self.r27_factor()
-            self.r26b_term_prime()
+            self.__r27_factor()
+            self.__r26b_term_prime()
         # Handle Epsilon case
         else:
             self.debug_print("<Term Prime> -> ε")
 
-    def r27_factor(self):
+    def __r27_factor(self):
         """
         Applies the production rule 27:
         <Factor> -> - <Primary> | <Primary>
@@ -308,13 +308,13 @@ class Parser:
 
         if self.__current_token.lexeme == "-":
             self.__match(self.__current_token.lexeme)  # Move to the next token
-            primary = self.r28_primary()
+            primary = self.__r28_primary()
             self.debug_print(f"<Factor> -> - {primary}")
         else:
-            primary = self.r28_primary()
+            primary = self.__r28_primary()
             self.debug_print(f"<Factor> -> {primary}")
 
-    def r28_primary(self):
+    def __r28_primary(self):
         """
         Applies the production rule 28:
         <Primary> -> <Identifier> | <Integer> | 
@@ -329,9 +329,9 @@ class Parser:
 
         # Check if the current token is an identifier, integer, or real number
         if (self.__current_token.token_type == TokenType.IDENTIFIER
-                    or self.__current_token.token_type == TokenType.INTEGER
-                    or self.__current_token.token_type == TokenType.REAL
-                ):
+            or self.__current_token.token_type == TokenType.INTEGER
+            or self.__current_token.token_type == TokenType.REAL
+            ):
             text = f"<{self.__current_token.token_type.name}>"
         # Check if the current token is "true" or "false"
         elif (self.__current_token.lexeme == "true" or self.__current_token.lexeme == "false"):
