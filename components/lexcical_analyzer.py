@@ -38,6 +38,7 @@ class Lexer:
         stop_signs = self.__get_stop_signs()
         
         self.tokens = list() # Store extracted tokens
+        self.__current_index = -1  # Current index for token retrieval
 
         # Open the file in read mode
         filestream = FileStream(file_path)
@@ -155,6 +156,19 @@ class Lexer:
         finally:
             # Close the file
             filestream.close()
+
+    def get_next_token(self):
+        """
+        Retrieve the next token from the list of extracted tokens.
+
+        Returns:
+            Token or None: The next token object or None if end of tokens reached.
+        """
+        if self.__current_index < len(self.tokens) - 1:
+            self.__current_index += 1
+            return self.tokens[self.__current_index]
+        else:
+            return None
         
     def __get_stop_signs(self):
         new_set = set()
