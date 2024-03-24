@@ -29,32 +29,6 @@ class Parser:
             print(
                 f"Token: {tokentype:<20} Lexeme: {self.__current_token.lexeme}")
 
-    def __match(self, expected_lexeme: str):
-        """
-        Compares the current token's lexeme with the expected lexeme.
-
-        If the lexemes match, then advance to the next token using the lexer.get_next_token() method. 
-
-        Otherwise, raise a ValueError indicating that the expected lexeme was not found.
-
-        Parameters:
-            expected_lexeme (str): The expected lexeme to match against the current token's lexeme.
-
-        Raises:
-            ValueError: If the current token's lexeme does not match the expected character.
-
-        Returns:
-            None
-
-        This method is used in a lexer/parser system to validate tokens against expected characters. If the current token's lexeme matches the expected character, the method advances to the next token. Otherwise, it raises a ValueError indicating the mismatch.
-        """
-
-        if self.__current_token.lexeme == expected_lexeme:
-            self.__current_token = self.__lexer.get_next_token()
-        else:
-            raise ValueError(
-                f'Expected {expected_lexeme}, found {self.__current_token.lexeme}')
-
     def parse(self):
         """
         Parses the input by tokenizing it with the lexer and applying grammar rules.
@@ -86,6 +60,32 @@ class Parser:
             print(red_color + "Error:", err, reset_color)
         finally:
             return parsing_result
+
+    def __match(self, expected_lexeme: str):
+        """
+        Compares the current token's lexeme with the expected lexeme.
+
+        If the lexemes match, then advance to the next token using the lexer.get_next_token() method. 
+
+        Otherwise, raise a ValueError indicating that the expected lexeme was not found.
+
+        Parameters:
+            expected_lexeme (str): The expected lexeme to match against the current token's lexeme.
+
+        Raises:
+            ValueError: If the current token's lexeme does not match the expected character.
+
+        Returns:
+            None
+
+        This method is used in a lexer/parser system to validate tokens against expected characters. If the current token's lexeme matches the expected character, the method advances to the next token. Otherwise, it raises a ValueError indicating the mismatch.
+        """
+
+        if self.__current_token.lexeme == expected_lexeme:
+            self.__current_token = self.__lexer.get_next_token()
+        else:
+            raise ValueError(
+                f'Expected {expected_lexeme}, found {self.__current_token.lexeme}')
 
     def __r1_Rat24S(self):
         """
