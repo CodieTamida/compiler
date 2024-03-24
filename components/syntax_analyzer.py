@@ -5,25 +5,30 @@ from components.lexcical_analyzer import Lexer, Token
 class Parser:
     def __init__(self, lexer: Lexer, debug_print=False):
         """
-        Initialize the Parser object.
+        Initializes the Parser object.
 
         Parameters:
-        - lexer (Lexer): The lexer object responsible for tokenizing input.
-        - debug_print (bool): A flag indicating whether to print production rules for debugging purposes.
+        - lexer (Lexer): A Lexer object that generates tokens for parsing.
+        - debug_print (bool): A flag indicating whether to print a text to the console for debugging purposes.
         """
         self.__lexer = lexer
-
-        # The current token retrieved from the Lexer
         self.__current_token = None
-
-        # A switch for printing production rule
         self.__debug_print = debug_print
 
     def debug_print(self, text=str()):
+        """
+        Print the provided text if debug_print flag is True.
+
+        Parameters:
+        - text (str): The text to be printed.
+        """
         if self.__debug_print:
             print(text)
 
     def debug_print_current_token(self):
+        """
+        Prints information about the current token if debug_print flag is True
+        """
         if self.__debug_print:
             tokentype = self.__current_token.token_type.name.capitalize()
             print(
@@ -44,10 +49,12 @@ class Parser:
             if self.__current_token is None:
                 raise ValueError(f"The input is empty")
 
-            # Apply grammar rules
+            # Apply the entry point rule, <Rat24S>
             self.__r1_Rat24S()
 
-            # Check if EOF has been reached
+            # Set parsing_result to True, indicating that the parsing process was successful
+            #  and there are no more tokens to be processed.
+            # Otherwise, raise a ValueError
             if self.__current_token is None:
                 parsing_result = True  # Parsing successful
             else:
@@ -77,8 +84,6 @@ class Parser:
 
         Returns:
             None
-
-        This method is used in a lexer/parser system to validate tokens against expected characters. If the current token's lexeme matches the expected character, the method advances to the next token. Otherwise, it raises a ValueError indicating the mismatch.
         """
 
         if self.__current_token.lexeme == expected_lexeme:
@@ -89,7 +94,7 @@ class Parser:
 
     def __r1_Rat24S(self):
         """
-        Applies the production rule 1:
+        Applies the grammar rule 1:
         <Rat24S> -> $ 
                     <Opt Function Definitions> 
                     $ 
@@ -116,7 +121,7 @@ class Parser:
         self.debug_print_current_token()
         self.__match("$")
 
-        # <Statement List>
+        # Apply rule 14 <Statement List>
         self.__r14_statement_list()
 
         # Match the end of <Rat24S>, indicated by "$".
@@ -168,7 +173,7 @@ class Parser:
 
     def __r14_statement_list(self):
         """
-        Applies the production rule 14:
+        Applies the grammar rule 14:
         <Statement List> -> <Statement> | 
                             <Statement> <Statement List>
         """
@@ -179,7 +184,7 @@ class Parser:
 
     def __r15_statement(self):
         """
-        Applies the production rule 15:
+        Applies the grammar rule 15:
         <Statement> -> <Compound> | <Assign> | 
                         <If> | <Return> | 
                         <Print> | <Scan> | <While>
@@ -215,7 +220,7 @@ class Parser:
 
     def __r17_assign(self):
         """
-        Applies the production rule 17:
+        Applies the grammar rule 17:
         <Assign> -> <Identifier> = <Expression> ;
         """
         self.debug_print("<Assign> -> <Identifier> = <Expression> ;")
@@ -333,7 +338,7 @@ class Parser:
 
     def __r27_factor(self):
         """
-        Applies the production rule 27:
+        Applies the grammar rule 27:
         <Factor> -> - <Primary> | <Primary>
         """
 
@@ -347,7 +352,7 @@ class Parser:
 
     def __r28_primary(self):
         """
-        Applies the production rule 28:
+        Applies the grammar rule 28:
         <Primary> -> <Identifier> | <Integer> | 
                     <Identifier> ( <IDs> ) | 
                     ( <Expression> ) |
