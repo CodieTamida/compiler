@@ -18,8 +18,10 @@ class StatementTestCase(unittest.TestCase):
 
     def test_1id(self):
         # Arrange
-        input_string = "$ a $"
+        input_string = "$ $ $ a $"
         expected_tokens = [
+            Token("$", TokenType.SEPARATOR),
+            Token("$", TokenType.SEPARATOR),
             Token("$", TokenType.SEPARATOR),
             Token("a", TokenType.IDENTIFIER),
             Token("$", TokenType.SEPARATOR)
@@ -43,8 +45,10 @@ class StatementTestCase(unittest.TestCase):
 
     def test_2ids_1op(self):
         # Arrange
-        input_string = "$ a = b; $"
+        input_string = "$ $ $ a = b; $"
         expected_tokens = [
+            Token("$", TokenType.SEPARATOR),
+            Token("$", TokenType.SEPARATOR),
             Token("$", TokenType.SEPARATOR),
             Token("a", TokenType.IDENTIFIER),
             Token("=", TokenType.OPERATOR),
@@ -71,8 +75,10 @@ class StatementTestCase(unittest.TestCase):
 
     def test_3ids_2ops(self):
         # Arrange
-        input_string = "$ a = b + c; $"
+        input_string = "$ $ $ a = b + c; $"
         expected_tokens = [
+            Token("$", TokenType.SEPARATOR),
+            Token("$", TokenType.SEPARATOR),
             Token("$", TokenType.SEPARATOR),
             Token("a", TokenType.IDENTIFIER),
             Token("=", TokenType.OPERATOR),
@@ -101,8 +107,10 @@ class StatementTestCase(unittest.TestCase):
 
     def test_4ids_3ops(self):
         # Arrange
-        input_string = "$ a = b + c - d; $"
+        input_string = "$ $ $ a = b + c - d; $"
         expected_tokens = [
+            Token("$", TokenType.SEPARATOR),
+            Token("$", TokenType.SEPARATOR),
             Token("$", TokenType.SEPARATOR),
             Token("a", TokenType.IDENTIFIER),
             Token("=", TokenType.OPERATOR),
@@ -132,8 +140,10 @@ class StatementTestCase(unittest.TestCase):
 
     def test_4ids_3ops_mul_div(self):
         # Arrange
-        input_string = "$ a = b * c - d; $"
+        input_string = "$ $ $ a = b * c - d; $"
         expected_tokens = [
+            Token("$", TokenType.SEPARATOR),
+            Token("$", TokenType.SEPARATOR),
             Token("$", TokenType.SEPARATOR),
             Token("a", TokenType.IDENTIFIER),
             Token("=", TokenType.OPERATOR),
@@ -163,8 +173,10 @@ class StatementTestCase(unittest.TestCase):
 
     def test_2ids_2ops_1boolean(self):
         # Arrange
-        input_string = "$ a = b - true; $"
+        input_string = "$ $ $ a = b - true; $"
         expected_tokens = [
+            Token("$", TokenType.SEPARATOR),
+            Token("$", TokenType.SEPARATOR),
             Token("$", TokenType.SEPARATOR),
             Token("a", TokenType.IDENTIFIER),
             Token("=", TokenType.OPERATOR),
@@ -192,8 +204,10 @@ class StatementTestCase(unittest.TestCase):
 
     def test_2ids_2ops_1negative_int(self):
         # Arrange
-        input_string = "$ a = b - -3; $"
+        input_string = "$ $ $ a = b - -3; $"
         expected_tokens = [
+            Token("$", TokenType.SEPARATOR),
+            Token("$", TokenType.SEPARATOR),
             Token("$", TokenType.SEPARATOR),
             Token("a", TokenType.IDENTIFIER),
             Token("=", TokenType.OPERATOR),
@@ -222,8 +236,10 @@ class StatementTestCase(unittest.TestCase):
 
     def test_2ids_2ops_1real(self):
         # Arrange
-        input_string = "$ a = b - 3.1; $"
+        input_string = "$ $ $ a = b - 3.1; $"
         expected_tokens = [
+            Token("$", TokenType.SEPARATOR),
+            Token("$", TokenType.SEPARATOR),
             Token("$", TokenType.SEPARATOR),
             Token("a", TokenType.IDENTIFIER),
             Token("=", TokenType.OPERATOR),
@@ -251,8 +267,10 @@ class StatementTestCase(unittest.TestCase):
 
     def test_invalid_missing_id(self):
         # Arrange
-        input_string = "$ a = b + ; $"
+        input_string = "$ $ $ a = b + ; $"
         expected_tokens = [
+            Token("$", TokenType.SEPARATOR),
+            Token("$", TokenType.SEPARATOR),
             Token("$", TokenType.SEPARATOR),
             Token("a", TokenType.IDENTIFIER),
             Token("=", TokenType.OPERATOR),

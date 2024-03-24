@@ -62,14 +62,30 @@ class Parser:
         Returns:
             bool: True if parsing is successful, False otherwise.
         """
+        parsing_result = False  # Initialize parsing result to False
+
         try:
-            self.__r1_Rat24S()  # Apply grammar rules
-            self.debug_print_current_token()
-            self.__match("$")  # Check if input ends with '$' symbol
-            return True  # Parsing successful
+            # Get the first token
+            self.__current_token = self.__lexer.get_next_token()
+            if self.__current_token is None:
+                raise ValueError(f"The input is empty")
+
+            # Apply grammar rules
+            self.__r1_Rat24S()
+
+            # Check if EOF has been reached
+            if self.__current_token is None:
+                parsing_result = True  # Parsing successful
+            else:
+                self.debug_print_current_token()
+                raise ValueError(
+                    f"Expected End Of File, but found {self.__current_token.lexeme}")
         except Exception as err:
-            print(err)
-            return False  # Parsing failed
+            red_color = "\033[91m"  # ANSI escape code for red color
+            reset_color = "\033[0m"  # ANSI escape code to reset
+            print(red_color + "Error:", err, reset_color)
+        finally:
+            return parsing_result
 
     def __r1_Rat24S(self):
         """
@@ -82,27 +98,34 @@ class Parser:
                     <Statement List> 
                     $
         """
-        # Get the first token
-        self.__current_token = self.__lexer.get_next_token()
+        # Match the beginning of <Rat24S>, indicated by "$".
         self.debug_print_current_token()
-
-        # Check if the first token is '$' symbol
         self.__match("$")
 
-        if self.__current_token.lexeme == "function":
-            self.debug_print("<Rat24S> -> <Function Definitions>")
-        elif (self.__current_token.lexeme == "integer"
-              or self.__current_token.lexeme == "real"
-              or self.__current_token.lexeme == "boolean"):
-            self.debug_print("<Rat24S> -> <Opt Declaration List>")
+        # Apply rule 2 <Opt Function Definitions>
+        self.__r2_optional_function_definitions()
 
-        # Statement
-        self.debug_print("<Rat24S> -> <Statement List>")
+        # Match the end of <Opt Function Definitions>, indicated by "$".
         self.debug_print_current_token()
+        self.__match("$")
+
+        # Apply rule 10 <Opt Declaration List>
+        self.__r10_optional_declaration_list()
+
+        # Match the end of <Opt Function Definitions>, indicated by "$".
+        self.debug_print_current_token()
+        self.__match("$")
+
+        # <Statement List>
         self.__r14_statement_list()
 
+        # Match the end of <Rat24S>, indicated by "$".
+        self.debug_print_current_token()
+        self.__match("$")
+
     def __r2_optional_function_definitions(self):
-        raise NotImplementedError("Must implement this method!")
+        if self.__current_token.lexeme == "function":
+            raise NotImplementedError("Must implement this method!")
 
     def __r3_function_definitions(self):
         raise NotImplementedError("Must implement this method!")
@@ -126,10 +149,16 @@ class Parser:
         raise NotImplementedError("Must implement this method!")
 
     def __r10_optional_declaration_list(self):
-        raise NotImplementedError("Must implement this method!")
+        if (self.__current_token.lexeme == "integer"
+            or self.__current_token.lexeme == "real"
+                or self.__current_token.lexeme == "boolean"):
+            self.debug_print("<Rat24S> -> <Opt Declaration List>")
+            self.debug_print("<Opt Declaration List> -> <Declaration List>")
+            self.__match(self.__current_token.lexeme)  # Move to the next token
+            self.__r11_declaration_list()
 
     def __r11_declaration_list(self):
-        raise NotImplementedError("Must implement this method!")
+        self.debug_print("<Declaration List> -> <Declaration>")
 
     def __r12_declaration(self):
         raise NotImplementedError("Must implement this method!")
@@ -143,7 +172,9 @@ class Parser:
         <Statement List> -> <Statement> | 
                             <Statement> <Statement List>
         """
-        # self.debug_print("<Statement List> -> <Statement>")
+        self.debug_print(
+            "<Statement List> -> <Statement> | <Statement> <Statement List>")
+        self.debug_print_current_token()
         self.__r15_statement()
 
     def __r15_statement(self):
@@ -329,8 +360,8 @@ class Parser:
 
         # Check if the current token is an identifier, integer, or real number
         if (self.__current_token.token_type == TokenType.IDENTIFIER
-            or self.__current_token.token_type == TokenType.INTEGER
-            or self.__current_token.token_type == TokenType.REAL
+                or self.__current_token.token_type == TokenType.INTEGER
+                or self.__current_token.token_type == TokenType.REAL
             ):
             text = f"<{self.__current_token.token_type.name}>"
         # Check if the current token is "true" or "false"
