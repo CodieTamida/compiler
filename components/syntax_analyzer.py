@@ -12,7 +12,7 @@ class Parser:
         - debug_print (bool): A flag indicating whether to print a text to the console for debugging purposes.
         """
         self.__lexer = lexer
-        self.__current_token = None
+        self.__current_token = None  # Used to store extracted token from the Lexer
         self.__debug_print = debug_print
 
     def debug_print(self, text=str()):
@@ -182,6 +182,10 @@ class Parser:
         self.debug_print_current_token()
         self.__r15_statement()
 
+        #  Check if there are more statements to process
+        if self.__current_token.lexeme != "}" and self.__current_token.lexeme != "$":
+            self.__r14_statement_list()
+
     def __r15_statement(self):
         """
         Applies the grammar rule 15:
@@ -210,11 +214,6 @@ class Parser:
         elif lexeme == "while":
             self.__r22_while()
 
-        #  Check if there are more statements to process
-        # (not reached the end of input)
-        if self.__current_token.lexeme != "$":
-            self.__r14_statement_list()
-
     def __r16_compound(self):
         raise NotImplementedError("Must implement this method!")
 
@@ -230,6 +229,9 @@ class Parser:
         if self.__current_token.lexeme == "=":
             self.__match(self.__current_token.lexeme)  # Move to the next token
             self.__r25a_expression()
+
+            # Match the end of <Assign>, indicated by a semicolon ";".
+            self.__match(";")  # Match & Move to the next token
 
     def __r18_if(self):
         raise NotImplementedError("Must implement this method!")
@@ -288,7 +290,6 @@ class Parser:
             self.__r25b_expression_prime()
         # Handle Epsilon case
         else:
-            self.__match(self.__current_token.lexeme)  # Move to the next token
             self.debug_print("<Expression Prime> -> ε")
 
     def __r26a_term(self):
@@ -309,7 +310,7 @@ class Parser:
     def __r26b_term_prime(self):
         """
         Applies the production rule 26b:
-        T' -> *FT' | /FT' | F
+        T' -> *FT' | /FT' | ε
 
         Notes:
         F is <Factor>
