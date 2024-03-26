@@ -277,7 +277,7 @@ class Parser:
 
         else:
             self.__r25a_expression()
-            self.__r19_return_b_prime()
+            self.__match(';')
         
 
     def __r20_print(self):
