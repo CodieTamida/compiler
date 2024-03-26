@@ -268,7 +268,7 @@ class Parser:
         """
 
         # Check to see if the current token is a separator, ;
-        if self.__current_token == ";":
+        if self.__current_token.lexeme == ";":
             self.debug_print(f"<Return Prime> -> {self.__current_token.lexeme}")
             self.__match(self.__current_token.lexeme) # Move to the next token
 
@@ -277,6 +277,7 @@ class Parser:
 
         else:
             self.__r25a_expression()
+            self.__r19_return_b_prime()
         
 
     def __r20_print(self):
