@@ -133,6 +133,7 @@ class Parser:
             raise NotImplementedError("Must implement this method!")
 
     def __r3_function_definitions(self):
+        self.__r4_function()
         raise NotImplementedError("Must implement this method!")
 
     def __r4_function(self):
@@ -237,7 +238,49 @@ class Parser:
         raise NotImplementedError("Must implement this method!")
 
     def __r19_return(self):
-        raise NotImplementedError("Must implement this method!")
+        """
+        Applies the production rule 19a:
+        R --> rR'
+
+        R = <Return>
+        r = return
+        R` = <Return Prime>
+        """
+
+        if self.__current_token.lexeme == "return":
+            expression = f'<Return> -> {self.__current_token.lexeme} <Return Prime>'
+            self.debug_print(expression)
+
+            self.__match(self.__current_token.lexeme)
+            self.debug_print_current_token()
+
+            self.__r19_return_b_prime()
+        else:
+            self.debug_print(f"Expecting return keyword, but read {self.__current_token.lexeme}")
+
+    def __r19_return_b_prime(self):
+        """
+        R' --> ; | E
+
+        R' = <Return Prime>
+        ; = symbol ;
+        E = <Expression>
+        """
+
+        # Check to see if the current token is a separator, ;
+        if self.__current_token == ";":
+            self.debug_print(f"<Return Prime> -> {self.__current_token.lexeme}")
+            self.__match(self.__current_token.lexeme) # Move to the next token
+
+        
+        # Check to see if <Expression>, after left-recursion, leads E -> TE'
+
+        elif self.__current_token == "-":
+            self.debug_print_current_token()
+            self.debug_print("<Expression> -> <Term> <Expression> <Expression Prime>")
+
+            self.__r25a_expression()
+        
 
     def __r20_print(self):
         raise NotImplementedError("Must implement this method!")
