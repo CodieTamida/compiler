@@ -52,7 +52,7 @@ class ReturnTestCase(unittest.TestCase):
         # Assert
         self.assertTrue(parsing_success)
 
-    def test_return_expresion(self):
+    def test_return_expression(self):
         # Arrange
         input_string = "$ $ $ return a * b - c; $"
 
