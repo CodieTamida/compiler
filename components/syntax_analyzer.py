@@ -275,10 +275,7 @@ class Parser:
         
         # Check to see if <Expression>, after left-recursion, leads E -> TE'
 
-        elif self.__current_token == "-":
-            self.debug_print_current_token()
-            self.debug_print("<Expression> -> <Term> <Expression> <Expression Prime>")
-
+        else:
             self.__r25a_expression()
         
 
