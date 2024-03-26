@@ -237,7 +237,7 @@ class Parser:
     def __r18_if(self):
         raise NotImplementedError("Must implement this method!")
 
-    def __r19_return_a(self):
+    def __r19_return(self):
         """
         Applies the production rule 19a:
         R --> rR'
