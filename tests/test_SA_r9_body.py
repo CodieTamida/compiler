@@ -30,11 +30,24 @@ class BodyTestCase(unittest.TestCase):
 
         self.assertTrue(parsing_success)
 
-    def test_body_no_closing_curly(self):
+    def test_body_no_closing_brace(self):
         input_string = "$$ { a- 2 $"
         with open(self.SAMPLE_FILE_PATH, 'w') as file:
             file.write(input_string)
         
+        lexer = Lexer(self.SAMPLE_FILE_PATH)
+        parser = Parser(lexer, debug_print=True)
+        parser.debug_print()
+        parser.debug_print()
+        parsing_success = parser.parse()
+
+        self.assertTrue(parsing_success)
+
+    def test_body_no_opening_brace(self):
+        input_string = "$ a - -5}$"
+        with open(self.SAMPLE_FILE_PATH, 'w') as file:
+            file.write(input_string)
+
         lexer = Lexer(self.SAMPLE_FILE_PATH)
         parser = Parser(lexer, debug_print=True)
         parser.debug_print()
