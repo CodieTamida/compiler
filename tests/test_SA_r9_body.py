@@ -41,7 +41,7 @@ class BodyTestCase(unittest.TestCase):
         parser.debug_print()
         parsing_success = parser.parse()
 
-        self.assertTrue(parsing_success)
+        self.assertFalse(parsing_success)
 
     def test_body_no_opening_brace(self):
         input_string = "$ a - -5}$"
