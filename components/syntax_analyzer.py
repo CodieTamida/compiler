@@ -108,6 +108,7 @@ class Parser:
         self.__match("$")
 
         # Apply rule 2 <Opt Function Definitions>
+        self.debug_print("<Rat24S> -> <Opt Function Definitions>")
         self.__r2_optional_function_definitions()
 
         # Match the end of <Opt Function Definitions>, indicated by "$".
@@ -115,6 +116,7 @@ class Parser:
         self.__match("$")
 
         # Apply rule 10 <Opt Declaration List>
+        self.debug_print("<Rat24S> -> <Opt Declaration List>")
         self.__r10_optional_declaration_list()
 
         # Match the end of <Opt Function Definitions>, indicated by "$".
@@ -129,48 +131,210 @@ class Parser:
         self.__match("$")
 
     def __r2_optional_function_definitions(self):
+        """
+        Applies the grammar rule 2: 
+        <Opt Function Definitions> -> <Function Definitions> | ε
+        """
         if self.__current_token.lexeme == "function":
-            raise NotImplementedError("Must implement this method!")
+            self.debug_print(
+                "<Opt Function Definitions> -> <Function Definitions>")
+            self.__r3a_function_definitions()
+        else:
+            self.debug_print("<Opt Function Definitions> -> ε")
 
-    def __r3_function_definitions(self):
+    def __r3a_function_definitions(self):
+        """
+        Applies the production rule 3a: 
+        <Function Definitions> -> <Function> <Function Definitions Prime>
+        """
+        self.debug_print(
+            "<Function Definitions> -> <Function> <Function Definitions Prime>")
         self.__r4_function()
-        raise NotImplementedError("Must implement this method!")
+        self.__r3b_function_definitions_prime()
+
+    def __r3b_function_definitions_prime(self):
+        """
+        Applies the production rule 3b: 
+        <Function Definitions Prime> -> <Function Definitions> | ε
+        """
+        if self.__current_token.lexeme == "function":
+            self.debug_print(
+                "<Function Definitions Prime> -> <Function Definitions>")
+            self.__r4_function()
+        else:
+            self.debug_print("<Function Definitions Prime> -> ε")
 
     def __r4_function(self):
-        raise NotImplementedError("Must implement this method!")
+        """
+        Applies the production rule 4: 
+        <Function> ::= function <Identifier> ( <Opt Parameter List> ) 
+                                <Opt Declaration List> <Body>
+        """
+        self.debug_print_current_token()
+
+        # Match the beginning of <Function>, indicated by "function".
+        self.__match("function")  # Match and Move to the next token
+
+        # Check if function's name exists
+        if self.__current_token.token_type == TokenType.IDENTIFIER:
+            self.debug_print(
+                "<Function> -> function <Identifier> ( <Opt Parameter List> ) <Opt Declaration List> <Body>")
+            self.debug_print_current_token()
+            self.__match(self.__current_token.lexeme)  # Move to the next token
+
+            # After the function's name, there must be an open parenthesis '('
+            self.debug_print_current_token()
+            self.__match("(")
+            self.__r5_optional_parameter_list()
+
+            # After the function's params, there must be a close parenthesis ')'
+            self.debug_print_current_token()
+            self.__match(")")
+
+            self.__r10_optional_declaration_list()
+            self.__r9_body()
+        # Handle error: Function's name does not exist
+        else:
+            raise ValueError(
+                f"Expected an Identifier, but found {self.__current_token.token_type}")
 
     def __r5_optional_parameter_list(self):
-        raise NotImplementedError("Must implement this method!")
+        """
+        Applies the grammar rule 5: 
+        <Opt Parameter List> -> <Parameter List> | ε
+        """
+        if self.__current_token.token_type == TokenType.IDENTIFIER:
+            self.debug_print("<Opt Parameter List> -> <Parameter List>")
+            self.__r6_parameter_list()
+        else:
+            self.debug_print("<Opt Parameter List> -> ε")
 
     def __r6_parameter_list(self):
-        raise NotImplementedError("Must implement this method!")
+        """
+        Applies production rule r6
+        <PL> -> <P> <P'>
+
+        Notes:
+        PL = <Parameter List>
+        P  = <Parameter>
+        P' = <Parameter Prime> 
+        """
+        self.debug_print_current_token()
+        self.debug_print("<Parameter List> -> <Parameter> <Parameter Prime> ")
+        self.__r7_parameter()
+        self.__r6b_parameter_prime()
+        
+        #raise NotImplementedError("Must implement this method!")
+    def __r6b_parameter_prime(self):
+        """
+        Applies production rule r6b
+        <P'> -> ,<PL> | ε
+
+        P' = Parameter Prime
+        PL = Parameter List
+        ε  = Epsilon
+        """
+        if self.__current_token.lexeme == ",":
+            self.debug_print(f"<Parameter Prime> -> {self.__current_token.lexeme} <Parameter List>")
+            self.__match(self.__current_token.lexeme)
+            self.debug_print_current_token
+            self.__r6_parameter_list()
+        else:
+            self.debug_print("<Parameter Prime> -> ε")
+
 
     def __r7_parameter(self):
-        raise NotImplementedError("Must implement this method!")
+        self.debug_print("<Parameter> -> <IDs> <Qualifier>")
+        self.__r13_ids()
+        self.__r8_qualifier()
+        #raise NotImplementedError("Must implement this method!")
 
     def __r8_qualifier(self):
-        raise NotImplementedError("Must implement this method!")
+        if (self.__current_token.lexeme == "integer" or self.__current_token.lexeme == "boolean"  or 
+        self.__current_token.lexeme == "real"):
+            self.debug_print("<Qualifier> -> integer | boolean | real")
+            self.__match(self.__current_token.lexeme)
+            
+        #raise NotImplementedError("Must implement this method!")
 
     def __r9_body(self):
-        raise NotImplementedError("Must implement this method!")
+        if self.__current_token.lexeme == '{':
+            self.debug_print("<Body> -> { <Statement List> }")
+            self.__match(self.__current_token.lexeme)
+            self.__r14_statement_list()
+            self.__match('}')
+        #raise NotImplementedError("Must implement this method!")
 
     def __r10_optional_declaration_list(self):
         if (self.__current_token.lexeme == "integer"
             or self.__current_token.lexeme == "real"
                 or self.__current_token.lexeme == "boolean"):
-            self.debug_print("<Rat24S> -> <Opt Declaration List>")
             self.debug_print("<Opt Declaration List> -> <Declaration List>")
-            self.__match(self.__current_token.lexeme)  # Move to the next token
             self.__r11_declaration_list()
+        else:
+            self.debug_print("<Opt Declaration List> -> ε")
 
     def __r11_declaration_list(self):
-        self.debug_print("<Declaration List> -> <Declaration>")
+        """
+        Applies the production rule 11: 
+        <Declaration List> -> <Declaration> ; <Declaration List Prime>
+        """
+        if (self.__current_token.lexeme == "integer"
+            or self.__current_token.lexeme == "real"
+                or self.__current_token.lexeme == "boolean"):            
+            self.debug_print("<Declaration List> -> <Declaration> ;")
+            self.__r12_declaration()
+            self.debug_print_current_token()
+            self.__match(";")
+            self.__r11b_declaration_list_prime()
+
+    def __r11b_declaration_list_prime(self):
+        """
+        Applies the production rule 11: 
+        <Declaration List Prime> -> <Declaration List> | ε
+        """
+        if (self.__current_token.lexeme == "integer"
+            or self.__current_token.lexeme == "real"
+                or self.__current_token.lexeme == "boolean"):
+            self.debug_print("<Declaration List Prime> -> <Declaration>")
+            self.__r11_declaration_list()
+        else:
+            self.debug_print("<Declaration List Prime> -> ε")
 
     def __r12_declaration(self):
-        raise NotImplementedError("Must implement this method!")
+        """
+        Applies the grammar rule 12: 
+        <Declaration> ::= <Qualifier > <IDs>
+        """
+        self.debug_print_current_token()
+        self.__r8_qualifier()
+        self.__r13_ids()
 
     def __r13_ids(self):
-        raise NotImplementedError("Must implement this method!")
+        """
+        Applies the production rule 13a: 
+        <IDs> -> <Identifier> <IDs Prime>
+        """
+        self.debug_print_current_token()
+        if self.__current_token.token_type == TokenType.IDENTIFIER:
+            self.debug_print("<IDs> -> <Identifier> <IDs Prime>")
+            self.__match(self.__current_token.lexeme)
+            self.__r13b_ids_prime()
+        else:
+            raise ValueError(
+                f"Expected an Identifier, but found {self.__current_token.token_type}")
+
+    def __r13b_ids_prime(self):
+        """
+        Applies the production rule 13b: 
+        <IDs Prime> -> , <IDs> | ε
+        """
+        if self.__current_token.lexeme == ",":
+            self.debug_print("<IDs Prime> -> , <IDs>")
+            self.__match(self.__current_token.lexeme)  # Move to the next token
+            self.__r13_ids()
+        else:
+            self.debug_print("<IDs Prime> -> ε")
 
     def __r14_statement_list(self):
         """
