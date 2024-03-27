@@ -131,19 +131,83 @@ class Parser:
         self.__match("$")
 
     def __r2_optional_function_definitions(self):
+        """
+        Applies the grammar rule 2: 
+        <Opt Function Definitions> -> <Function Definitions> | ε
+        """
         if self.__current_token.lexeme == "function":
+            self.debug_print(
+                "<Opt Function Definitions> -> <Function Definitions>")
+            self.__r3a_function_definitions()
+        else:
+            self.debug_print("<Opt Function Definitions> -> ε")
 
-            raise NotImplementedError("Must implement this method!")
-
-    def __r3_function_definitions(self):
+    def __r3a_function_definitions(self):
+        """
+        Applies the production rule 3a: 
+        <Function Definitions> -> <Function> <Function Definitions Prime>
+        """
+        self.debug_print(
+            "<Function Definitions> -> <Function> <Function Definitions Prime>")
         self.__r4_function()
-        raise NotImplementedError("Must implement this method!")
+        self.__r3b_function_definitions_prime()
+
+    def __r3b_function_definitions_prime(self):
+        """
+        Applies the production rule 3b: 
+        <Function Definitions Prime> -> <Function Definitions> | ε
+        """
+        if self.__current_token.lexeme == "function":
+            self.debug_print(
+                "<Function Definitions Prime> -> <Function Definitions>")
+            self.__r4_function()
+        else:
+            self.debug_print("<Function Definitions Prime> -> ε")
 
     def __r4_function(self):
-        raise NotImplementedError("Must implement this method!")
+        """
+        Applies the production rule 4: 
+        <Function> ::= function <Identifier> ( <Opt Parameter List> ) 
+                                <Opt Declaration List> <Body>
+        """
+        self.debug_print_current_token()
+
+        # Match the beginning of <Function>, indicated by "function".
+        self.__match("function")  # Match and Move to the next token
+
+        # Check if function's name exists
+        if self.__current_token.token_type == TokenType.IDENTIFIER:
+            self.debug_print(
+                "<Function> -> function <Identifier> ( <Opt Parameter List> ) <Opt Declaration List> <Body>")
+            self.debug_print_current_token()
+            self.__match(self.__current_token.lexeme)  # Move to the next token
+
+            # After the function's name, there must be an open parenthesis '('
+            self.debug_print_current_token()
+            self.__match("(")
+            self.__r5_optional_parameter_list()
+
+            # After the function's params, there must be a close parenthesis ')'
+            self.debug_print_current_token()
+            self.__match(")")
+
+            self.__r10_optional_declaration_list()
+            self.__r9_body()
+        # Handle error: Function's name does not exist
+        else:
+            raise ValueError(
+                f"Expected an Identifier, but found {self.__current_token.token_type}")
 
     def __r5_optional_parameter_list(self):
-        raise NotImplementedError("Must implement this method!")
+        """
+        Applies the grammar rule 5: 
+        <Opt Parameter List> -> <Parameter List> | ε
+        """
+        if self.__current_token.token_type == TokenType.IDENTIFIER:
+            self.debug_print("<Opt Parameter List> -> <Parameter List>")
+            self.__r6_parameter_list()
+        else:
+            self.debug_print("<Opt Parameter List> -> ε")
 
     def __r6_parameter_list(self):
         """
