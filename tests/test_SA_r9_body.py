@@ -3,6 +3,8 @@ import os
 from common.enums import TokenType
 from components.lexcical_analyzer import Lexer, Token
 from components.syntax_analyzer import Parser
+from tests.helpers import write_to_file, get_result_from_parser
+
 
 class BodyTestCase(unittest.TestCase):
     SAMPLE_FILE_PATH = "tests/sample1.txt"
@@ -15,23 +17,22 @@ class BodyTestCase(unittest.TestCase):
         if os.path.exists(self.SAMPLE_FILE_PATH):
             os.remove(self.SAMPLE_FILE_PATH)
 
+    
     def test_body(self):
-        input_string = "$ $ $ { a + b } $"
+        # Arrange
+        input_string = "$ function abc() { a= b + z; } $ $ $"
+        expected_output = True
 
-        with open(self.SAMPLE_FILE_PATH, 'w') as file:
-            file.write(input_string)
+        # Act
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
 
-        lexer = Lexer(self.SAMPLE_FILE_PATH)
+        # Assert
+        self.assertEqual(actual_output, expected_output)
 
-        parser = Parser(lexer, debug_print=True)
-        parser.debug_print()
-        parser.debug_print()
-        parsing_success = parser.parse()
-
-        self.assertTrue(parsing_success)
 
     def test_body_no_closing_brace(self):
-        input_string = "$$ { a- 2 $"
+        input_string = "$$ function abc() { a- 2; $"
         with open(self.SAMPLE_FILE_PATH, 'w') as file:
             file.write(input_string)
         
@@ -44,7 +45,7 @@ class BodyTestCase(unittest.TestCase):
         self.assertFalse(parsing_success)
 
     def test_body_no_opening_brace(self):
-        input_string = "$ a - -5}$"
+        input_string = "$ function abc() a - -5;}$"
         with open(self.SAMPLE_FILE_PATH, 'w') as file:
             file.write(input_string)
 
@@ -55,8 +56,19 @@ class BodyTestCase(unittest.TestCase):
         parsing_success = parser.parse()
 
         self.assertFalse(parsing_success)
-        
 
+    def test_body_no_braces(self):
+        input_string = "$$ function abc() a - c; $"
+        with open(self.SAMPLE_FILE_PATH, 'w') as file:
+            file.write(input_string)
+
+        lexer = Lexer(self.SAMPLE_FILE_PATH)
+        parser = Parser(lexer, debug_print=True)
+        parser.debug_print()
+        parser.debug_print()
+        parsing_success = parser.parse()
+
+        self.assertFalse(parsing_success)
 
 
 

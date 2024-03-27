@@ -258,12 +258,15 @@ class Parser:
         #raise NotImplementedError("Must implement this method!")
 
     def __r9_body(self):
-        if self.__current_token.lexeme == '{':
-            self.debug_print("<Body> -> { <Statement List> }")
-            self.__match(self.__current_token.lexeme)
-            self.__r14_statement_list()
-            self.__match('}')
-        #raise NotImplementedError("Must implement this method!")
+        # if self.__current_token.lexeme == '{':
+        #     self.debug_print("<Body> -> { <Statement List> }")
+        #     self.__match(self.__current_token.lexeme)
+        #     self.__r14_statement_list()
+        # self.__match('}')
+        self.debug_print("<Body> -> { <Statement List> }")
+        self.__match('{')
+        self.__r14_statement_list()
+        self.__match('}')
 
     def __r10_optional_declaration_list(self):
         if (self.__current_token.lexeme == "integer"
