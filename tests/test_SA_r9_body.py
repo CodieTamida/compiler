@@ -16,7 +16,7 @@ class BodyTestCase(unittest.TestCase):
             os.remove(self.SAMPLE_FILE_PATH)
 
     def test_body(self):
-        input_string = "$ $ $ { a + b }"
+        input_string = "$ $ $ { a + b } $"
 
         with open(self.SAMPLE_FILE_PATH, 'w') as file:
             file.write(input_string)
@@ -29,6 +29,22 @@ class BodyTestCase(unittest.TestCase):
         parsing_success = parser.parse()
 
         self.assertTrue(parsing_success)
+
+    def test_body_no_closing_curly(self):
+        input_string = "$$ { a- 2 $"
+        with open(self.SAMPLE_FILE_PATH, 'w') as file:
+            file.write(input_string)
+        
+        lexer = Lexer(self.SAMPLE_FILE_PATH)
+        parser = Parser(lexer, debug_print=True)
+        parser.debug_print()
+        parser.debug_print()
+        parsing_success = parser.parse()
+
+        self.assertTrue(parsing_success)
+        
+
+
 
 
 if __name__ == '__main__':
