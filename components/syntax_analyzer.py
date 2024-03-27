@@ -178,7 +178,7 @@ class Parser:
 
 
     def __r7_parameter(self):
-        self.debug_print("<Parameter> -> <IDs> <Qualifer>")
+        self.debug_print("<Parameter> -> <IDs> <Qualifier>")
         self.__r13_ids()
         self.__r8_qualifier()
         #raise NotImplementedError("Must implement this method!")
