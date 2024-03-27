@@ -1,5 +1,6 @@
 import unittest
 import os
+from tests.helpers import write_to_file, get_result_from_parser
 from common.enums import TokenType
 from components.lexcical_analyzer import Lexer, Token
 from components.syntax_analyzer import Parser
@@ -19,110 +20,74 @@ class DeclarationListTestCase(unittest.TestCase):
     def test_1declaration_1id(self):
         # Arrange
         input_string = "$ $ integer a; $ $"
-
-        with open(self.SAMPLE_FILE_PATH, 'w') as file:
-            file.write(input_string)
+        expected_output = True
 
         # Act
-        lexer = Lexer(self.SAMPLE_FILE_PATH)
-
-        parser = Parser(lexer, debug_print=True)
-        parser.debug_print()
-        parser.debug_print()
-        parsing_success = parser.parse()
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
 
         # Assert
-        self.assertTrue(parsing_success)
+        self.assertEqual(actual_output, expected_output)
 
     def test_1declaration_2ids(self):
         # Arrange
         input_string = "$ $ real a, b; $ $"
-
-        with open(self.SAMPLE_FILE_PATH, 'w') as file:
-            file.write(input_string)
+        expected_output = True
 
         # Act
-        lexer = Lexer(self.SAMPLE_FILE_PATH)
-
-        parser = Parser(lexer, debug_print=True)
-        parser.debug_print()
-        parser.debug_print()
-        parsing_success = parser.parse()
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
 
         # Assert
-        self.assertTrue(parsing_success)
+        self.assertEqual(actual_output, expected_output)
 
     def test_1declaration_3ids(self):
         # Arrange
         input_string = "$ $ boolean a, b, c; $ $"
-
-        with open(self.SAMPLE_FILE_PATH, 'w') as file:
-            file.write(input_string)
+        expected_output = True
 
         # Act
-        lexer = Lexer(self.SAMPLE_FILE_PATH)
-
-        parser = Parser(lexer, debug_print=True)
-        parser.debug_print()
-        parser.debug_print()
-        parsing_success = parser.parse()
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
 
         # Assert
-        self.assertTrue(parsing_success)
+        self.assertEqual(actual_output, expected_output)
 
     def test_2declarations_1id(self):
         # Arrange
         input_string = "$ $ boolean a; boolean b; $ $"
-
-        with open(self.SAMPLE_FILE_PATH, 'w') as file:
-            file.write(input_string)
+        expected_output = True
 
         # Act
-        lexer = Lexer(self.SAMPLE_FILE_PATH)
-
-        parser = Parser(lexer, debug_print=True)
-        parser.debug_print()
-        parser.debug_print()
-        parsing_success = parser.parse()
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
 
         # Assert
-        self.assertTrue(parsing_success)
+        self.assertEqual(actual_output, expected_output)
 
     def test_2declarations_2ids(self):
         # Arrange
         input_string = "$ $ boolean a, b; integer x, y, z; $ $"
-
-        with open(self.SAMPLE_FILE_PATH, 'w') as file:
-            file.write(input_string)
+        expected_output = True
 
         # Act
-        lexer = Lexer(self.SAMPLE_FILE_PATH)
-
-        parser = Parser(lexer, debug_print=True)
-        parser.debug_print()
-        parser.debug_print()
-        parsing_success = parser.parse()
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
 
         # Assert
-        self.assertTrue(parsing_success)
+        self.assertEqual(actual_output, expected_output)
 
     def test_missing_semicolon(self):
         # Arrange
         input_string = "$ $ integer a $ $"
-
-        with open(self.SAMPLE_FILE_PATH, 'w') as file:
-            file.write(input_string)
+        expected_output = False
 
         # Act
-        lexer = Lexer(self.SAMPLE_FILE_PATH)
-
-        parser = Parser(lexer, debug_print=True)
-        parser.debug_print()
-        parser.debug_print()
-        parsing_success = parser.parse()
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
 
         # Assert
-        self.assertFalse(parsing_success)
+        self.assertEqual(actual_output, expected_output)
 
 
 if __name__ == '__main__':
