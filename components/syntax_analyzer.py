@@ -200,12 +200,15 @@ class Parser:
         #raise NotImplementedError("Must implement this method!")
 
     def __r10_optional_declaration_list(self):
+        self.debug_print("<Rat24S> -> <Opt Declaration List>")
+
         if (self.__current_token.lexeme == "integer"
             or self.__current_token.lexeme == "real"
                 or self.__current_token.lexeme == "boolean"):            
-            self.debug_print("<Rat24S> -> <Opt Declaration List>")
             self.debug_print("<Opt Declaration List> -> <Declaration List>")
             self.__r11_declaration_list()
+        else:
+            self.debug_print("<Opt Declaration List> -> ε")
 
     def __r11_declaration_list(self):
         """
