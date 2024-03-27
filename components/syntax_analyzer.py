@@ -130,6 +130,7 @@ class Parser:
 
     def __r2_optional_function_definitions(self):
         if self.__current_token.lexeme == "function":
+
             raise NotImplementedError("Must implement this method!")
 
     def __r3_function_definitions(self):
@@ -143,16 +144,60 @@ class Parser:
         raise NotImplementedError("Must implement this method!")
 
     def __r6_parameter_list(self):
-        raise NotImplementedError("Must implement this method!")
+        """
+        Applies production rule r6
+        <PL> -> <P> <P'>
+
+        Notes:
+        PL = <Parameter List>
+        P  = <Parameter>
+        P' = <Parameter Prime> 
+        """
+        self.debug_print_current_token()
+        self.debug_print("<Parameter List> -> <Parameter> <Parameter Prime> ")
+        self.__r7_parameter()
+        self.__r6b_parameter_prime()
+        
+        #raise NotImplementedError("Must implement this method!")
+    def __r6b_parameter_prime(self):
+        """
+        Applies production rule r6b
+        <P'> -> ,<PL> | ε
+
+        P' = Parameter Prime
+        PL = Parameter List
+        ε  = Epsilon
+        """
+        if self.__current_token.lexeme == ",":
+            self.debug_print(f"<Parameter Prime> -> {self.__current_token.lexeme} <Parameter List>")
+            self.__match(self.__current_token.lexeme)
+            self.debug_print_current_token
+            self.__r6_parameter_list()
+        else:
+            self.debug_print("<Parameter Prime> -> ε")
+
 
     def __r7_parameter(self):
-        raise NotImplementedError("Must implement this method!")
+        self.debug_print("<Parameter> -> <IDs> <Qualifer>")
+        self.__r13_ids()
+        self.__r8_qualifier()
+        #raise NotImplementedError("Must implement this method!")
 
     def __r8_qualifier(self):
-        raise NotImplementedError("Must implement this method!")
+        if (self.__current_token.lexeme == "integer" or self.__current_token.lexeme == "boolean"  or 
+        self.__current_token.lexeme == "real"):
+            self.debug_print("<Qualifier> -> integer | boolean | real")
+            self.__match(self.__current_token.lexeme)
+            
+        #raise NotImplementedError("Must implement this method!")
 
     def __r9_body(self):
-        raise NotImplementedError("Must implement this method!")
+        if self.__current_token.lexeme == '{':
+            self.debug_print("<Body> -> { <Statement List> }")
+            self.__match(self.__current_token.lexeme)
+            self.__r14_statement_list()
+            self.__match('}')
+        #raise NotImplementedError("Must implement this method!")
 
     def __r10_optional_declaration_list(self):
         if (self.__current_token.lexeme == "integer"
