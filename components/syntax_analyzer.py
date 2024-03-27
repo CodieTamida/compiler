@@ -108,6 +108,7 @@ class Parser:
         self.__match("$")
 
         # Apply rule 2 <Opt Function Definitions>
+        self.debug_print("<Rat24S> -> <Opt Function Definitions>")
         self.__r2_optional_function_definitions()
 
         # Match the end of <Opt Function Definitions>, indicated by "$".
@@ -115,6 +116,7 @@ class Parser:
         self.__match("$")
 
         # Apply rule 10 <Opt Declaration List>
+        self.debug_print("<Rat24S> -> <Opt Declaration List>")
         self.__r10_optional_declaration_list()
 
         # Match the end of <Opt Function Definitions>, indicated by "$".
@@ -200,11 +202,9 @@ class Parser:
         #raise NotImplementedError("Must implement this method!")
 
     def __r10_optional_declaration_list(self):
-        self.debug_print("<Rat24S> -> <Opt Declaration List>")
-
         if (self.__current_token.lexeme == "integer"
             or self.__current_token.lexeme == "real"
-                or self.__current_token.lexeme == "boolean"):            
+                or self.__current_token.lexeme == "boolean"):
             self.debug_print("<Opt Declaration List> -> <Declaration List>")
             self.__r11_declaration_list()
         else:
