@@ -1,0 +1,129 @@
+import unittest
+import os
+from common.enums import TokenType
+from components.lexcical_analyzer import Lexer, Token
+from components.syntax_analyzer import Parser
+
+
+class DeclarationListTestCase(unittest.TestCase):
+    SAMPLE_FILE_PATH = "tests/sample1.txt"
+
+    def setUp(self):
+        if os.path.exists(self.SAMPLE_FILE_PATH):
+            os.remove(self.SAMPLE_FILE_PATH)
+
+    def tearDown(self):
+        if os.path.exists(self.SAMPLE_FILE_PATH):
+            os.remove(self.SAMPLE_FILE_PATH)
+
+    def test_1declaration_1id(self):
+        # Arrange
+        input_string = "$ $ integer a; $ $"
+
+        with open(self.SAMPLE_FILE_PATH, 'w') as file:
+            file.write(input_string)
+
+        # Act
+        lexer = Lexer(self.SAMPLE_FILE_PATH)
+
+        parser = Parser(lexer, debug_print=True)
+        parser.debug_print()
+        parser.debug_print()
+        parsing_success = parser.parse()
+
+        # Assert
+        self.assertTrue(parsing_success)
+
+    def test_1declaration_2ids(self):
+        # Arrange
+        input_string = "$ $ real a, b; $ $"
+
+        with open(self.SAMPLE_FILE_PATH, 'w') as file:
+            file.write(input_string)
+
+        # Act
+        lexer = Lexer(self.SAMPLE_FILE_PATH)
+
+        parser = Parser(lexer, debug_print=True)
+        parser.debug_print()
+        parser.debug_print()
+        parsing_success = parser.parse()
+
+        # Assert
+        self.assertTrue(parsing_success)
+
+    def test_1declaration_3ids(self):
+        # Arrange
+        input_string = "$ $ boolean a, b, c; $ $"
+
+        with open(self.SAMPLE_FILE_PATH, 'w') as file:
+            file.write(input_string)
+
+        # Act
+        lexer = Lexer(self.SAMPLE_FILE_PATH)
+
+        parser = Parser(lexer, debug_print=True)
+        parser.debug_print()
+        parser.debug_print()
+        parsing_success = parser.parse()
+
+        # Assert
+        self.assertTrue(parsing_success)
+
+    def test_2declarations_1id(self):
+        # Arrange
+        input_string = "$ $ boolean a; boolean b; $ $"
+
+        with open(self.SAMPLE_FILE_PATH, 'w') as file:
+            file.write(input_string)
+
+        # Act
+        lexer = Lexer(self.SAMPLE_FILE_PATH)
+
+        parser = Parser(lexer, debug_print=True)
+        parser.debug_print()
+        parser.debug_print()
+        parsing_success = parser.parse()
+
+        # Assert
+        self.assertTrue(parsing_success)
+
+    def test_2declarations_2ids(self):
+        # Arrange
+        input_string = "$ $ boolean a, b; integer x, y, z; $ $"
+
+        with open(self.SAMPLE_FILE_PATH, 'w') as file:
+            file.write(input_string)
+
+        # Act
+        lexer = Lexer(self.SAMPLE_FILE_PATH)
+
+        parser = Parser(lexer, debug_print=True)
+        parser.debug_print()
+        parser.debug_print()
+        parsing_success = parser.parse()
+
+        # Assert
+        self.assertTrue(parsing_success)
+
+    def test_missing_semicolon(self):
+        # Arrange
+        input_string = "$ $ integer a $ $"
+
+        with open(self.SAMPLE_FILE_PATH, 'w') as file:
+            file.write(input_string)
+
+        # Act
+        lexer = Lexer(self.SAMPLE_FILE_PATH)
+
+        parser = Parser(lexer, debug_print=True)
+        parser.debug_print()
+        parser.debug_print()
+        parsing_success = parser.parse()
+
+        # Assert
+        self.assertFalse(parsing_success)
+
+
+if __name__ == '__main__':
+    unittest.main()
