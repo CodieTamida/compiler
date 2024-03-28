@@ -342,7 +342,7 @@ class Parser:
         """
         self.debug_print(
             "<Statement List> -> <Statement> | <Statement> <Statement List>")
-        self.debug_print_current_token()
+        # self.debug_print_current_token()
         self.__r15_statement()
 
         #  Check if there are more statements to process
@@ -413,11 +413,11 @@ class Parser:
         """
 
         if self.__current_token.lexeme == "return":
-            expression = f'<Return> -> {self.__current_token.lexeme} <Return Prime>'
+            self.debug_print_current_token()
+            expression = f'<Return> -> return <Return Prime>'
             self.debug_print(expression)
 
             self.__match(self.__current_token.lexeme)
-            self.debug_print_current_token()
 
             self.__r19_return_b_prime()
         else:
@@ -434,13 +434,14 @@ class Parser:
 
         # Check to see if the current token is a separator, ;
         if self.__current_token.lexeme == ";":
-            self.debug_print(f"<Return Prime> -> {self.__current_token.lexeme}")
+            self.debug_print(f"<Return Prime> -> ;")
             self.__match(self.__current_token.lexeme) # Move to the next token
 
         
         # Check to see if <Expression>, after left-recursion, leads E -> TE'
 
         else:
+            self.debug_print(f"<Return Prime> -> <Expression>;")
             self.__r25a_expression()
             self.__match(';')
         
@@ -554,21 +555,25 @@ class Parser:
         Applies the grammar rule 27:
         <Factor> -> - <Primary> | <Primary>
         """
+        text_to_print = ""
 
         if self.__current_token.lexeme == "-":
             self.__match(self.__current_token.lexeme)  # Move to the next token
-            primary = self.__r28_primary()
-            self.debug_print(f"<Factor> -> - {primary}")
+            text_to_print = "<Factor> -> - "            
         else:
-            primary = self.__r28_primary()
-            self.debug_print(f"<Factor> -> {primary}")
+            text_to_print = "<Factor> -> "
+        
+        primary_type = self.__r28_primary()      
+
+        if primary_type:
+            text_to_print = f"{text_to_print} {primary_type}"
+            self.debug_print(text_to_print)
 
     def __r28_primary(self):
         """
         Applies the grammar rule 28:
-        <Primary> -> <Identifier> | <Integer> | 
-                    <Identifier> ( <IDs> ) | 
-                    ( <Expression> ) |
+        <Primary> -> <Identifier> <Primary Prime> | 
+                    <Integer> | ( <Expression> ) |
                     <Real> | true | false
 
         Returns:
@@ -576,20 +581,54 @@ class Parser:
         """
         text = ""
 
-        # Check if the current token is an identifier, integer, or real number
-        if (self.__current_token.token_type == TokenType.IDENTIFIER
-                or self.__current_token.token_type == TokenType.INTEGER
+        # Case 1: IDENTIFIER
+        if self.__current_token.token_type == TokenType.IDENTIFIER:
+            self.__match(self.__current_token.lexeme)  # Move to the next token
+            text = self.__r28b_primary_prime()
+            text = f"<Identifier> {text}"
+        # Case 2: INTEGER, REAL
+        elif (self.__current_token.token_type == TokenType.INTEGER
                 or self.__current_token.token_type == TokenType.REAL
             ):
             text = f"<{self.__current_token.token_type.name}>"
-        # Check if the current token is "true" or "false"
+            self.__match(self.__current_token.lexeme)  # Move to the next token
+        # Case 3: "true" or "false"
         elif (self.__current_token.lexeme == "true" or self.__current_token.lexeme == "false"):
             text = self.__current_token.lexeme
-
+            self.__match(self.__current_token.lexeme)  # Move to the next token
+        # Case 4: ( <Expression> )
+        elif self.__current_token.lexeme == "(":
+            self.debug_print("<Primary Prime> -> ( <Expression> )")
+            self.__match(self.__current_token.lexeme)  # Move to the next token
+            self.__r25a_expression()
+            self.__match(")")  # Match and Move to the next token
+            self.debug_print("<Primary Prime> -> ( <Expression> )")
         # Handle error: The current token does not match any expected types
         else:
             raise ValueError(
                 f'Expected `ID, Number, (Expression), boolean`, but found {self.__current_token.token_type}')
 
-        self.__match(self.__current_token.lexeme)  # Move to the next token
+        return text
+
+    def __r28b_primary_prime(self):
+        """
+        Applies the grammar rule 28:
+        <Primary Prime> -> ( <IDs> ) | ε
+        """
+        text = ""
+        if (self.__current_token.lexeme == "("):
+            # After the function's name, there must be an open parenthesis '('
+            self.debug_print_current_token()
+            self.__match("(")  # Match and Move to the next token
+
+            self.__r13_ids()
+
+            # After the function's params, there must be a close parenthesis ')'
+            self.debug_print_current_token()
+            self.__match(")")  # Match and Move to the next token
+            text = "( <IDs> )"
+        # Handle Epsilon case
+        else:
+            self.debug_print("<Primary Prime> -> ε")
+
         return text

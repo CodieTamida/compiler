@@ -50,6 +50,30 @@ class ReturnTestCase(unittest.TestCase):
         # Assert
         self.assertEqual(actual_output, expected_output)
 
+    def test_return_expression_with_parentheses(self):
+        # Arrange
+        input_string = "$ $ $ return (a * b - c); $"
+        expected_output = True
+
+        # Act
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
+
+        # Assert
+        self.assertEqual(actual_output, expected_output)
+
+    def test_return_with_a_function_call(self):
+        # Arrange
+        input_string = "$ $ $ return average(a, b, c); $"
+        expected_output = True
+
+        # Act
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
+
+        # Assert
+        self.assertEqual(actual_output, expected_output)
+
     def test_missing_semicolon(self):
         # Arrange
         input_string = "$ $ $ return $"
