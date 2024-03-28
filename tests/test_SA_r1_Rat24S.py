@@ -1,8 +1,6 @@
 import unittest
 import os
-from common.enums import TokenType
-from components.lexcical_analyzer import Lexer, Token
-from components.syntax_analyzer import Parser
+from tests.helpers import write_to_file, get_result_from_parser
 
 
 class R1_Rat24STestCase(unittest.TestCase):
@@ -16,122 +14,65 @@ class R1_Rat24STestCase(unittest.TestCase):
         if os.path.exists(self.SAMPLE_FILE_PATH):
             os.remove(self.SAMPLE_FILE_PATH)
 
-    @unittest.skip
     def test_opt_function_definition(self):
         # Arrange
-        input_string = "$ function f1() $ $ a = b; $"
-        expected_tokens = [
-            Token("$", TokenType.SEPARATOR),
-            Token("function", TokenType.KEYWORD),
-            Token("f1", TokenType.IDENTIFIER),
-            Token("(", TokenType.SEPARATOR),
-            Token(")", TokenType.SEPARATOR),
-            Token("$", TokenType.SEPARATOR),
-            Token("$", TokenType.SEPARATOR),
-            Token("a", TokenType.IDENTIFIER),
-            Token("=", TokenType.OPERATOR),
-            Token("b", TokenType.IDENTIFIER),
-            Token(";", TokenType.SEPARATOR),
-            Token("$", TokenType.SEPARATOR)
-        ]
-
-        with open(self.SAMPLE_FILE_PATH, 'w') as file:
-            file.write(input_string)
+        input_string = "$ function f1() { } $ $ a = b; $"
+        expected_output = True
 
         # Act
-        lexer = Lexer(self.SAMPLE_FILE_PATH)
-        actual_tokens = lexer.tokens
-
-        parser = Parser(lexer, debug_print=True)
-        parser.debug_print()
-        parser.debug_print()
-        parsing_success = parser.parse()
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
 
         # Assert
-        self.assertListEqual(actual_tokens, expected_tokens)
-        self.assertTrue(parsing_success)
+        self.assertEqual(actual_output, expected_output)
 
-    def test_without_function_definition(self):
+    def test_no_function_definition(self):
         # Arrange
         input_string = "$ $ $ a = b; $"
-        expected_tokens = [
-            Token("$", TokenType.SEPARATOR),
-            Token("$", TokenType.SEPARATOR),
-            Token("$", TokenType.SEPARATOR),
-            Token("a", TokenType.IDENTIFIER),
-            Token("=", TokenType.OPERATOR),
-            Token("b", TokenType.IDENTIFIER),
-            Token(";", TokenType.SEPARATOR),
-            Token("$", TokenType.SEPARATOR)
-        ]
-
-        with open(self.SAMPLE_FILE_PATH, 'w') as file:
-            file.write(input_string)
+        expected_output = True
 
         # Act
-        lexer = Lexer(self.SAMPLE_FILE_PATH)
-        actual_tokens = lexer.tokens
-
-        parser = Parser(lexer, debug_print=True)
-        parser.debug_print()
-        parser.debug_print()
-        parsing_success = parser.parse()
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
 
         # Assert
-        self.assertListEqual(actual_tokens, expected_tokens)
-        self.assertTrue(parsing_success)
+        self.assertEqual(actual_output, expected_output)
+
+    def test_no_declarations_no_function_definitions(self):
+        # Arrange
+        input_string = "$ $ $ $"
+        expected_output = True
+
+        # Act
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
+
+        # Assert
+        self.assertEqual(actual_output, expected_output)
 
     def test_not_end_with_dollar_symbol(self):
         # Arrange
         input_string = "$ $ $ a = b; $xyz"
-        expected_tokens = [
-            Token("$", TokenType.SEPARATOR),
-            Token("$", TokenType.SEPARATOR),
-            Token("$", TokenType.SEPARATOR),
-            Token("a", TokenType.IDENTIFIER),
-            Token("=", TokenType.OPERATOR),
-            Token("b", TokenType.IDENTIFIER),
-            Token(";", TokenType.SEPARATOR),
-            Token("$", TokenType.SEPARATOR),
-            Token("xyz", TokenType.IDENTIFIER)
-        ]
-
-        with open(self.SAMPLE_FILE_PATH, 'w') as file:
-            file.write(input_string)
+        expected_output = False
 
         # Act
-        lexer = Lexer(self.SAMPLE_FILE_PATH)
-        actual_tokens = lexer.tokens
-
-        parser = Parser(lexer, debug_print=True)
-        parser.debug_print()
-        parser.debug_print()
-        parsing_success = parser.parse()
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
 
         # Assert
-        self.assertListEqual(actual_tokens, expected_tokens)
-        self.assertFalse(parsing_success)
+        self.assertEqual(actual_output, expected_output)
 
     def test_the_input_is_empty(self):
         # Arrange
         input_string = ""
-        expected_tokens = []
-
-        with open(self.SAMPLE_FILE_PATH, 'w') as file:
-            file.write(input_string)
+        expected_output = False
 
         # Act
-        lexer = Lexer(self.SAMPLE_FILE_PATH)
-        actual_tokens = lexer.tokens
-
-        parser = Parser(lexer, debug_print=True)
-        parser.debug_print()
-        parser.debug_print()
-        parsing_success = parser.parse()
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
 
         # Assert
-        self.assertListEqual(actual_tokens, expected_tokens)
-        self.assertFalse(parsing_success)
+        self.assertEqual(actual_output, expected_output)
 
 
 if __name__ == '__main__':
