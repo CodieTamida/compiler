@@ -258,11 +258,6 @@ class Parser:
         #raise NotImplementedError("Must implement this method!")
 
     def __r9_body(self):
-        # if self.__current_token.lexeme == '{':
-        #     self.debug_print("<Body> -> { <Statement List> }")
-        #     self.__match(self.__current_token.lexeme)
-        #     self.__r14_statement_list()
-        # self.__match('}')
         self.debug_print("<Body> -> { <Statement List> }")
         self.__match('{')
         self.__r14_statement_list()
@@ -383,7 +378,10 @@ class Parser:
             self.__r22_while()
 
     def __r16_compound(self):
-        raise NotImplementedError("Must implement this method!")
+        self.debug_print("<Compound> -> { <Statement List> }")
+        self.__match('{')
+        self.__r14_statement_list()
+        self.__match('}')
 
     def __r17_assign(self):
         """
