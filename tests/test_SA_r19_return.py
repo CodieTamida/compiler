@@ -1,8 +1,6 @@
 import unittest
 import os
-from common.enums import TokenType
-from components.lexcical_analyzer import Lexer, Token
-from components.syntax_analyzer import Parser
+from tests.helpers import write_to_file, get_result_from_parser
 
 
 class ReturnTestCase(unittest.TestCase):
@@ -19,74 +17,50 @@ class ReturnTestCase(unittest.TestCase):
     def test_return_nothing(self):
         # Arrange
         input_string = "$ $ $ return; $"
-
-        with open(self.SAMPLE_FILE_PATH, 'w') as file:
-            file.write(input_string)
+        expected_output = True
 
         # Act
-        lexer = Lexer(self.SAMPLE_FILE_PATH)
-
-        parser = Parser(lexer, debug_print=True)
-        parser.debug_print()
-        parser.debug_print()
-        parsing_success = parser.parse()
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
 
         # Assert
-        self.assertTrue(parsing_success)
+        self.assertEqual(actual_output, expected_output)
 
     def test_return_identifier(self):
         # Arrange
         input_string = "$ $ $ return a; $"
-
-        with open(self.SAMPLE_FILE_PATH, 'w') as file:
-            file.write(input_string)
+        expected_output = True
 
         # Act
-        lexer = Lexer(self.SAMPLE_FILE_PATH)
-
-        parser = Parser(lexer, debug_print=True)
-        parser.debug_print()
-        parser.debug_print()
-        parsing_success = parser.parse()
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
 
         # Assert
-        self.assertTrue(parsing_success)
+        self.assertEqual(actual_output, expected_output)
 
     def test_return_expression(self):
         # Arrange
         input_string = "$ $ $ return a * b - c; $"
-
-        with open(self.SAMPLE_FILE_PATH, 'w') as file:
-            file.write(input_string)
+        expected_output = True
 
         # Act
-        lexer = Lexer(self.SAMPLE_FILE_PATH)
-
-        parser = Parser(lexer, debug_print=True)
-        parser.debug_print()
-        parser.debug_print()
-        parsing_success = parser.parse()
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
 
         # Assert
-        self.assertTrue(parsing_success)
+        self.assertEqual(actual_output, expected_output)
 
     def test_missing_semicolon(self):
         # Arrange
         input_string = "$ $ $ return $"
-
-        with open(self.SAMPLE_FILE_PATH, 'w') as file:
-            file.write(input_string)
+        expected_output = False
 
         # Act
-        lexer = Lexer(self.SAMPLE_FILE_PATH)
-
-        parser = Parser(lexer, debug_print=True)
-        parser.debug_print()
-        parser.debug_print()
-        parsing_success = parser.parse()
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
 
         # Assert
-        self.assertFalse(parsing_success)
+        self.assertEqual(actual_output, expected_output)
 
 
 if __name__ == '__main__':
