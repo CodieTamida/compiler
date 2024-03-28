@@ -22,7 +22,68 @@ class PrintTestCase(unittest.TestCase):
 
         self.assertEqual(actual_output, expected_output)
 
+    def test_print_and_expression(self):
+        input_string = "$$$ print (x + 3 - 2); $"
+        expected_output = True
 
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
+
+        self.assertEqual(actual_output, expected_output)
+
+    def test_print_no_semicolol(self):
+        input_string = " $$$ print (x - 4 /6) $"
+        expected_output = False
+
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
+
+        self.assertEqual(actual_output, expected_output)
+    
+    def test_print_no_expression(self):
+        input_string = "$$$ print ( ); $"
+        expected_output = False
+
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
+
+        self.assertEqual(actual_output, expected_output) 
+
+    def test_print_incorrect_expression(self):
+        input_string = " $$$ print ( _e 3erts ); $"
+        expected_output = False
+
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
+
+        self.assertEqual(actual_output, expected_output)
+
+    def test_print_no_open_paren(self):
+        input_string = " $$$ print 4 + x); $"
+        expected_output = False
+
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
+
+        self.assertEqual(actual_output, expected_output)
+
+    def test_no_close_paren(self):
+        input_string = "$$$ print (4 + 5 - x; $"
+        expected_output = False
+
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
+
+        self.assertEqual(actual_output, expected_output)
+
+    def test_expression_is_id(self):
+        input_string = "$$$ print (hello); $"
+        expected_output = True
+
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
+
+        self.assertEqual(actual_output, expected_output)
 if __name__ == '__main__':
     unittest.main()
     
