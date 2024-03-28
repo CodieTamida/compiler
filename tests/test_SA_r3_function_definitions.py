@@ -114,7 +114,7 @@ class FunctionDefinitionsTestCase(unittest.TestCase):
         # Assert
         self.assertEqual(actual_output, expected_output)
 
-    @unittest.expectedFailure
+
     def test_missing_body(self):
         # Arrange
         input_string = "$ function abc() $ $ $"
