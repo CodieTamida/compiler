@@ -449,7 +449,13 @@ class Parser:
         
 
     def __r20_print(self):
-        raise NotImplementedError("Must implement this method!")
+        self.__match("print")
+        self.__match('(')
+        self.__r25a_expression()
+        self.debug_print_current_token()
+        self.__match(')')
+        self.__match(';')
+
 
     def __r21_scan(self):
         raise NotImplementedError("Must implement this method!")
