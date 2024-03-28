@@ -1,12 +1,9 @@
 import unittest
 import os
-from common.enums import TokenType
-from components.lexcical_analyzer import Lexer, Token
-from components.syntax_analyzer import Parser
 from tests.helpers import write_to_file, get_result_from_parser
 
 
-class BodyTestCase(unittest.TestCase):
+class CompoundTestCase(unittest.TestCase):
     SAMPLE_FILE_PATH = "tests/sample1.txt"
 
     def setUp(self) -> None:
@@ -18,9 +15,9 @@ class BodyTestCase(unittest.TestCase):
             os.remove(self.SAMPLE_FILE_PATH)
 
     
-    def test_body(self):
+    def test_compound(self):
         # Arrange
-        input_string = "$ function abc() { a= b + z; } $ $ $"
+        input_string = "$$$ { a = b + z; } $"
         expected_output = True
 
         # Act
@@ -31,44 +28,32 @@ class BodyTestCase(unittest.TestCase):
         self.assertEqual(actual_output, expected_output)
 
 
-    def test_body_no_closing_brace(self):
-        input_string = "$$ function abc() { a- 2; $"
-        with open(self.SAMPLE_FILE_PATH, 'w') as file:
-            file.write(input_string)
-        
-        lexer = Lexer(self.SAMPLE_FILE_PATH)
-        parser = Parser(lexer, debug_print=True)
-        parser.debug_print()
-        parser.debug_print()
-        parsing_success = parser.parse()
+    def test_compound_no_closing_brace(self):
+        input_string = "$$$ { a- 2; $"
+        expected_output= False
 
-        self.assertFalse(parsing_success)
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
 
-    def test_body_no_opening_brace(self):
-        input_string = "$ function abc() a - -5;}$"
-        with open(self.SAMPLE_FILE_PATH, 'w') as file:
-            file.write(input_string)
+        self.assertEqual(actual_output, expected_output)
 
-        lexer = Lexer(self.SAMPLE_FILE_PATH)
-        parser = Parser(lexer, debug_print=True)
-        parser.debug_print()
-        parser.debug_print()
-        parsing_success = parser.parse()
+    def test_compound_no_opening_brace(self):
+        input_string = "$$$  a - -5;}$"
+        expected_output= False
 
-        self.assertFalse(parsing_success)
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
 
-    def test_body_no_braces(self):
-        input_string = "$$ function abc() a - c; $"
-        with open(self.SAMPLE_FILE_PATH, 'w') as file:
-            file.write(input_string)
+        self.assertEqual(actual_output, expected_output)
 
-        lexer = Lexer(self.SAMPLE_FILE_PATH)
-        parser = Parser(lexer, debug_print=True)
-        parser.debug_print()
-        parser.debug_print()
-        parsing_success = parser.parse()
+    def test_compound_no_braces(self):
+        input_string = "$$$  a - c; $"
+        expected_output= False
 
-        self.assertFalse(parsing_success)
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
+
+        self.assertEqual(actual_output, expected_output)
 
 
 
