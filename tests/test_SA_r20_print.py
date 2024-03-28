@@ -14,7 +14,7 @@ class PrintTestCase(unittest.TestCase):
             os.remove(self.SAMPLE_FILE_PATH)
 
     def test_no_print_keyword(self):
-        input_string = " $$ ( a + b ); $"
+        input_string = " $$$ ( a + b ); $"
         expected_output= False
 
         write_to_file(self.SAMPLE_FILE_PATH, input_string)
