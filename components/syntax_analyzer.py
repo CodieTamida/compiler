@@ -124,7 +124,7 @@ class Parser:
         self.__match("$")
 
         # Apply rule 14 <Statement List>
-        self.__r14_statement_list()
+        self.__r14a_statement_list()
 
         # Match the end of <Rat24S>, indicated by "$".
         self.debug_print_current_token()
@@ -260,7 +260,7 @@ class Parser:
     def __r9_body(self):
         self.debug_print("<Body> -> { <Statement List> }")
         self.__match('{')
-        self.__r14_statement_list()
+        self.__r14a_statement_list()
         self.__match('}')
 
     def __r10_optional_declaration_list(self):
@@ -334,20 +334,28 @@ class Parser:
         else:
             self.debug_print("<IDs Prime> -> ε")
 
-    def __r14_statement_list(self):
+    def __r14a_statement_list(self):
         """
-        Applies the grammar rule 14:
-        <Statement List> -> <Statement> | 
-                            <Statement> <Statement List>
+        Applies the production rule 14a:
+        <Statement List> -> <Statement> <Statement List Prime>
         """
         self.debug_print(
-            "<Statement List> -> <Statement> | <Statement> <Statement List>")
-        # self.debug_print_current_token()
+            "<Statement List> -> <Statement> <Statement List Prime>")
         self.__r15_statement()
+        self.__r14b_statement_list_prime()
 
-        #  Check if there are more statements to process
-        if self.__current_token.lexeme != "}" and self.__current_token.lexeme != "$":
-            self.__r14_statement_list()
+    def __r14b_statement_list_prime(self):
+        """
+        Applies the grammar rule 14b:
+        <Statement List Prime> -> <Statement> | ε
+        """
+        first_of_statement = ("{", "if", "return", "print", "scan", "while")
+        lexeme = self.__current_token.lexeme.lower()
+
+        if (self.__current_token.token_type == TokenType.IDENTIFIER
+                or lexeme in first_of_statement):
+            self.debug_print("<Statement List Prime> -> <Statement>")
+            self.__r15_statement()
 
     def __r15_statement(self):
         """
@@ -362,6 +370,7 @@ class Parser:
             self.__r16_compound()
         # Check if the current token is an identifier for an assignment statement
         elif self.__current_token.token_type == TokenType.IDENTIFIER:
+            self.debug_print_current_token()
             self.debug_print("<Statement> -> <Assign>")
             self.__match(self.__current_token.lexeme)  # Move to the next token
             self.__r17_assign()
@@ -380,7 +389,7 @@ class Parser:
     def __r16_compound(self):
         self.debug_print("<Compound> -> { <Statement List> }")
         self.__match('{')
-        self.__r14_statement_list()
+        self.__r14a_statement_list()
         self.__match('}')
 
     def __r17_assign(self):
