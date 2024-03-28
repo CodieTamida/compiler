@@ -2,7 +2,6 @@ import unittest
 import os
 from tests.helpers import write_to_file, get_result_from_parser
 
-
 class PrintTestCase(unittest.TestCase):
     SAMPLE_FILE_PATH = "tests/sample1.txt"
 
@@ -14,7 +13,7 @@ class PrintTestCase(unittest.TestCase):
         if os.path.exists(self.SAMPLE_FILE_PATH):
             os.remove(self.SAMPLE_FILE_PATH)
 
-    def no_print_keyword(self):
+    def test_no_print_keyword(self):
         input_string = " $$ ( a + b ); $"
         expected_output= False
 
@@ -26,3 +25,4 @@ class PrintTestCase(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+    
