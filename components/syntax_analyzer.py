@@ -387,6 +387,10 @@ class Parser:
             self.__r21_scan()
         elif lexeme == "while":
             self.__r22_while()
+        else:
+            text_1 = f"Statement is missing."
+            text_2 = f"Expected a <Statement>, but found {self.__current_token.lexeme}"
+            raise SyntaxError(f"{text_1}\n{text_2}")
 
     def __r16_compound(self):
         self.debug_print("<Compound> -> { <Statement List> }")
