@@ -63,9 +63,10 @@ class Parser:
                 raise ValueError(
                     f"Expected End Of File, but found {self.__current_token.lexeme}")
         except Exception as err:
-            red_color = "\033[91m"  # ANSI escape code for red color
-            reset_color = "\033[0m"  # ANSI escape code to reset
-            print(red_color + "Error:", err, reset_color)
+            self.__log('-' * 50)
+            print("\033[91m", end="")  # Print ANSI escape code for red color
+            self.__log(f"Error: {err}\nParsing failed")
+            print("\033[0m", end="")  # Print ANSI escape code to reset
         finally:
             return parsing_result
 
@@ -88,23 +89,6 @@ class Parser:
         self.__message_logs.append(text)
         if self.__debug_print:
             print(text)
-
-    def __log_error(self, text):
-        """
-        Logs an error message and indicates that parsing has failed.
-
-        Parameters:
-        - text (str): The error message to be logged.
-        """
-        self.__message_logs.append('-' * 50)
-        self.__message_logs.append(f"Error: {text}\nParsing failed")
-
-        if self.__debug_print:
-            print()
-            red_color = "\033[91m"  # ANSI escape code for red color
-            reset_color = "\033[0m"  # ANSI escape code to reset
-            print(red_color, self.__message_logs[-1], reset_color, sep='')
-            
 
     def __log_current_token(self):
         """
