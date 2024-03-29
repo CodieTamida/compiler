@@ -14,6 +14,7 @@ class Parser:
         self.__lexer = lexer
         self.__current_token = None  # Used to store extracted token from the Lexer
         self.__debug_print = debug_print
+        self.__message_logs = list()
 
     def debug_print(self, text=str()):
         """
@@ -67,6 +68,53 @@ class Parser:
             print(red_color + "Error:", err, reset_color)
         finally:
             return parsing_result
+
+    def get_logs(self):
+        """
+        Retrieves the message logs generated during parsing.
+
+        Returns:
+            list: A list of messages logged during parsing.
+        """
+        return self.__message_logs
+    
+    def __log(self, text=str()):
+        """
+        Logs a text entry to the internal log list.
+
+        Parameters:
+        - text (str): The text to be added to the log. Default is an empty string.
+        """
+        self.__message_logs.append(text)
+        if self.__debug_print:
+            print(text)
+
+    def __log_error(self, text):
+        """
+        Logs an error message and indicates that parsing has failed.
+
+        Parameters:
+        - text (str): The error message to be logged.
+        """
+        self.__message_logs.append('-' * 50)
+        self.__message_logs.append(f"Error: {text}\nParsing failed")
+
+        if self.__debug_print:
+            print()
+            red_color = "\033[91m"  # ANSI escape code for red color
+            reset_color = "\033[0m"  # ANSI escape code to reset
+            print(red_color, self.__message_logs[-1], reset_color, sep='')
+            
+
+    def __log_current_token(self):
+        """
+        Logs information about the current token, including its token type and lexeme.
+        """
+        tokentype = self.__current_token.token_type.name.capitalize()
+        text = f"Token: {tokentype:<20} Lexeme: {self.__current_token.lexeme}"
+        self.__message_logs.append(text)
+        if self.__debug_print:
+            print(text)
 
     def __match(self, expected_lexeme: str):
         """
