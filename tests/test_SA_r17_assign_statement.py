@@ -98,9 +98,21 @@ class AssignTestCase(unittest.TestCase):
         # Assert
         self.assertEqual(actual_output, expected_output)
 
-    def test_missing_factor(self):
+    def test_missing_a_factor(self):
         # Arrange
         input_string = "$ $ $ a = b + ; $"
+        expected_output = False
+
+        # Act
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
+
+        # Assert
+        self.assertEqual(actual_output, expected_output)
+
+    def test_no_assignment_operator(self):
+        # Arrange
+        input_string = "$ $ $ a; $"
         expected_output = False
 
         # Act
