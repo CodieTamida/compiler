@@ -258,7 +258,6 @@ class Parser:
             text1 = f"Qualifier is missing."
             text2 = f"Expected token integer, real, or boolean, but found {self.__current_token.lexeme}"
             raise SyntaxError(f"{text1}\n{text2}")
-        #raise NotImplementedError("Must implement this method!")
 
     def __r9_body(self):
         self.debug_print("<Body> -> { <Statement List> }")
