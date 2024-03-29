@@ -252,9 +252,13 @@ class Parser:
     def __r8_qualifier(self):
         if (self.__current_token.lexeme == "integer" or self.__current_token.lexeme == "boolean"  or 
         self.__current_token.lexeme == "real"):
-            self.debug_print("<Qualifier> -> integer | boolean | real")
+            self.debug_print(f"<Qualifier> -> integer | real | boolean")
+            self.debug_print(f"<Qualifier> -> {self.__current_token.lexeme}")
             self.__match(self.__current_token.lexeme)
-            
+        else:
+            text1 = f"Qualifier is missing."
+            text2 = f"Expected token integer, real, or boolean, but found {self.__current_token.lexeme}"
+            raise SyntaxError(f"{text1}\n{text2}")
         #raise NotImplementedError("Must implement this method!")
 
     def __r9_body(self):
