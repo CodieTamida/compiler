@@ -252,7 +252,6 @@ class Parser:
     def __r8_qualifier(self):
         if (self.__current_token.lexeme == "integer" or self.__current_token.lexeme == "boolean"  or 
         self.__current_token.lexeme == "real"):
-            self.debug_print(f"<Qualifier> -> integer | real | boolean")
             self.debug_print(f"<Qualifier> -> {self.__current_token.lexeme}")
             self.__match(self.__current_token.lexeme)
         else:
