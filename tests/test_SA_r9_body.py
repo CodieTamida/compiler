@@ -20,7 +20,7 @@ class BodyTestCase(unittest.TestCase):
     
     def test_body(self):
         # Arrange
-        input_string = "$ function abc() { a= b + z; } $ $ $"
+        input_string = "$ function abc() { a= b + z; } $ $ num = 1; $"
         expected_output = True
 
         # Act

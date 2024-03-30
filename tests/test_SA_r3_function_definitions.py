@@ -17,7 +17,7 @@ class FunctionDefinitionsTestCase(unittest.TestCase):
     def test_1fn_0params_0statements(self):
         # Arrange
         input_string = "$ function abc() { } $ $ $"
-        expected_output = True
+        expected_output = False
 
         # Act
         write_to_file(self.SAMPLE_FILE_PATH, input_string)
@@ -28,7 +28,7 @@ class FunctionDefinitionsTestCase(unittest.TestCase):
 
     def test_1fn_0params_1statement(self):
         # Arrange
-        input_string = "$ function abc() { a = 1.1; } $ $ $"
+        input_string = "$ function abc() { a = 1.1; } $ $ num = 1; $"
         expected_output = True
 
         # Act
@@ -40,7 +40,7 @@ class FunctionDefinitionsTestCase(unittest.TestCase):
 
     def test_1fn_1param_1statement(self):
         # Arrange
-        input_string = "$ function abc(amount real) { a = amount; } $ $ $"
+        input_string = "$ function abc(amount real) { a = amount; } $ $ num = 1; $"
         expected_output = True
 
         # Act
@@ -67,6 +67,7 @@ class FunctionDefinitionsTestCase(unittest.TestCase):
                         }
                     $ 
                     $
+                        num = 1;
                     $
                     """
         expected_output = True

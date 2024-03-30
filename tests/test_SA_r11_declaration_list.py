@@ -19,7 +19,7 @@ class DeclarationListTestCase(unittest.TestCase):
 
     def test_1declaration_1id(self):
         # Arrange
-        input_string = "$ $ integer a; $ $"
+        input_string = "$ $ integer a; $ num = 1; $"
         expected_output = True
 
         # Act
@@ -31,7 +31,7 @@ class DeclarationListTestCase(unittest.TestCase):
 
     def test_1declaration_2ids(self):
         # Arrange
-        input_string = "$ $ real a, b; $ $"
+        input_string = "$ $ real a, b; $ num = 1; $"
         expected_output = True
 
         # Act
@@ -43,7 +43,7 @@ class DeclarationListTestCase(unittest.TestCase):
 
     def test_1declaration_3ids(self):
         # Arrange
-        input_string = "$ $ boolean a, b, c; $ $"
+        input_string = "$ $ boolean a, b, c; $ num = 1; $"
         expected_output = True
 
         # Act
@@ -55,7 +55,7 @@ class DeclarationListTestCase(unittest.TestCase):
 
     def test_2declarations_1id(self):
         # Arrange
-        input_string = "$ $ boolean a; boolean b; $ $"
+        input_string = "$ $ boolean a; boolean b; $ num = 1; $"
         expected_output = True
 
         # Act
@@ -67,7 +67,7 @@ class DeclarationListTestCase(unittest.TestCase):
 
     def test_2declarations_2ids(self):
         # Arrange
-        input_string = "$ $ boolean a, b; integer x, y, z; $ $"
+        input_string = "$ $ boolean a, b; integer x, y, z; $ num = 1; $"
         expected_output = True
 
         # Act

@@ -14,9 +14,9 @@ class R1_Rat24STestCase(unittest.TestCase):
         if os.path.exists(self.SAMPLE_FILE_PATH):
             os.remove(self.SAMPLE_FILE_PATH)
 
-    def test_opt_function_definition(self):
+    def test_one_function_definition(self):
         # Arrange
-        input_string = "$ function f1() { } $ $ a = b; $"
+        input_string = "$ function f1() { a = 1; } $ $ a = b; $"
         expected_output = True
 
         # Act
@@ -40,7 +40,7 @@ class R1_Rat24STestCase(unittest.TestCase):
 
     def test_no_declarations_no_function_definitions(self):
         # Arrange
-        input_string = "$ $ $ $"
+        input_string = "$ $ $ num = 1; $"
         expected_output = True
 
         # Act
