@@ -464,20 +464,12 @@ class Parser:
         R` = <Return Prime>
         """
 
-        if self.__current_token.lexeme == "return":
-            self.debug_print_current_token()
-            expression = f'<Return> -> return <Return Prime>'
-            self.debug_print(expression)
-
-            self.__match(self.__current_token.lexeme)
-
-            self.__r19_return_b_prime()
-        else:
-            text1 = f"Return keyword is missing."
-            text2 = f"Expecting return keyword, but found {self.__current_token.lexeme}"
-
-            raise SyntaxError(f"{text1}\n{text2}")
-
+        
+        self.debug_print_current_token()
+        self.__match("return")
+        self.debug_print(f"<Return> -> return <Return Prime>")
+        self.__r19_return_b_prime()
+        
     def __r19_return_b_prime(self):
         """
         R' --> ; | E
@@ -494,17 +486,11 @@ class Parser:
 
         
         # Check to see if <Expression>, after left-recursion, leads E -> TE'
-
-        elif (self.debug_print(f"<Return Prime> -> <Expression>;")):
+        else:
+            self.debug_print(f"<Return Prime> -> <Expression>;")
             self.__r25a_expression()
             self.__match(';')
-        else:
-            text1 = f"Missing a semicolon or expression."
-            text2 = f"Expected a semicolon or expression, but found {self.__current_token.lexeme}"
-
-            raise SyntaxError(f"{text1}\n{text2}")
         
-
     def __r20_print(self):
         self.debug_print(f"<Print> -> print ( <Expression> );")
         self.__match("print")
