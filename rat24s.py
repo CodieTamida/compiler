@@ -3,44 +3,54 @@ from components.lexcical_analyzer import Lexer
 from components.syntax_analyzer import Parser
 
 
-def extract_tokens(args):
-    # Create a Lexer instance
-    lexer = Lexer(args.input)
+def print_tokens(lexer: Lexer):
+    for token in lexer.tokens:
+        text = f"{token.token_type.name.lower():<20} {token.lexeme}"
+        print(text)
 
-    if args.output:
-        # Open a file for writing
-        with open(args.output, 'w') as file:
-            # Write table headers
-            file.write(f"{'token':<20} {'lexeme':<10}\n")
-            file.write(f'{"-" * 31}\n')
 
-            for token in lexer.tokens:
-                text = f"{token.token_type.name.lower():<20} {token.lexeme}\n"
-                file.write(text)
-                if args.verbose:
-                    print(text, end="")
-    # Verbose mode
-    elif args.verbose:
+def write_tokens_to_file(lexer: Lexer, output_file: str):
+    with open(output_file, 'w') as file:
+        # Write table headers
+        file.write(f"{'token':<20} {'lexeme':<10}\n")
+        file.write(f'{"-" * 31}\n')
+
+        # Write tokens
         for token in lexer.tokens:
             text = f"{token.token_type.name.lower():<20} {token.lexeme}\n"
-            print(text, end="")
+            file.write(text)
 
 
-def check_syntax(args):
-    # Create a Lexer instance
-    lexer = Lexer(args.input)
+def lexical_analyze(input_file, output_file, verbose):
+    lexer = Lexer(input_file)
 
-    parser = Parser(lexer, debug_print=args.verbose)
+    if verbose:
+        print_tokens(lexer)
+
+    if output_file:
+        write_tokens_to_file(lexer, output_file)
+
+    return lexer
+
+
+def syntax_analyze(input_file, output_file, verbose):
+    lexer = lexical_analyze(input_file, output_file, False)
+
+    parser = Parser(lexer, debug_print=False)
     parsing_success = parser.parse()
 
-    if args.output:
+    if verbose:
+        for text in parser.get_logs():
+            print(text)
+
+    if output_file:
         # Open a file for writing
-        with open(args.output, 'w') as file:
+        with open(output_file, 'w') as file:
             for text in parser.get_logs():
                 file.write(text)
                 file.write('\n')
 
-    # Display parsing result
+    # Print parsing result to console
     print('-' * 50)
     print(f"Filename: {args.input}")
     print(f"Number of Tokens: {len(lexer.tokens)}")
@@ -66,10 +76,10 @@ def main(args):
     """
     # Token-only mode
     if args.tokens:
-        extract_tokens(args)
+        lexical_analyze(args.input, args.output, args.verbose)
     # Check syntax mode
-    elif args.syntax:
-        check_syntax(args)
+    else:
+        syntax_analyze(args.input, args.output, args.verbose)
 
 
 if __name__ == '__main__':
