@@ -338,6 +338,7 @@ class Parser:
         Applies the grammar rule 12: 
         <Declaration> ::= <Qualifier > <IDs>
         """
+        self.debug_print("<Declaration> ::= <Qualifier > <IDs>")
         self.debug_print_current_token()
         self.__r8_qualifier()
         self.__r13_ids()
@@ -472,7 +473,10 @@ class Parser:
 
             self.__r19_return_b_prime()
         else:
-            self.debug_print(f"Expecting return keyword, but read {self.__current_token.lexeme}")
+            text1 = f"Return keyword is missing."
+            text2 = f"Expecting return keyword, but found {self.__current_token.lexeme}"
+
+            raise SyntaxError(f"{text1}\n{text2}")
 
     def __r19_return_b_prime(self):
         """
@@ -491,14 +495,20 @@ class Parser:
         
         # Check to see if <Expression>, after left-recursion, leads E -> TE'
 
-        else:
-            self.debug_print(f"<Return Prime> -> <Expression>;")
+        elif (self.debug_print(f"<Return Prime> -> <Expression>;")):
             self.__r25a_expression()
             self.__match(';')
+        else:
+            text1 = f"Missing a semicolon or expression."
+            text2 = f"Expected a semicolon or expression, but found {self.__current_token.lexeme}"
+
+            raise SyntaxError(f"{text1}\n{text2}")
         
 
     def __r20_print(self):
+        self.debug_print(f"<Print> -> print ( <Expression> );")
         self.__match("print")
+        self.debug_print_current_token()
         self.__match('(')
         self.__r25a_expression()
         self.debug_print_current_token()
