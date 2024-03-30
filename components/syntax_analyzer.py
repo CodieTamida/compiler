@@ -338,6 +338,7 @@ class Parser:
         Applies the grammar rule 12: 
         <Declaration> ::= <Qualifier > <IDs>
         """
+        self.debug_print("<Declaration> ::= <Qualifier > <IDs>")
         self.debug_print_current_token()
         self.__r8_qualifier()
         self.__r13_ids()
@@ -462,17 +463,12 @@ class Parser:
         R` = <Return Prime>
         """
 
-        if self.__current_token.lexeme == "return":
-            self.debug_print_current_token()
-            expression = f'<Return> -> return <Return Prime>'
-            self.debug_print(expression)
-
-            self.__match(self.__current_token.lexeme)
-
-            self.__r19_return_b_prime()
-        else:
-            self.debug_print(f"Expecting return keyword, but read {self.__current_token.lexeme}")
-
+        
+        self.debug_print_current_token()
+        self.__match("return")
+        self.debug_print(f"<Return> -> return <Return Prime>")
+        self.__r19_return_b_prime()
+        
     def __r19_return_b_prime(self):
         """
         R' --> ; | E
@@ -489,15 +485,15 @@ class Parser:
 
         
         # Check to see if <Expression>, after left-recursion, leads E -> TE'
-
         else:
             self.debug_print(f"<Return Prime> -> <Expression>;")
             self.__r25a_expression()
             self.__match(';')
         
-
     def __r20_print(self):
+        self.debug_print(f"<Print> -> print ( <Expression> );")
         self.__match("print")
+        self.debug_print_current_token()
         self.__match('(')
         self.__r25a_expression()
         self.debug_print_current_token()
