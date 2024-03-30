@@ -409,6 +409,10 @@ class Parser:
 
             # Match the end of <Assign>, indicated by a semicolon ";".
             self.__match(";")  # Match & Move to the next token
+        else:
+            text_1 = f"Assignment operator is missing."
+            text_2 = f"Expected `=`, but found {self.__current_token.lexeme}"
+            raise SyntaxError(f"{text_1}\n{text_2}")
 
     def __r18_if(self):
         raise NotImplementedError("Must implement this method!")
