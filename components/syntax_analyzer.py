@@ -292,9 +292,11 @@ class Parser:
             raise SyntaxError(f"{text1}\n{text2}")
 
     def __r9_body(self):
-        self.debug_print("<Body> -> { <Statement List> }")
+        self.debug_print_current_token()
         self.__match('{')
+        self.debug_print("<Body> -> { <Statement List> }")
         self.__r14a_statement_list()
+        self.debug_print_current_token()
         self.__match('}')
 
     def __r10_optional_declaration_list(self):
