@@ -338,6 +338,7 @@ class Parser:
         Applies the grammar rule 12: 
         <Declaration> ::= <Qualifier > <IDs>
         """
+        self.debug_print("<Declaration> ::= <Qualifier > <IDs>")
         self.debug_print_current_token()
         self.__r8_qualifier()
         self.__r13_ids()
@@ -437,9 +438,8 @@ class Parser:
         """
         self.debug_print("<Assign> -> <Identifier> = <Expression> ;")
 
-        self.debug_print_current_token()
-
         if self.__current_token.lexeme == "=":
+            self.debug_print_current_token()
             self.__match(self.__current_token.lexeme)  # Move to the next token
             self.__r25a_expression()
 
@@ -463,17 +463,12 @@ class Parser:
         R` = <Return Prime>
         """
 
-        if self.__current_token.lexeme == "return":
-            self.debug_print_current_token()
-            expression = f'<Return> -> return <Return Prime>'
-            self.debug_print(expression)
-
-            self.__match(self.__current_token.lexeme)
-
-            self.__r19_return_b_prime()
-        else:
-            self.debug_print(f"Expecting return keyword, but read {self.__current_token.lexeme}")
-
+        
+        self.debug_print_current_token()
+        self.__match("return")
+        self.debug_print(f"<Return> -> return <Return Prime>")
+        self.__r19_return_b_prime()
+        
     def __r19_return_b_prime(self):
         """
         R' --> ; | E
@@ -490,15 +485,15 @@ class Parser:
 
         
         # Check to see if <Expression>, after left-recursion, leads E -> TE'
-
         else:
             self.debug_print(f"<Return Prime> -> <Expression>;")
             self.__r25a_expression()
             self.__match(';')
         
-
     def __r20_print(self):
+        self.debug_print(f"<Print> -> print ( <Expression> );")
         self.__match("print")
+        self.debug_print_current_token()
         self.__match('(')
         self.__r25a_expression()
         self.debug_print_current_token()
@@ -510,13 +505,66 @@ class Parser:
         raise NotImplementedError("Must implement this method!")
 
     def __r22_while(self):
-        raise NotImplementedError("Must implement this method!")
+        """
+        Applies the grammar rule 24: 
+        <While> -> while ( <Condition> ) <Statement> endwhile
+
+        Raises:
+            SyntaxError: 
+        """
+        self.debug_print_current_token()
+        self.debug_print("<While> -> while ( <Condition> ) <Statement> endwhile")
+
+        # Match the beginning of <While>, indicated by "while".        
+        self.__match("while")
+
+        # Match the open parenthesis, indicated by "(".
+        self.debug_print_current_token()
+        self.__match("(")
+
+        # Apply rule 23 <Condition>
+        self.__r23_condition()
+
+        # Match the close parenthesis, indicated by ")".
+        self.debug_print_current_token()
+        self.__match(")")
+
+        # Apply rule 15 <Statement>
+        self.__r15_statement()
+
+         # Match the end of <While>, indicated by "endwhile".
+        self.debug_print_current_token()
+        self.__match("endwhile")
 
     def __r23_condition(self):
-        raise NotImplementedError("Must implement this method!")
+        """
+        Applies the grammar rule 23: 
+        <Condition> -> <Expression> <Relop> <Expression>
+        """
+        self.debug_print("<Condition> -> <Expression> <Relop> <Expression>")
+        self.__r25a_expression()
+        self.__r24_relop()
+        self.__r25a_expression()
 
     def __r24_relop(self):
-        raise NotImplementedError("Must implement this method!")
+        """
+        Applies the grammar rule 24: 
+        <Relop> -> == | != | > | < | <= | =>
+
+        Raises:
+            SyntaxError: If the current token is not a valid relational operator.
+        """
+        relation_operators = {"==", "!=", ">", "<", "<=", "=>"}
+        lexeme = self.__current_token.lexeme.lower()
+
+        if lexeme in relation_operators:
+            self.debug_print_current_token()
+            self.debug_print(f"<Relop> -> {self.__current_token.lexeme}")
+            self.__match(self.__current_token.lexeme)
+        else:
+            text1 = f"Relation operator is missing."
+            text2 = f"Expected `{relation_operators}`, but found {self.__current_token.lexeme}"
+            raise SyntaxError(f"{text1}\n{text2}")
 
     def __r25a_expression(self):
         """
@@ -546,10 +594,11 @@ class Parser:
         """
         # Check for '+' or '-' case
         if self.__current_token.lexeme == "+" or self.__current_token.lexeme == "-":
+            self.debug_print_current_token()
             self.debug_print(
                 f"<Expression Prime> -> {self.__current_token.lexeme} <Term> <Expression Prime>")
             self.__match(self.__current_token.lexeme)  # Move to the next token
-            self.debug_print_current_token()
+            
             self.__r26a_term()
             self.__r25b_expression_prime()
         # Handle Epsilon case
@@ -566,6 +615,7 @@ class Parser:
         T is <Term>
         T' is <Term Prime>
         """
+        # self.debug_print_current_token()
         self.debug_print("<Term> -> <Factor> <Term Prime>")
 
         self.__r27_factor()
@@ -582,17 +632,15 @@ class Parser:
         T' is <Term Prime>
         """
 
-        # Print current token for debugging purposes
-        self.debug_print_current_token()
-
         # Check for '*' or '/' case
         if self.__current_token.lexeme == "*" or self.__current_token.lexeme == "/":
+            self.debug_print_current_token()
+
             # Generate and print production rule text
             text = f"<Term Prime> -> {self.__current_token.lexeme} <Factor> <Term Prime>"
             self.debug_print(text)
 
             self.__match(self.__current_token.lexeme)  # Move to the next token
-            self.debug_print_current_token()
 
             # Apply production rules for Factor and Term Prime recursively
             self.__r27_factor()
@@ -678,8 +726,5 @@ class Parser:
             self.debug_print_current_token()
             self.__match(")")  # Match and Move to the next token
             text = "( <IDs> )"
-        # Handle Epsilon case
-        else:
-            self.debug_print("<Primary Prime> -> ε")
 
         return text
