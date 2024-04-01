@@ -59,7 +59,7 @@ class Parser:
             if self.__current_token is None:
                 parsing_result = True  # Parsing successful
             else:
-                self.debug_print_current_token()
+                self.__log_current_token()
                 raise ValueError(
                     f"Expected End Of File, but found {self.__current_token.lexeme}")
         except Exception as err:
@@ -136,30 +136,30 @@ class Parser:
                     $
         """
         # Match the beginning of <Rat24S>, indicated by "$".
-        self.debug_print_current_token()
+        self.__log_current_token()
         self.__match("$")
 
         # Apply rule 2 <Opt Function Definitions>
-        self.debug_print("<Rat24S> -> <Opt Function Definitions>")
+        self.__log("<Rat24S> -> <Opt Function Definitions>")
         self.__r2_optional_function_definitions()
 
         # Match the end of <Opt Function Definitions>, indicated by "$".
-        self.debug_print_current_token()
+        self.__log_current_token()
         self.__match("$")
 
         # Apply rule 10 <Opt Declaration List>
-        self.debug_print("<Rat24S> -> <Opt Declaration List>")
+        self.__log("<Rat24S> -> <Opt Declaration List>")
         self.__r10_optional_declaration_list()
 
         # Match the end of <Opt Function Definitions>, indicated by "$".
-        self.debug_print_current_token()
+        self.__log_current_token()
         self.__match("$")
 
         # Apply rule 14 <Statement List>
         self.__r14a_statement_list()
 
         # Match the end of <Rat24S>, indicated by "$".
-        self.debug_print_current_token()
+        self.__log_current_token()
         self.__match("$")
 
     def __r2_optional_function_definitions(self):
@@ -168,18 +168,18 @@ class Parser:
         <Opt Function Definitions> -> <Function Definitions> | ε
         """
         if self.__current_token.lexeme == "function":
-            self.debug_print(
+            self.__log(
                 "<Opt Function Definitions> -> <Function Definitions>")
             self.__r3a_function_definitions()
         else:
-            self.debug_print("<Opt Function Definitions> -> ε")
+            self.__log("<Opt Function Definitions> -> ε")
 
     def __r3a_function_definitions(self):
         """
         Applies the production rule 3a: 
         <Function Definitions> -> <Function> <Function Definitions Prime>
         """
-        self.debug_print(
+        self.__log(
             "<Function Definitions> -> <Function> <Function Definitions Prime>")
         self.__r4_function()
         self.__r3b_function_definitions_prime()
@@ -190,11 +190,11 @@ class Parser:
         <Function Definitions Prime> -> <Function Definitions> | ε
         """
         if self.__current_token.lexeme == "function":
-            self.debug_print(
+            self.__log(
                 "<Function Definitions Prime> -> <Function Definitions>")
             self.__r4_function()
         else:
-            self.debug_print("<Function Definitions Prime> -> ε")
+            self.__log("<Function Definitions Prime> -> ε")
 
     def __r4_function(self):
         """
@@ -202,25 +202,25 @@ class Parser:
         <Function> ::= function <Identifier> ( <Opt Parameter List> ) 
                                 <Opt Declaration List> <Body>
         """
-        self.debug_print_current_token()
+        self.__log_current_token()
 
         # Match the beginning of <Function>, indicated by "function".
         self.__match("function")  # Match and Move to the next token
 
         # Check if function's name exists
         if self.__current_token.token_type == TokenType.IDENTIFIER:
-            self.debug_print(
+            self.__log(
                 "<Function> -> function <Identifier> ( <Opt Parameter List> ) <Opt Declaration List> <Body>")
-            self.debug_print_current_token()
+            self.__log_current_token()
             self.__match(self.__current_token.lexeme)  # Move to the next token
 
             # After the function's name, there must be an open parenthesis '('
-            self.debug_print_current_token()
+            self.__log_current_token()
             self.__match("(")
             self.__r5_optional_parameter_list()
 
             # After the function's params, there must be a close parenthesis ')'
-            self.debug_print_current_token()
+            self.__log_current_token()
             self.__match(")")
 
             self.__r10_optional_declaration_list()
@@ -236,10 +236,10 @@ class Parser:
         <Opt Parameter List> -> <Parameter List> | ε
         """
         if self.__current_token.token_type == TokenType.IDENTIFIER:
-            self.debug_print("<Opt Parameter List> -> <Parameter List>")
+            self.__log("<Opt Parameter List> -> <Parameter List>")
             self.__r6_parameter_list()
         else:
-            self.debug_print("<Opt Parameter List> -> ε")
+            self.__log("<Opt Parameter List> -> ε")
 
     def __r6_parameter_list(self):
         """
@@ -251,8 +251,8 @@ class Parser:
         P  = <Parameter>
         P' = <Parameter Prime> 
         """
-        self.debug_print_current_token()
-        self.debug_print("<Parameter List> -> <Parameter> <Parameter Prime> ")
+        self.__log_current_token()
+        self.__log("<Parameter List> -> <Parameter> <Parameter Prime> ")
         self.__r7_parameter()
         self.__r6b_parameter_prime()
         
@@ -267,16 +267,16 @@ class Parser:
         ε  = Epsilon
         """
         if self.__current_token.lexeme == ",":
-            self.debug_print(f"<Parameter Prime> -> {self.__current_token.lexeme} <Parameter List>")
+            self.__log(f"<Parameter Prime> -> {self.__current_token.lexeme} <Parameter List>")
             self.__match(self.__current_token.lexeme)
-            self.debug_print_current_token
+            self.__log_current_token
             self.__r6_parameter_list()
         else:
-            self.debug_print("<Parameter Prime> -> ε")
+            self.__log("<Parameter Prime> -> ε")
 
 
     def __r7_parameter(self):
-        self.debug_print("<Parameter> -> <IDs> <Qualifier>")
+        self.__log("<Parameter> -> <IDs> <Qualifier>")
         self.__r13_ids()
         self.__r8_qualifier()
         #raise NotImplementedError("Must implement this method!")
@@ -284,7 +284,7 @@ class Parser:
     def __r8_qualifier(self):
         if (self.__current_token.lexeme == "integer" or self.__current_token.lexeme == "boolean"  or 
         self.__current_token.lexeme == "real"):
-            self.debug_print(f"<Qualifier> -> {self.__current_token.lexeme}")
+            self.__log(f"<Qualifier> -> {self.__current_token.lexeme}")
             self.__match(self.__current_token.lexeme)
         else:
             text1 = f"Qualifier is missing."
@@ -292,21 +292,21 @@ class Parser:
             raise SyntaxError(f"{text1}\n{text2}")
 
     def __r9_body(self):
-        self.debug_print_current_token()
+        self.__log_current_token()
         self.__match('{')
-        self.debug_print("<Body> -> { <Statement List> }")
+        self.__log("<Body> -> { <Statement List> }")
         self.__r14a_statement_list()
-        self.debug_print_current_token()
+        self.__log_current_token()
         self.__match('}')
 
     def __r10_optional_declaration_list(self):
         if (self.__current_token.lexeme == "integer"
             or self.__current_token.lexeme == "real"
                 or self.__current_token.lexeme == "boolean"):
-            self.debug_print("<Opt Declaration List> -> <Declaration List>")
+            self.__log("<Opt Declaration List> -> <Declaration List>")
             self.__r11_declaration_list()
         else:
-            self.debug_print("<Opt Declaration List> -> ε")
+            self.__log("<Opt Declaration List> -> ε")
 
     def __r11_declaration_list(self):
         """
@@ -316,9 +316,9 @@ class Parser:
         if (self.__current_token.lexeme == "integer"
             or self.__current_token.lexeme == "real"
                 or self.__current_token.lexeme == "boolean"):            
-            self.debug_print("<Declaration List> -> <Declaration> ;")
+            self.__log("<Declaration List> -> <Declaration> ;")
             self.__r12_declaration()
-            self.debug_print_current_token()
+            self.__log_current_token()
             self.__match(";")
             self.__r11b_declaration_list_prime()
 
@@ -330,18 +330,18 @@ class Parser:
         if (self.__current_token.lexeme == "integer"
             or self.__current_token.lexeme == "real"
                 or self.__current_token.lexeme == "boolean"):
-            self.debug_print("<Declaration List Prime> -> <Declaration>")
+            self.__log("<Declaration List Prime> -> <Declaration>")
             self.__r11_declaration_list()
         else:
-            self.debug_print("<Declaration List Prime> -> ε")
+            self.__log("<Declaration List Prime> -> ε")
 
     def __r12_declaration(self):
         """
         Applies the grammar rule 12: 
         <Declaration> ::= <Qualifier > <IDs>
         """
-        self.debug_print("<Declaration> ::= <Qualifier > <IDs>")
-        self.debug_print_current_token()
+        self.__log("<Declaration> ::= <Qualifier > <IDs>")
+        self.__log_current_token()
         self.__r8_qualifier()
         self.__r13_ids()
 
@@ -350,9 +350,9 @@ class Parser:
         Applies the production rule 13a: 
         <IDs> -> <Identifier> <IDs Prime>
         """
-        self.debug_print_current_token()
+        self.__log_current_token()
         if self.__current_token.token_type == TokenType.IDENTIFIER:
-            self.debug_print("<IDs> -> <Identifier> <IDs Prime>")
+            self.__log("<IDs> -> <Identifier> <IDs Prime>")
             self.__match(self.__current_token.lexeme)
             self.__r13b_ids_prime()
         else:
@@ -365,18 +365,18 @@ class Parser:
         <IDs Prime> -> , <IDs> | ε
         """
         if self.__current_token.lexeme == ",":
-            self.debug_print("<IDs Prime> -> , <IDs>")
+            self.__log("<IDs Prime> -> , <IDs>")
             self.__match(self.__current_token.lexeme)  # Move to the next token
             self.__r13_ids()
         else:
-            self.debug_print("<IDs Prime> -> ε")
+            self.__log("<IDs Prime> -> ε")
 
     def __r14a_statement_list(self):
         """
         Applies the production rule 14a:
         <Statement List> -> <Statement> <Statement List Prime>
         """
-        self.debug_print(
+        self.__log(
             "<Statement List> -> <Statement> <Statement List Prime>")
         self.__r15_statement()
         self.__r14b_statement_list_prime()
@@ -391,7 +391,7 @@ class Parser:
 
         if (self.__current_token.token_type == TokenType.IDENTIFIER
                 or lexeme in first_of_statement):
-            self.debug_print("<Statement List Prime> -> <Statement>")
+            self.__log("<Statement List Prime> -> <Statement>")
             self.__r15_statement()
 
     def __r15_statement(self):
@@ -407,8 +407,8 @@ class Parser:
             self.__r16_compound()
         # Check if the current token is an identifier for an assignment statement
         elif self.__current_token.token_type == TokenType.IDENTIFIER:
-            self.debug_print_current_token()
-            self.debug_print("<Statement> -> <Assign>")
+            self.__log_current_token()
+            self.__log("<Statement> -> <Assign>")
             self.__match(self.__current_token.lexeme)  # Move to the next token
             self.__r17_assign()
         # Check if the current token is the "if" keyword for an if statement
@@ -428,7 +428,7 @@ class Parser:
             raise SyntaxError(f"{text_1}\n{text_2}")
 
     def __r16_compound(self):
-        self.debug_print("<Compound> -> { <Statement List> }")
+        self.__log("<Compound> -> { <Statement List> }")
         self.__match('{')
         self.__r14a_statement_list()
         self.__match('}')
@@ -438,10 +438,10 @@ class Parser:
         Applies the grammar rule 17:
         <Assign> -> <Identifier> = <Expression> ;
         """
-        self.debug_print("<Assign> -> <Identifier> = <Expression> ;")
+        self.__log("<Assign> -> <Identifier> = <Expression> ;")
 
         if self.__current_token.lexeme == "=":
-            self.debug_print_current_token()
+            self.__log_current_token()
             self.__match(self.__current_token.lexeme)  # Move to the next token
             self.__r25a_expression()
 
@@ -466,9 +466,9 @@ class Parser:
         """
 
         
-        self.debug_print_current_token()
+        self.__log_current_token()
         self.__match("return")
-        self.debug_print(f"<Return> -> return <Return Prime>")
+        self.__log(f"<Return> -> return <Return Prime>")
         self.__r19_return_b_prime()
         
     def __r19_return_b_prime(self):
@@ -482,23 +482,23 @@ class Parser:
 
         # Check to see if the current token is a separator, ;
         if self.__current_token.lexeme == ";":
-            self.debug_print(f"<Return Prime> -> ;")
+            self.__log(f"<Return Prime> -> ;")
             self.__match(self.__current_token.lexeme) # Move to the next token
 
         
         # Check to see if <Expression>, after left-recursion, leads E -> TE'
         else:
-            self.debug_print(f"<Return Prime> -> <Expression>;")
+            self.__log(f"<Return Prime> -> <Expression>;")
             self.__r25a_expression()
             self.__match(';')
         
     def __r20_print(self):
-        self.debug_print(f"<Print> -> print ( <Expression> );")
+        self.__log(f"<Print> -> print ( <Expression> );")
         self.__match("print")
-        self.debug_print_current_token()
+        self.__log_current_token()
         self.__match('(')
         self.__r25a_expression()
-        self.debug_print_current_token()
+        self.__log_current_token()
         self.__match(')')
         self.__match(';')
 
@@ -514,28 +514,28 @@ class Parser:
         Raises:
             SyntaxError: 
         """
-        self.debug_print_current_token()
-        self.debug_print("<While> -> while ( <Condition> ) <Statement> endwhile")
+        self.__log_current_token()
+        self.__log("<While> -> while ( <Condition> ) <Statement> endwhile")
 
         # Match the beginning of <While>, indicated by "while".        
         self.__match("while")
 
         # Match the open parenthesis, indicated by "(".
-        self.debug_print_current_token()
+        self.__log_current_token()
         self.__match("(")
 
         # Apply rule 23 <Condition>
         self.__r23_condition()
 
         # Match the close parenthesis, indicated by ")".
-        self.debug_print_current_token()
+        self.__log_current_token()
         self.__match(")")
 
         # Apply rule 15 <Statement>
         self.__r15_statement()
 
          # Match the end of <While>, indicated by "endwhile".
-        self.debug_print_current_token()
+        self.__log_current_token()
         self.__match("endwhile")
 
     def __r23_condition(self):
@@ -543,7 +543,7 @@ class Parser:
         Applies the grammar rule 23: 
         <Condition> -> <Expression> <Relop> <Expression>
         """
-        self.debug_print("<Condition> -> <Expression> <Relop> <Expression>")
+        self.__log("<Condition> -> <Expression> <Relop> <Expression>")
         self.__r25a_expression()
         self.__r24_relop()
         self.__r25a_expression()
@@ -560,8 +560,8 @@ class Parser:
         lexeme = self.__current_token.lexeme.lower()
 
         if lexeme in relation_operators:
-            self.debug_print_current_token()
-            self.debug_print(f"<Relop> -> {self.__current_token.lexeme}")
+            self.__log_current_token()
+            self.__log(f"<Relop> -> {self.__current_token.lexeme}")
             self.__match(self.__current_token.lexeme)
         else:
             text1 = f"Relation operator is missing."
@@ -579,8 +579,8 @@ class Parser:
         T is <Term>
         """
 
-        self.debug_print_current_token()
-        self.debug_print("<Expression> -> <Term> <Expression Prime>")
+        self.__log_current_token()
+        self.__log("<Expression> -> <Term> <Expression Prime>")
 
         self.__r26a_term()
         self.__r25b_expression_prime()
@@ -596,8 +596,8 @@ class Parser:
         """
         # Check for '+' or '-' case
         if self.__current_token.lexeme == "+" or self.__current_token.lexeme == "-":
-            self.debug_print_current_token()
-            self.debug_print(
+            self.__log_current_token()
+            self.__log(
                 f"<Expression Prime> -> {self.__current_token.lexeme} <Term> <Expression Prime>")
             self.__match(self.__current_token.lexeme)  # Move to the next token
             
@@ -605,7 +605,7 @@ class Parser:
             self.__r25b_expression_prime()
         # Handle Epsilon case
         else:
-            self.debug_print("<Expression Prime> -> ε")
+            self.__log("<Expression Prime> -> ε")
 
     def __r26a_term(self):
         """
@@ -617,8 +617,8 @@ class Parser:
         T is <Term>
         T' is <Term Prime>
         """
-        # self.debug_print_current_token()
-        self.debug_print("<Term> -> <Factor> <Term Prime>")
+        # self.__log_current_token()
+        self.__log("<Term> -> <Factor> <Term Prime>")
 
         self.__r27_factor()
         self.__r26b_term_prime()
@@ -636,11 +636,11 @@ class Parser:
 
         # Check for '*' or '/' case
         if self.__current_token.lexeme == "*" or self.__current_token.lexeme == "/":
-            self.debug_print_current_token()
+            self.__log_current_token()
 
             # Generate and print production rule text
             text = f"<Term Prime> -> {self.__current_token.lexeme} <Factor> <Term Prime>"
-            self.debug_print(text)
+            self.__log(text)
 
             self.__match(self.__current_token.lexeme)  # Move to the next token
 
@@ -649,7 +649,7 @@ class Parser:
             self.__r26b_term_prime()
         # Handle Epsilon case
         else:
-            self.debug_print("<Term Prime> -> ε")
+            self.__log("<Term Prime> -> ε")
 
     def __r27_factor(self):
         """
@@ -668,7 +668,7 @@ class Parser:
 
         if primary_type:
             text_to_print = f"{text_to_print} {primary_type}"
-            self.debug_print(text_to_print)
+            self.__log(text_to_print)
 
     def __r28_primary(self):
         """
@@ -699,11 +699,11 @@ class Parser:
             self.__match(self.__current_token.lexeme)  # Move to the next token
         # Case 4: ( <Expression> )
         elif self.__current_token.lexeme == "(":
-            self.debug_print("<Primary Prime> -> ( <Expression> )")
+            self.__log("<Primary Prime> -> ( <Expression> )")
             self.__match(self.__current_token.lexeme)  # Move to the next token
             self.__r25a_expression()
             self.__match(")")  # Match and Move to the next token
-            self.debug_print("<Primary Prime> -> ( <Expression> )")
+            self.__log("<Primary Prime> -> ( <Expression> )")
         # Handle error: The current token does not match any expected types
         else:
             raise ValueError(
@@ -719,13 +719,13 @@ class Parser:
         text = ""
         if (self.__current_token.lexeme == "("):
             # After the function's name, there must be an open parenthesis '('
-            self.debug_print_current_token()
+            self.__log_current_token()
             self.__match("(")  # Match and Move to the next token
 
             self.__r13_ids()
 
             # After the function's params, there must be a close parenthesis ')'
-            self.debug_print_current_token()
+            self.__log_current_token()
             self.__match(")")  # Match and Move to the next token
             text = "( <IDs> )"
 
