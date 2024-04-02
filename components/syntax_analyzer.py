@@ -477,14 +477,17 @@ class Parser:
             self.__log_current_token()
             self.__log(f"<If Prime> -> endif")
             self.__match(self.__current_token.lexeme)
-        else:
+        elif self.__current_token.lexeme == "else":
             self.__log_current_token()
             self.__log(f"<If Prime> -> else <Statement> endif")
-            self.__match("else")
+            self.__match(self.__current_token.lexeme)
             self.__r15_statement()
             self.__log_current_token()
             self.__match("endif")
-
+        else:
+            text1 = f"Else of Endif is missing."
+            text2 = f"Expected token endif or else, but found {self.__current_token.lexeme}"
+            raise SyntaxError(f"{text1}\n{text2}")
 
     def __r19_return(self):
         """
