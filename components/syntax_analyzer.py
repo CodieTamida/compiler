@@ -428,9 +428,16 @@ class Parser:
             raise SyntaxError(f"{text_1}\n{text_2}")
 
     def __r16_compound(self):
+        """
+        Applies grammar rule 16:
+        <Compound> -> { Statement List> }
+
+        """
         self.__log("<Compound> -> { <Statement List> }")
+        self.__log_current_token()
         self.__match('{')
         self.__r14a_statement_list()
+        self.__log_current_token()
         self.__match('}')
 
     def __r17_assign(self):
