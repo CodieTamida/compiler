@@ -506,7 +506,20 @@ class Parser:
 
 
     def __r21_scan(self):
-        raise NotImplementedError("Must implement this method!")
+        """
+        Applies grammar rule 21:
+        <Scan> -> scan ( <IDs> );
+        """
+        self.__log_current_token()
+        self.__match("scan")
+        self.__log(f"<Scan> -> scan ( <IDs> );")
+        self.__log_current_token()
+        self.__match("(")
+        self.__r13_ids()
+        self.__log_current_token()
+        self.__match(')')
+        self.__log_current_token()
+        self.__match(';')
 
     def __r22_while(self):
         """
