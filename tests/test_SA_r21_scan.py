@@ -68,7 +68,7 @@ class PrintTestCase(unittest.TestCase):
         self.assertEqual(actual_output, expected_output)
 
     def test_no_close_paren(self):
-        input_string = "$$$ scan (4 + 5 - x; $"
+        input_string = "$$$ scan (x; $"
         expected_output = False
 
         write_to_file(self.SAMPLE_FILE_PATH, input_string)
