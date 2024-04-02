@@ -494,12 +494,14 @@ class Parser:
         
     def __r20_print(self):
         self.__log(f"<Print> -> print ( <Expression> );")
+        self.__log_current_token()
         self.__match("print")
         self.__log_current_token()
         self.__match('(')
         self.__r25a_expression()
         self.__log_current_token()
         self.__match(')')
+        self.__log_current_token()
         self.__match(';')
 
 
