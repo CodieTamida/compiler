@@ -57,3 +57,27 @@ class ReturnTestCase(unittest.TestCase):
 
         # Assert
         self.assertEqual(actual_output, expected_output)
+
+    def test_if_no_open_paren(self):
+        input_string = "$ $ $ if a == b ) return c; endif $"
+        expected_output = False
+
+        # Act
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
+
+        # Assert
+        self.assertEqual(actual_output, expected_output)
+
+    def test_if_no_close_paren(self):
+        input_string = "$ $ $ if (a == b  return c; endif $"
+        expected_output = False
+
+        # Act
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
+
+        # Assert
+        self.assertEqual(actual_output, expected_output)
+
+    
