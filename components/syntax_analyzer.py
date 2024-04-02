@@ -485,8 +485,8 @@ class Parser:
             self.__log_current_token()
             self.__match("endif")
         else:
-            text1 = f"Else of Endif is missing."
-            text2 = f"Expected token endif or else, but found {self.__current_token.lexeme}"
+            text1 = f'A keyword is missing.'
+            text2 = f'Expected "else" or "endif", but found {self.__current_token.lexeme}'
             raise SyntaxError(f"{text1}\n{text2}")
 
     def __r19_return(self):
