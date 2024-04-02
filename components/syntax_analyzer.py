@@ -413,7 +413,7 @@ class Parser:
             self.__r17_assign()
         # Check if the current token is the "if" keyword for an if statement
         elif lexeme == "if":
-            self.__r18_if()
+            self.__r18a_if()
         elif lexeme == "return":
             self.__r19_return()
         elif lexeme == "print":
@@ -452,8 +452,39 @@ class Parser:
             text_2 = f"Expected `=`, but found {self.__current_token.lexeme}"
             raise SyntaxError(f"{text_1}\n{text_2}")
 
-    def __r18_if(self):
-        raise NotImplementedError("Must implement this method!")
+    def __r18a_if(self):
+        """
+        Applies grammar rule 18a:
+        <if> -> if ( <Condition> ) <statement> <if Prime>
+        """
+        self.__log_current_token()
+        self.__match("if")
+        self.__log(f"<If> if ( <Condition> ) <Statement> <If Prime>")
+        self.__log_current_token()
+        self.__match("(")
+        self.__r23_condition()
+        self.__log_current_token()
+        self.__match(")")
+        self.__r15_statement()
+        self.__r18b_if()
+        
+    def __r18b_if(self):
+        """
+        Applies grammar rule 18b:
+        <If Prime> -> endif | else <Statement> endif
+        """
+        if self.__current_token.lexeme == "endif":
+            self.__log_current_token()
+            self.__log(f"<If Prime> -> endif")
+            self.__match(self.__current_token.lexeme)
+        else:
+            self.__log_current_token()
+            self.__log(f"<If Prime> -> else <Statement> endif")
+            self.__match("else")
+            self.__r15_statement()
+            self.__log_current_token()
+            self.__match("endif")
+
 
     def __r19_return(self):
         """
