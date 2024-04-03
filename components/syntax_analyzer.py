@@ -94,6 +94,11 @@ class Parser:
         """
         Logs information about the current token, including its token type and lexeme.
         """
+        if self.__current_token == None:
+            text1 = "Encountered End of File unexpectedly"
+            text2 = "Expected a Token, but found EOF"
+            raise SyntaxError(f"{text1}\n{text2}")
+        
         tokentype = self.__current_token.token_type.name.capitalize()
         text = f"Token: {tokentype:<20} Lexeme: {self.__current_token.lexeme}"
         self.__message_logs.append(text)
