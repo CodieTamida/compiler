@@ -663,7 +663,7 @@ class Parser:
             self.__log_current_token()
 
             # Generate and print production rule text
-            text = f"<Term Prime> -> {self.__current_token.lexeme} <Factor>"
+            text = f"<Term Prime> -> {self.__current_token.lexeme} <Factor> <Term Prime>"
             self.__log(text)
 
             self.__match(self.__current_token.lexeme)  # Move to the next token
