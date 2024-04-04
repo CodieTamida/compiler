@@ -33,42 +33,33 @@ class BodyTestCase(unittest.TestCase):
 
     def test_body_no_closing_brace(self):
         input_string = "$$ function abc() { a- 2; $"
-        with open(self.SAMPLE_FILE_PATH, 'w') as file:
-            file.write(input_string)
-        
-        lexer = Lexer(self.SAMPLE_FILE_PATH)
-        parser = Parser(lexer, debug_print=True)
-        parser.debug_print()
-        parser.debug_print()
-        parsing_success = parser.parse()
+        expected_output = False
+         # Act
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
 
-        self.assertFalse(parsing_success)
+        # Assert
+        self.assertEqual(actual_output, expected_output)
 
     def test_body_no_opening_brace(self):
         input_string = "$ function abc() a - -5;}$"
-        with open(self.SAMPLE_FILE_PATH, 'w') as file:
-            file.write(input_string)
+        expected_output = False
+         # Act
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
 
-        lexer = Lexer(self.SAMPLE_FILE_PATH)
-        parser = Parser(lexer, debug_print=True)
-        parser.debug_print()
-        parser.debug_print()
-        parsing_success = parser.parse()
-
-        self.assertFalse(parsing_success)
+        # Assert
+        self.assertEqual(actual_output, expected_output)
 
     def test_body_no_braces(self):
         input_string = "$$ function abc() a - c; $"
-        with open(self.SAMPLE_FILE_PATH, 'w') as file:
-            file.write(input_string)
+        expected_output = False
+        # Act
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
 
-        lexer = Lexer(self.SAMPLE_FILE_PATH)
-        parser = Parser(lexer, debug_print=True)
-        parser.debug_print()
-        parser.debug_print()
-        parsing_success = parser.parse()
-
-        self.assertFalse(parsing_success)
+        # Assert
+        self.assertEqual(actual_output, expected_output)
 
 
 

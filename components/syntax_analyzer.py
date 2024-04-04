@@ -16,25 +16,6 @@ class Parser:
         self.__debug_print = debug_print
         self.__message_logs = list()
 
-    def debug_print(self, text=str()):
-        """
-        Print the provided text if debug_print flag is True.
-
-        Parameters:
-        - text (str): The text to be printed.
-        """
-        if self.__debug_print:
-            print(text)
-
-    def debug_print_current_token(self):
-        """
-        Prints information about the current token if debug_print flag is True
-        """
-        if self.__debug_print:
-            tokentype = self.__current_token.token_type.name.capitalize()
-            print(
-                f"Token: {tokentype:<20} Lexeme: {self.__current_token.lexeme}")
-
     def parse(self):
         """
         Parses the input by tokenizing it with the lexer and applying grammar rules.
