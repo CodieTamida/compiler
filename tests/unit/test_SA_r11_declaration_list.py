@@ -1,9 +1,12 @@
 import unittest
 import os
-from tests.helpers import write_to_file, get_result_from_parser
+from tests.unit.helpers import write_to_file, get_result_from_parser
+from common.enums import TokenType
+from components.lexcical_analyzer import Lexer, Token
+from components.syntax_analyzer import Parser
 
 
-class R1_Rat24STestCase(unittest.TestCase):
+class DeclarationListTestCase(unittest.TestCase):
     SAMPLE_FILE_PATH = "tests/sample1.txt"
 
     def setUp(self):
@@ -14,9 +17,9 @@ class R1_Rat24STestCase(unittest.TestCase):
         if os.path.exists(self.SAMPLE_FILE_PATH):
             os.remove(self.SAMPLE_FILE_PATH)
 
-    def test_one_function_definition(self):
+    def test_1declaration_1id(self):
         # Arrange
-        input_string = "$ function f1() { a = 1; } $ $ a = b; $"
+        input_string = "$ $ integer a; $ num = 1; $"
         expected_output = True
 
         # Act
@@ -26,9 +29,9 @@ class R1_Rat24STestCase(unittest.TestCase):
         # Assert
         self.assertEqual(actual_output, expected_output)
 
-    def test_no_function_definition(self):
+    def test_1declaration_2ids(self):
         # Arrange
-        input_string = "$ $ $ a = b; $"
+        input_string = "$ $ real a, b; $ num = 1; $"
         expected_output = True
 
         # Act
@@ -38,9 +41,9 @@ class R1_Rat24STestCase(unittest.TestCase):
         # Assert
         self.assertEqual(actual_output, expected_output)
 
-    def test_no_declarations_no_function_definitions(self):
+    def test_1declaration_3ids(self):
         # Arrange
-        input_string = "$ $ $ num = 1; $"
+        input_string = "$ $ boolean a, b, c; $ num = 1; $"
         expected_output = True
 
         # Act
@@ -50,10 +53,10 @@ class R1_Rat24STestCase(unittest.TestCase):
         # Assert
         self.assertEqual(actual_output, expected_output)
 
-    def test_not_end_with_dollar_symbol(self):
+    def test_2declarations_1id(self):
         # Arrange
-        input_string = "$ $ $ a = b; $xyz"
-        expected_output = False
+        input_string = "$ $ boolean a; boolean b; $ num = 1; $"
+        expected_output = True
 
         # Act
         write_to_file(self.SAMPLE_FILE_PATH, input_string)
@@ -62,9 +65,21 @@ class R1_Rat24STestCase(unittest.TestCase):
         # Assert
         self.assertEqual(actual_output, expected_output)
 
-    def test_the_input_is_empty(self):
+    def test_2declarations_2ids(self):
         # Arrange
-        input_string = ""
+        input_string = "$ $ boolean a, b; integer x, y, z; $ num = 1; $"
+        expected_output = True
+
+        # Act
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
+
+        # Assert
+        self.assertEqual(actual_output, expected_output)
+
+    def test_missing_semicolon(self):
+        # Arrange
+        input_string = "$ $ integer a $ $"
         expected_output = False
 
         # Act

@@ -3,7 +3,7 @@ import os
 from common.enums import TokenType
 from components.lexcical_analyzer import Lexer, Token
 from components.syntax_analyzer import Parser
-from tests.helpers import write_to_file, get_result_from_parser
+from tests.unit.helpers import write_to_file, get_result_from_parser
 
 
 class BodyTestCase(unittest.TestCase):
