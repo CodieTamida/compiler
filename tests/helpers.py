@@ -30,8 +30,7 @@ def get_result_from_parser(filename):
 
     # Parser: Call parse() method
     parser = Parser(lexer, debug_print=True)
-    parser.debug_print()
-    parser.debug_print()
+    print("\n")
     result = parser.parse()
     
     return result
