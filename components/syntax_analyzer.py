@@ -613,12 +613,7 @@ class Parser:
     def __r25a_expression(self):
         """
         Applies the production rule 25a: 
-        E -> TE'
-
-        Notes:
-        E is <Expression>
-        E' is <Expression Prime>
-        T is <Term>
+        <Expression> -> <Term> <Expression Prime>
         """
 
         self.__log_current_token()
@@ -630,11 +625,7 @@ class Parser:
     def __r25b_expression_prime(self):
         """
         Applies the production rule 25b: 
-        E' -> +TE' | -TE' | ε
-
-        Notes:
-        E' is <Expression Prime>
-        T is <Term>
+        <Expression Prime> -> + <Term> <Expression Prime> | - <Term> <Expression Prime> | ε
         """
         # Check for '+' or '-' case
         if self.__current_token.lexeme == "+" or self.__current_token.lexeme == "-":
@@ -643,6 +634,7 @@ class Parser:
                 f"<Expression Prime> -> {self.__current_token.lexeme} <Term> <Expression Prime>")
             self.__match(self.__current_token.lexeme)  # Move to the next token
             
+            self.__log_current_token()
             self.__r26a_term()
             self.__r25b_expression_prime()
         # Handle Epsilon case
@@ -652,12 +644,7 @@ class Parser:
     def __r26a_term(self):
         """
         Applies the production rule 26a:
-        T -> FT'
-
-        Notes:
-        F is <Factor>
-        T is <Term>
-        T' is <Term Prime>
+        <Term> -> <Factor> <Term Prime>
         """
         # self.__log_current_token()
         self.__log("<Term> -> <Factor> <Term Prime>")
@@ -668,12 +655,7 @@ class Parser:
     def __r26b_term_prime(self):
         """
         Applies the production rule 26b:
-        T' -> *FT' | /FT' | ε
-
-        Notes:
-        F is <Factor>
-        T is <Term>
-        T' is <Term Prime>
+        <Term Prime> -> * <Factor> <Term Prime> | / <Factor> <Term Prime> | ε
         """
 
         # Check for '*' or '/' case
@@ -685,6 +667,8 @@ class Parser:
             self.__log(text)
 
             self.__match(self.__current_token.lexeme)  # Move to the next token
+
+            self.__log_current_token()
 
             # Apply production rules for Factor and Term Prime recursively
             self.__r27_factor()
