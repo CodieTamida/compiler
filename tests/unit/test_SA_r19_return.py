@@ -1,6 +1,6 @@
 import unittest
 import os
-from tests.helpers import write_to_file, get_result_from_parser
+from tests.unit.helpers import write_to_file, get_result_from_parser
 
 
 class ReturnTestCase(unittest.TestCase):

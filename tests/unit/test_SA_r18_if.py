@@ -1,12 +1,9 @@
 import unittest
 import os
-from tests.helpers import write_to_file, get_result_from_parser
-from common.enums import TokenType
-from components.lexcical_analyzer import Lexer, Token
-from components.syntax_analyzer import Parser
+from tests.unit.helpers import write_to_file, get_result_from_parser
 
 
-class DeclarationListTestCase(unittest.TestCase):
+class ReturnTestCase(unittest.TestCase):
     SAMPLE_FILE_PATH = "tests/sample1.txt"
 
     def setUp(self):
@@ -17,9 +14,19 @@ class DeclarationListTestCase(unittest.TestCase):
         if os.path.exists(self.SAMPLE_FILE_PATH):
             os.remove(self.SAMPLE_FILE_PATH)
 
-    def test_1declaration_1id(self):
-        # Arrange
-        input_string = "$ $ integer a; $ num = 1; $"
+    def test_if_no_else(self):
+        input_string = "$ $ $ if (a == b ) return c; endif $"
+        expected_output = True
+
+        # Act
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
+
+        # Assert
+        self.assertEqual(actual_output, expected_output)
+    
+    def test_if_else(self):
+        input_string = "$ $ $ if (a == b ) return c; else return 85; endif $"
         expected_output = True
 
         # Act
@@ -29,10 +36,9 @@ class DeclarationListTestCase(unittest.TestCase):
         # Assert
         self.assertEqual(actual_output, expected_output)
 
-    def test_1declaration_2ids(self):
-        # Arrange
-        input_string = "$ $ real a, b; $ num = 1; $"
-        expected_output = True
+    def test_if_no_if(self):
+        input_string = "$ $ $ (a == b ) return c; endif $"
+        expected_output = False
 
         # Act
         write_to_file(self.SAMPLE_FILE_PATH, input_string)
@@ -40,46 +46,9 @@ class DeclarationListTestCase(unittest.TestCase):
 
         # Assert
         self.assertEqual(actual_output, expected_output)
-
-    def test_1declaration_3ids(self):
-        # Arrange
-        input_string = "$ $ boolean a, b, c; $ num = 1; $"
-        expected_output = True
-
-        # Act
-        write_to_file(self.SAMPLE_FILE_PATH, input_string)
-        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
-
-        # Assert
-        self.assertEqual(actual_output, expected_output)
-
-    def test_2declarations_1id(self):
-        # Arrange
-        input_string = "$ $ boolean a; boolean b; $ num = 1; $"
-        expected_output = True
-
-        # Act
-        write_to_file(self.SAMPLE_FILE_PATH, input_string)
-        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
-
-        # Assert
-        self.assertEqual(actual_output, expected_output)
-
-    def test_2declarations_2ids(self):
-        # Arrange
-        input_string = "$ $ boolean a, b; integer x, y, z; $ num = 1; $"
-        expected_output = True
-
-        # Act
-        write_to_file(self.SAMPLE_FILE_PATH, input_string)
-        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
-
-        # Assert
-        self.assertEqual(actual_output, expected_output)
-
-    def test_missing_semicolon(self):
-        # Arrange
-        input_string = "$ $ integer a $ $"
+    
+    def test_if_no_endif(self):
+        input_string = "$ $ $ if (a == b ) return c; $"
         expected_output = False
 
         # Act
@@ -89,6 +58,26 @@ class DeclarationListTestCase(unittest.TestCase):
         # Assert
         self.assertEqual(actual_output, expected_output)
 
+    def test_if_no_open_paren(self):
+        input_string = "$ $ $ if a == b ) return c; endif $"
+        expected_output = False
 
-if __name__ == '__main__':
-    unittest.main()
+        # Act
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
+
+        # Assert
+        self.assertEqual(actual_output, expected_output)
+
+    def test_if_no_close_paren(self):
+        input_string = "$ $ $ if (a == b  return c; endif $"
+        expected_output = False
+
+        # Act
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
+
+        # Assert
+        self.assertEqual(actual_output, expected_output)
+
+    

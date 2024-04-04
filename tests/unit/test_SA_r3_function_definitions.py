@@ -1,9 +1,9 @@
 import unittest
 import os
-from tests.helpers import write_to_file, get_result_from_parser
+from tests.unit.helpers import write_to_file, get_result_from_parser
 
 
-class WhileTestCase(unittest.TestCase):
+class FunctionDefinitionsTestCase(unittest.TestCase):
     SAMPLE_FILE_PATH = "tests/sample1.txt"
 
     def setUp(self):
@@ -14,9 +14,21 @@ class WhileTestCase(unittest.TestCase):
         if os.path.exists(self.SAMPLE_FILE_PATH):
             os.remove(self.SAMPLE_FILE_PATH)
 
-    def test_while(self):
+    def test_1fn_0params_0statements(self):
         # Arrange
-        input_string = "$ $ $ while (a == true) b = 1; endwhile $"
+        input_string = "$ function abc() { } $ $ $"
+        expected_output = False
+
+        # Act
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
+
+        # Assert
+        self.assertEqual(actual_output, expected_output)
+
+    def test_1fn_0params_1statement(self):
+        # Arrange
+        input_string = "$ function abc() { a = 1.1; } $ $ num = 1; $"
         expected_output = True
 
         # Act
@@ -26,9 +38,50 @@ class WhileTestCase(unittest.TestCase):
         # Assert
         self.assertEqual(actual_output, expected_output)
 
-    def test_0_conditions(self):
+    def test_1fn_1param_1statement(self):
         # Arrange
-        input_string = "$ $ $ while () b = 1; endwhile $"
+        input_string = "$ function abc(amount real) { a = amount; } $ $ num = 1; $"
+        expected_output = True
+
+        # Act
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
+
+        # Assert
+        self.assertEqual(actual_output, expected_output)
+
+    def test_2fns_2params_2statements(self):
+        # Arrange
+        input_string = """
+                    $ 
+                        function move(x real, y real)
+                        {
+                            longitude = x;
+                            latitude = y;
+                        }
+
+                        function scale(x integer, y integer)
+                        {
+                            width = width * x;
+                            height = height * y;
+                        }
+                    $ 
+                    $
+                        num = 1;
+                    $
+                    """
+        expected_output = True
+
+        # Act
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
+
+        # Assert
+        self.assertEqual(actual_output, expected_output)
+
+    def test_missing_function_name(self):
+        # Arrange
+        input_string = "$ function () $ $ $"
         expected_output = False
 
         # Act
@@ -38,21 +91,9 @@ class WhileTestCase(unittest.TestCase):
         # Assert
         self.assertEqual(actual_output, expected_output)
 
-    def test_no_relop(self):
+    def test_missing_open_parenthesis(self):
         # Arrange
-        input_string = "$ $ $ while (a) b = 1; endwhile $"
-        expected_output = False
-
-        # Act
-        write_to_file(self.SAMPLE_FILE_PATH, input_string)
-        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
-
-        # Assert
-        self.assertEqual(actual_output, expected_output)
-    
-    def test_2_conditions(self):
-        # Arrange
-        input_string = "$ $ $ while (a == true, b == false) b = 1; endwhile $"
+        input_string = "$ function abc) { } $ $ $"
         expected_output = False
 
         # Act
@@ -62,9 +103,9 @@ class WhileTestCase(unittest.TestCase):
         # Assert
         self.assertEqual(actual_output, expected_output)
 
-    def test_no_open_parenthesis(self):
+    def test_missing_close_parenthesis(self):
         # Arrange
-        input_string = "$ $ $ while a == true) b = 1; endwhile $"
+        input_string = "$ function abc( { } $ $ $"
         expected_output = False
 
         # Act
@@ -74,9 +115,10 @@ class WhileTestCase(unittest.TestCase):
         # Assert
         self.assertEqual(actual_output, expected_output)
 
-    def test_no_close_parenthesis(self):
+
+    def test_missing_body(self):
         # Arrange
-        input_string = "$ $ $ while (a == true b = 1; endwhile $"
+        input_string = "$ function abc() $ $ $"
         expected_output = False
 
         # Act
@@ -86,29 +128,6 @@ class WhileTestCase(unittest.TestCase):
         # Assert
         self.assertEqual(actual_output, expected_output)
 
-    def test_no_statement(self):
-        # Arrange
-        input_string = "$ $ $ while (a == true) endwhile $"
-        expected_output = False
-
-        # Act
-        write_to_file(self.SAMPLE_FILE_PATH, input_string)
-        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
-
-        # Assert
-        self.assertEqual(actual_output, expected_output)
-
-    def test_no_endwhile(self):
-        # Arrange
-        input_string = "$ $ $ while (a == true) b = 1; $"
-        expected_output = False
-
-        # Act
-        write_to_file(self.SAMPLE_FILE_PATH, input_string)
-        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
-
-        # Assert
-        self.assertEqual(actual_output, expected_output)
 
 if __name__ == '__main__':
     unittest.main()
