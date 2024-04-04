@@ -400,7 +400,7 @@ class Parser:
         elif lexeme == "if":
             self.__r18a_if()
         elif lexeme == "return":
-            self.__r19_return()
+            self.__r19a_return()
         elif lexeme == "print":
             self.__r20_print()
         elif lexeme == "scan":
@@ -481,40 +481,31 @@ class Parser:
             text2 = f'Expected "else" or "endif", but found {self.__current_token.lexeme}'
             raise SyntaxError(f"{text1}\n{text2}")
 
-    def __r19_return(self):
+    def __r19a_return(self):
         """
         Applies the production rule 19a:
-        R --> rR'
-
-        R = <Return>
-        r = return
-        R` = <Return Prime>
+        <Return> -> return <Return Prime>
         """
 
-        
         self.__log_current_token()
         self.__match("return")
         self.__log(f"<Return> -> return <Return Prime>")
-        self.__r19_return_b_prime()
+        self.__r19b_return_prime()
         
-    def __r19_return_b_prime(self):
+    def __r19b_return_prime(self):
         """
-        R' --> ; | E
-
-        R' = <Return Prime>
-        ; = symbol ;
-        E = <Expression>
+        Applies the production rule 19b:
+        <Return Prime> -> ; | <Expression> ;
         """
 
         # Check to see if the current token is a separator, ;
         if self.__current_token.lexeme == ";":
+            self.__log_current_token()
             self.__log(f"<Return Prime> -> ;")
             self.__match(self.__current_token.lexeme) # Move to the next token
-
-        
         # Check to see if <Expression>, after left-recursion, leads E -> TE'
         else:
-            self.__log(f"<Return Prime> -> <Expression>;")
+            self.__log(f"<Return Prime> -> <Expression> ;")
             self.__r25a_expression()
             self.__log_current_token()
             self.__match(';')
