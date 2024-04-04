@@ -517,6 +517,7 @@ class Parser:
         else:
             self.__log(f"<Return Prime> -> <Expression>;")
             self.__r25a_expression()
+            self.__log_current_token()
             self.__match(';')
         
     def __r20_print(self):
@@ -742,8 +743,10 @@ class Parser:
         # Case 4: ( <Expression> )
         elif self.__current_token.lexeme == "(":
             self.__log("<Primary Prime> -> ( <Expression> )")
+            self.__log_current_token()
             self.__match(self.__current_token.lexeme)  # Move to the next token
             self.__r25a_expression()
+            self.__log_current_token()
             self.__match(")")  # Match and Move to the next token
             self.__log("<Primary Prime> -> ( <Expression> )")
         # Handle error: The current token does not match any expected types
