@@ -237,12 +237,10 @@ class Parser:
         P  = <Parameter>
         P' = <Parameter Prime> 
         """
-        self.__log_current_token()
         self.__log("<Parameter List> -> <Parameter> <Parameter Prime> ")
         self.__r7_parameter()
         self.__r6b_parameter_prime()
-        
-        #raise NotImplementedError("Must implement this method!")
+
     def __r6b_parameter_prime(self):
         """
         Applies production rule r6b
@@ -253,9 +251,9 @@ class Parser:
         ε  = Epsilon
         """
         if self.__current_token.lexeme == ",":
+            self.__log_current_token()
             self.__log(f"<Parameter Prime> -> {self.__current_token.lexeme} <Parameter List>")
-            self.__match(self.__current_token.lexeme)
-            self.__log_current_token
+            self.__match(self.__current_token.lexeme)            
             self.__r6_parameter_list()
         else:
             self.__log("<Parameter Prime> -> ε")
@@ -268,6 +266,7 @@ class Parser:
         #raise NotImplementedError("Must implement this method!")
 
     def __r8_qualifier(self):
+        self.__log_current_token()
         if (self.__current_token.lexeme == "integer" or self.__current_token.lexeme == "boolean"  or 
         self.__current_token.lexeme == "real"):
             self.__log(f"<Qualifier> -> {self.__current_token.lexeme}")
@@ -324,10 +323,9 @@ class Parser:
     def __r12_declaration(self):
         """
         Applies the grammar rule 12: 
-        <Declaration> ::= <Qualifier > <IDs>
+        <Declaration> -> <Qualifier > <IDs>
         """
-        self.__log("<Declaration> ::= <Qualifier > <IDs>")
-        self.__log_current_token()
+        self.__log("<Declaration> -> <Qualifier> <IDs>")
         self.__r8_qualifier()
         self.__r13_ids()
 
@@ -351,6 +349,7 @@ class Parser:
         <IDs Prime> -> , <IDs> | ε
         """
         if self.__current_token.lexeme == ",":
+            self.__log_current_token()
             self.__log("<IDs Prime> -> , <IDs>")
             self.__match(self.__current_token.lexeme)  # Move to the next token
             self.__r13_ids()
