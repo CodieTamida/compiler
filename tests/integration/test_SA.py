@@ -29,9 +29,33 @@ class SyntaxAnalyzerTestCase(unittest.TestCase):
         # Arrange
         input_string = """
             $
-
+                function alert(message integer) 
+                {
+                    message1 = message + 1;
+                    message2 = message + 2;
+                    message3 = message + 3;
+                }
+                
+                function alert(message integer) 
+                {
+                    if (len(message) > 0)
+                    {
+                        print(message);
+                    }
+                    endif
+                }
             $
+                [* Comments goes here *]
+                real width, height;
+                integer numOfSides;
+                [* Comments goes here *]
+                integer red, green, blue;
 
+                [* Multiline comment goes here 
+                    here here....
+                    here.                
+                *]
+                boolean isSquare;                
             $ 
                 [*This is a comment*]
                 [* This is anther comment *]
@@ -63,6 +87,20 @@ class SyntaxAnalyzerTestCase(unittest.TestCase):
                 function alert(p1, p2 real, x, y, z boolean) 
                 {
                     sum = p1 + p2;
+                }
+
+                function isPrime(n integer) {
+                    prime = true;
+                    i = 2;
+                    while (i <= (n / 2)) {
+                        if (n mod i == 0) {
+                            prime = false;
+                            break();
+                        }
+                        i = i + 1;
+                    }
+                    endwhile
+                    return prime;
                 }
             $
             
