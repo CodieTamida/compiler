@@ -438,6 +438,7 @@ class Parser:
             self.__r25a_expression()
 
             # Match the end of <Assign>, indicated by a semicolon ";".
+            self.__log_current_token()
             self.__match(";")  # Match & Move to the next token
         else:
             text_1 = f"Assignment operator is missing."
