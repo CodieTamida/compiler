@@ -1,7 +1,7 @@
 import unittest
 import os
 from components.lexcical_analyzer import Lexer, Token
-from integration.helpers import write_to_file, read_tokens_from_lexer_output, read_tokens_from_parser_output, run_command
+from tests.integration.helpers import write_to_file, read_tokens_from_lexer_output, read_tokens_from_parser_output, run_command
 
 
 class SyntaxAnalyzerTestCase(unittest.TestCase):
