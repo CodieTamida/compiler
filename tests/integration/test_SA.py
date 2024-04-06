@@ -1,7 +1,7 @@
 import unittest
 import os
 from components.lexcical_analyzer import Lexer, Token
-from tests.integration.helpers import write_to_file, read_tokens_from_lexer_output, read_tokens_from_parser_output, run_command
+from tests.integration.helpers import write_to_file, print_file, read_tokens_from_lexer_output, read_tokens_from_parser_output, run_command
 
 
 class SyntaxAnalyzerTestCase(unittest.TestCase):
@@ -77,7 +77,11 @@ class SyntaxAnalyzerTestCase(unittest.TestCase):
         tokens_from_parser = read_tokens_from_parser_output(self.PARSER_OUTPUT_PATH)
 
         # Assert
-        self.assertListEqual(tokens_from_lexer, tokens_from_parser)
+        try:
+            self.assertListEqual(tokens_from_lexer, tokens_from_parser)
+        except:
+            print_file(self.PARSER_OUTPUT_PATH)
+            raise AssertionError("A token is missing")
         self.assertIn("Syntax is correct", check_syntax_command_output)
 
     def test_medium(self):
@@ -85,11 +89,29 @@ class SyntaxAnalyzerTestCase(unittest.TestCase):
         input_string = """
             $
                 function alert(p1, p2 real, x, y, z boolean) 
+                    integer sum;
+                    real p1, p2, p3, p4;
                 {
                     sum = p1 + p2;
+                    if (sum != 0)
+                    {
+                        p1 = 1;
+                        p2 = 2;
+                        p3 = p1 * p2;
+                        p4 = p3 / 5.5;
+
+                        if (p4 => 10)
+                        {
+                            success = true;
+                            return success;
+                        }
+                        endif
+                    }
+                    endif                    
                 }
 
-                function isPrime(n integer) {
+                function isPrime(n integer) boolean prime; integer i; 
+                {
                     prime = true;
                     i = 2;
                     while (i <= n) {
@@ -131,8 +153,13 @@ class SyntaxAnalyzerTestCase(unittest.TestCase):
         tokens_from_parser = read_tokens_from_parser_output(self.PARSER_OUTPUT_PATH)
 
         # Assert
-        self.assertListEqual(tokens_from_lexer, tokens_from_parser)
+        try:
+            self.assertListEqual(tokens_from_lexer, tokens_from_parser)
+        except:
+            print_file(self.PARSER_OUTPUT_PATH)
+            raise AssertionError("A token is missing")
         self.assertIn("Syntax is correct", check_syntax_command_output)
+    
     def test_large(self):
         # Arrange
         input_string = """
@@ -237,7 +264,11 @@ class SyntaxAnalyzerTestCase(unittest.TestCase):
         tokens_from_parser = read_tokens_from_parser_output(self.PARSER_OUTPUT_PATH)
 
         # Assert
-        self.assertListEqual(tokens_from_lexer, tokens_from_parser)
+        try:
+            self.assertListEqual(tokens_from_lexer, tokens_from_parser)
+        except:
+            print_file(self.PARSER_OUTPUT_PATH)
+            raise AssertionError("A token is missing")
         self.assertIn("Syntax is correct", check_syntax_command_output)
 
 if __name__ == '__main__':
