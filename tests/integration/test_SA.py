@@ -147,7 +147,7 @@ class SyntaxAnalyzerTestCase(unittest.TestCase):
                     return purple;
                 }
 
-                function multi(p1, p2 real, x, y, z boolean) {
+                function multi(p1, p2 real, x, y, z boolean) integer helper; {
                     sum = p1 + p2;
                     diff = sum - y;
                     multi = diff + sum + 30;
@@ -208,7 +208,10 @@ class SyntaxAnalyzerTestCase(unittest.TestCase):
                 print (this + that);
                 scan (things, purple,strawberry);
 
-                { a= b + z; } 
+                { a= b + z; 
+                  helper = 87 + 68;
+                  [*This is a list of compound statment lists*]
+                } 
                 while (d == true)
                 {
                     a= b + z;
