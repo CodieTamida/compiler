@@ -178,7 +178,7 @@ class Parser:
         if self.__current_token.lexeme == "function":
             self.__log(
                 "<Function Definitions Prime> -> <Function Definitions>")
-            self.__r4_function()
+            self.__r3a_function_definitions()
         else:
             self.__log("<Function Definitions Prime> -> ε")
 
