@@ -369,15 +369,15 @@ class Parser:
     def __r14b_statement_list_prime(self):
         """
         Applies the grammar rule 14b:
-        <Statement List Prime> -> <Statement> | ε
+        <Statement List Prime> -> <Statement List> | ε
         """
         first_of_statement = ("{", "if", "return", "print", "scan", "while")
         lexeme = self.__current_token.lexeme.lower()
 
         if (self.__current_token.token_type == TokenType.IDENTIFIER
                 or lexeme in first_of_statement):
-            self.__log("<Statement List Prime> -> <Statement>")
-            self.__r15_statement()
+            self.__log("<Statement List Prime> -> <Statement List>")
+            self.__r14a_statement_list()
 
     def __r15_statement(self):
         """
