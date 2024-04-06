@@ -133,7 +133,112 @@ class SyntaxAnalyzerTestCase(unittest.TestCase):
         # Assert
         self.assertListEqual(tokens_from_lexer, tokens_from_parser)
         self.assertIn("Syntax is correct", check_syntax_command_output)
+    def test_large(self):
+        # Arrange
+        input_string = """
+            $
+                [*This is where the optional function definitions go*]
+                function this_one(a integer, b boolean, c , d real) {
+                    [*You can add Parameter Lists here, if you want*]
+                    purple = a +c / d;
+                    scan (a, b, c, d);
+                    print (a);
+                    
+                    return purple;
+                }
 
+                function multi(p1, p2 real, x, y, z boolean) integer helper; {
+                    sum = p1 + p2;
+                    diff = sum - y;
+                    multi = diff + sum + 30;
+                    if (multi == x)
+                        z = true;
+                    else
+                        z = false;
+                    endif
+                    return z;
+                }
+
+                function random(n integer) {
+                
+                    [* If n is less than 2, it's not prime *]
+                    if (n < 2) 
+                        return false;
+                    endif
+
+                    [*Check if 2 is a divisor (special case) *]
+                    if (n == 2) 
+                        return true;
+                    endif
+
+                    [* Check if n is even, hence not prime*]
+                    if (mod(n, i) == 0) 
+                        return false;
+                    endif
+
+                    [* Only need to check up to the square root of n *]
+                    while (i * i <= n) {
+                        [* If n is divisible by i, then n is not prime *]
+                        if (mod(n, i) == 0) 
+                            prime = false;
+                            [* Exit loop if not prime*]
+                        else
+                            [* Increment by 2, skip even numbers*]
+                            i = i + 2;
+                        endif                        
+                    }
+
+                    [* End the loop*]
+                    endwhile
+
+                    return prime;
+                }
+
+            $
+                [*This is where the optional declaration list goes*]
+                integer trememdous;
+                real fantastic;
+                boolean maybetrue;
+            $   
+                [*This is where the statement list goes*]
+                p =56;
+                adding = 87;
+                switch = false;
+                bad_switch = true;
+                print (this + that);
+                scan (things, purple,strawberry);
+
+                { a= b + z; 
+                  helper = 87 + 68;
+                  [*This is a list of compound statment lists*]
+                } 
+                while (d == true)
+                {
+                    a= b + z;
+                    if (a > 0)
+                        a = a / 2;
+                    endif
+                }
+                endwhile
+            $
+            """
+
+        # Act 1: Create a test file
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+
+        # Act 2 Run rat24s.py
+        extract_tokens_command = f"python3 rat24s.py {self.SAMPLE_FILE_PATH} --tokens --output {self.LEXER_OUTPUT_PATH}"
+        check_syntax_command = f"python3 rat24s.py {self.SAMPLE_FILE_PATH} --syntax --output {self.PARSER_OUTPUT_PATH}"
+
+        run_command(extract_tokens_command)
+        check_syntax_command_output = run_command(check_syntax_command)
+
+        tokens_from_lexer = read_tokens_from_lexer_output(self.LEXER_OUTPUT_PATH)
+        tokens_from_parser = read_tokens_from_parser_output(self.PARSER_OUTPUT_PATH)
+
+        # Assert
+        self.assertListEqual(tokens_from_lexer, tokens_from_parser)
+        self.assertIn("Syntax is correct", check_syntax_command_output)
 
 if __name__ == '__main__':
     unittest.main()
