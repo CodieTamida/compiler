@@ -79,6 +79,86 @@ class FunctionDefinitionsTestCase(unittest.TestCase):
         # Assert
         self.assertEqual(actual_output, expected_output)
 
+    def test_3fns_2params_2statements(self):
+        # Arrange
+        input_string = """
+                    $ 
+                        function move(x real, y real)
+                        {
+                            longitude = x;
+                            latitude = y;
+                        }
+
+                        function scale(x integer, y integer)
+                        {
+                            width = width * x;
+                            height = height * y;
+                        }
+
+                        function fn3(x integer, y integer)
+                        {
+                            width = width * x;
+                            height = height * y;
+                        }
+                    $ 
+                    $
+                        num = 1;
+                    $
+                    """
+        expected_output = True
+
+        # Act
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
+
+        # Assert
+        self.assertEqual(actual_output, expected_output)
+
+    def test_4fns_2params_3statements(self):
+        # Arrange
+        input_string = """
+                    $ 
+                        function move(x real, y real)
+                        {
+                            longitude = x;
+                            latitude = y;
+                            return true;
+                        }
+
+                        function scale(x integer, y integer)
+                        {
+                            width = width * x;
+                            height = height * y;
+                            return true;
+                        }
+
+                        function fn3(x integer, y integer)
+                        {
+                            width = width * x;
+                            height = height * y;
+                            return true;
+                        }
+
+                        function fn4(x integer, y integer)
+                        {
+                            width = width * x;
+                            height = height * y;
+                            return true;
+                        }
+                    $ 
+                    $
+                        num = 1;
+                    $
+                    """
+        expected_output = True
+
+        # Act
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
+
+        # Assert
+        self.assertEqual(actual_output, expected_output)
+
     def test_missing_function_name(self):
         # Arrange
         input_string = "$ function () $ $ $"
