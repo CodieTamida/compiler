@@ -92,12 +92,12 @@ class SyntaxAnalyzerTestCase(unittest.TestCase):
                 function isPrime(n integer) {
                     prime = true;
                     i = 2;
-                    while (i <= (n / 2)) {
-                        if (n mod i == 0) {
+                    while (i <= n) {
+                        if (mod(n, i) == 0) 
                             prime = false;
-                            break();
-                        }
-                        i = i + 1;
+                        else
+                            i = i + 1;
+                        endif                        
                     }
                     endwhile
                     return prime;
