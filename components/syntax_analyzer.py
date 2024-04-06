@@ -378,6 +378,8 @@ class Parser:
                 or lexeme in first_of_statement):
             self.__log("<Statement List Prime> -> <Statement List>")
             self.__r14a_statement_list()
+        else:
+            self.__log("<Statement List Prime> -> ε")
 
     def __r15_statement(self):
         """
