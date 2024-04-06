@@ -12,6 +12,13 @@ def write_to_file(filename, content):
     file.write(content)
     file.close()
 
+def print_file(filename):
+    # Open the file in read mode
+    with open(filename, 'r') as file:
+        # Read and print each line in the file
+        for line in file:
+            print(line, end='')
+    
 def run_command(command):
     """
     Execute the command capture its output
