@@ -103,7 +103,6 @@ class Parser:
         Returns:
             None
         """
-
         if self.__current_token.lexeme == expected_lexeme:
             self.__current_token = self.__lexer.get_next_token()
         else:
@@ -258,12 +257,10 @@ class Parser:
         else:
             self.__log("<Parameter Prime> -> ε")
 
-
     def __r7_parameter(self):
         self.__log("<Parameter> -> <IDs> <Qualifier>")
         self.__r13_ids()
         self.__r8_qualifier()
-        #raise NotImplementedError("Must implement this method!")
 
     def __r8_qualifier(self):
         self.__log_current_token()
@@ -418,7 +415,6 @@ class Parser:
         """
         Applies grammar rule 16:
         <Compound> -> { Statement List> }
-
         """
         self.__log("<Compound> -> { <Statement List> }")
         self.__log_current_token()
@@ -489,7 +485,6 @@ class Parser:
         Applies the production rule 19a:
         <Return> -> return <Return Prime>
         """
-
         self.__log_current_token()
         self.__match("return")
         self.__log(f"<Return> -> return <Return Prime>")
@@ -500,7 +495,6 @@ class Parser:
         Applies the production rule 19b:
         <Return Prime> -> ; | <Expression> ;
         """
-
         # Check to see if the current token is a separator, ;
         if self.__current_token.lexeme == ";":
             self.__log_current_token()
@@ -524,7 +518,6 @@ class Parser:
         self.__match(')')
         self.__log_current_token()
         self.__match(';')
-
 
     def __r21_scan(self):
         """
@@ -609,7 +602,6 @@ class Parser:
         Applies the production rule 25a: 
         <Expression> -> <Term> <Expression Prime>
         """
-
         self.__log_current_token()
         self.__log("<Expression> -> <Term> <Expression Prime>")
 
@@ -640,7 +632,6 @@ class Parser:
         Applies the production rule 26a:
         <Term> -> <Factor> <Term Prime>
         """
-        # self.__log_current_token()
         self.__log("<Term> -> <Factor> <Term Prime>")
 
         self.__r27_factor()
@@ -651,7 +642,6 @@ class Parser:
         Applies the production rule 26b:
         <Term Prime> -> * <Factor> <Term Prime> | / <Factor> <Term Prime> | ε
         """
-
         # Check for '*' or '/' case
         if self.__current_token.lexeme == "*" or self.__current_token.lexeme == "/":
             self.__log_current_token()
