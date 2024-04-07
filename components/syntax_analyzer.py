@@ -602,7 +602,11 @@ class Parser:
         Applies the production rule 25a: 
         <Expression> -> <Term> <Expression Prime>
         """
-        self.__log_current_token()
+        # Print the current token only if it's not an open parenthesis.
+        # Because rule 28 <Primary> will print it.
+        if self.__current_token.lexeme != "(":
+            self.__log_current_token()
+
         self.__log("<Expression> -> <Term> <Expression Prime>")
 
         self.__r26a_term()
@@ -620,7 +624,11 @@ class Parser:
                 f"<Expression Prime> -> {self.__current_token.lexeme} <Term> <Expression Prime>")
             self.__match(self.__current_token.lexeme)  # Move to the next token
             
-            self.__log_current_token()
+            # Print the current token only if it's not an open parenthesis.
+            # Because rule 28 <Primary> will print it.
+            if self.__current_token.lexeme != "(":
+                self.__log_current_token()
+
             self.__r26a_term()
             self.__r25b_expression_prime()
         # Handle Epsilon case
@@ -652,7 +660,10 @@ class Parser:
 
             self.__match(self.__current_token.lexeme)  # Move to the next token
 
-            self.__log_current_token()
+            # Print the current token only if it's not an open parenthesis.
+            # Because rule 28 <Primary> will print it.
+            if self.__current_token.lexeme != "(":
+                self.__log_current_token()
 
             # Apply production rules for Factor and Term Prime recursively
             self.__r27_factor()
