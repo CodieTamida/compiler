@@ -26,6 +26,34 @@ class WhileTestCase(unittest.TestCase):
         # Assert
         self.assertEqual(actual_output, expected_output)
 
+    def test_nested_while(self):
+        # Arrange
+        input_string = """
+            $ $ $ 
+                while (a == true)
+                    while (a == true)
+                    {
+                        sum = 1;
+                        
+                        while (a == true)
+                            while (a == true)
+                                b = 2;
+                            endwhile
+                        endwhile
+                    }
+                    endwhile
+                endwhile
+            $
+            """
+        expected_output = True
+
+        # Act
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
+
+        # Assert
+        self.assertEqual(actual_output, expected_output)
+
     def test_0_conditions(self):
         # Arrange
         input_string = "$ $ $ while () b = 1; endwhile $"
