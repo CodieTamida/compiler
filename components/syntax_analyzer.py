@@ -29,7 +29,7 @@ class Parser:
             # Get the first token
             self.__current_token = self.__lexer.get_next_token()
             if self.__current_token is None:
-                raise ValueError(f"The input is empty")
+                raise SyntaxError(f"The input is empty")
 
             # Apply the entry point rule, <Rat24S>
             self.__r1_Rat24S()
@@ -41,7 +41,7 @@ class Parser:
                 parsing_result = True  # Parsing successful
             else:
                 self.__log_current_token()
-                raise ValueError(
+                raise SyntaxError(
                     f"Expected End Of File, but found {self.__current_token.lexeme}")
         except Exception as err:
             self.__log('-' * 50)
@@ -67,6 +67,7 @@ class Parser:
         Parameters:
         - text (str): The text to be added to the log. Default is an empty string.
         """
+        text = f"  {text}"
         self.__message_logs.append(text)
         if self.__debug_print:
             print(text)
@@ -106,7 +107,7 @@ class Parser:
         if self.__current_token.lexeme == expected_lexeme:
             self.__current_token = self.__lexer.get_next_token()
         else:
-            raise ValueError(
+            raise SyntaxError(
                 f'Expected {expected_lexeme}, found {self.__current_token.lexeme}')
 
     def __r1_Rat24S(self):
@@ -212,7 +213,7 @@ class Parser:
             self.__r9_body()
         # Handle error: Function's name does not exist
         else:
-            raise ValueError(
+            raise SyntaxError(
                 f"Expected an Identifier, but found {self.__current_token.token_type}")
 
     def __r5_optional_parameter_list(self):
@@ -337,7 +338,7 @@ class Parser:
             self.__match(self.__current_token.lexeme)
             self.__r13b_ids_prime()
         else:
-            raise ValueError(
+            raise SyntaxError(
                 f"Expected an Identifier, but found {self.__current_token.token_type}")
 
     def __r13b_ids_prime(self):
@@ -736,7 +737,7 @@ class Parser:
             self.__match(")")  # Match and Move to the next token
         # Handle error: The current token does not match any expected types
         else:
-            raise ValueError(
+            raise SyntaxError(
                 f'Expected `ID, Number, (Expression), boolean`, but found {self.__current_token.token_type}')
 
         return text
