@@ -416,9 +416,10 @@ class Parser:
         Applies grammar rule 16:
         <Compound> -> { Statement List> }
         """
-        self.__log("<Compound> -> { <Statement List> }")
         self.__log_current_token()
+        self.__log("<Statement> -> <Compound>")
         self.__match('{')
+        self.__log("<Compound> -> { <Statement List> }")
         self.__r14a_statement_list()
         self.__log_current_token()
         self.__match('}')
@@ -449,6 +450,7 @@ class Parser:
         <if> -> if ( <Condition> ) <statement> <if Prime>
         """
         self.__log_current_token()
+        self.__log("<Statement> -> <If>")
         self.__match("if")
         self.__log(f"<If> if ( <Condition> ) <Statement> <If Prime>")
         self.__log_current_token()
@@ -486,6 +488,7 @@ class Parser:
         <Return> -> return <Return Prime>
         """
         self.__log_current_token()
+        self.__log("<Statement> -> <Return>")
         self.__match("return")
         self.__log(f"<Return> -> return <Return Prime>")
         self.__r19b_return_prime()
@@ -509,6 +512,7 @@ class Parser:
         
     def __r20_print(self):
         self.__log_current_token()
+        self.__log("<Statement> -> <Print>")
         self.__match("print")
         self.__log(f"<Print> -> print ( <Expression> );")
         self.__log_current_token()
@@ -525,6 +529,7 @@ class Parser:
         <Scan> -> scan ( <IDs> );
         """
         self.__log_current_token()
+        self.__log("<Statement> -> <Scan>")
         self.__match("scan")
         self.__log(f"<Scan> -> scan ( <IDs> );")
         self.__log_current_token()
@@ -544,10 +549,11 @@ class Parser:
             SyntaxError: 
         """
         self.__log_current_token()
-        self.__log("<While> -> while ( <Condition> ) <Statement> endwhile")
+        self.__log("<Statement> -> <While>")
 
         # Match the beginning of <While>, indicated by "while".        
         self.__match("while")
+        self.__log("<While> -> while ( <Condition> ) <Statement> endwhile")
 
         # Match the open parenthesis, indicated by "(".
         self.__log_current_token()
