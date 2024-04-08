@@ -76,7 +76,7 @@ class Lexer:
                 # ****************************************
                 # **** IGNORE WHITESPACES & COMMENTS *****
                 # ****************************************
-                elif current_char == ' ' or current_char == '\n' or inside_comment:
+                elif current_char == ' ' or current_char == '\n' or current_char == '\t' or inside_comment:
                     pass
 
                 # ****************************************
