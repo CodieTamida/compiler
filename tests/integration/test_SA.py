@@ -118,7 +118,9 @@ class SyntaxAnalyzerTestCase(unittest.TestCase):
                         if (mod(n, i) == 0) 
                             prime = false;
                         else
-                            i = i + 1;
+                            if (i <= 0)
+                                i = i + 1;
+                            endif
                         endif                        
                     }
                     endwhile
@@ -131,9 +133,29 @@ class SyntaxAnalyzerTestCase(unittest.TestCase):
                 while (d == true)
                 {
                     a= b + z;
-                    if (a > 0)
+                    if (a > 0) {
+                        a = (-(-(-xyz))) - a * ((2 - (b+4)) + 6);
+                    }
+                    else {
                         a = a / 2;
+                    }
                     endif
+
+                    while (a == true)
+                        while (a == true)
+                        {
+                            sum = 1;
+                            mmc = mmc - -sum;
+                            sum = sum * 2;
+                            
+                            while (a == true)
+                                while (a == true)
+                                    b = 2;
+                                endwhile
+                            endwhile
+                        }
+                        endwhile
+                    endwhile
                 }
                 endwhile
             $
@@ -270,6 +292,41 @@ class SyntaxAnalyzerTestCase(unittest.TestCase):
             print_file(self.PARSER_OUTPUT_PATH)
             raise AssertionError("A token is missing")
         self.assertIn("Syntax is correct", check_syntax_command_output)
+
+    def test_file_indented_with_tabs(self):
+        # Arrange
+        input_string = """
+            $
+            $
+            $
+			scan (message1     , 		num);
+	
+			if 		(num != 0)
+				print (message1);
+			endif
+			$
+        """
+        # Act 1: Create a test file
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+
+        # Act 2 Run rat24s.py
+        extract_tokens_command = f"python3 rat24s.py {self.SAMPLE_FILE_PATH} --tokens --output {self.LEXER_OUTPUT_PATH}"
+        check_syntax_command = f"python3 rat24s.py {self.SAMPLE_FILE_PATH} --syntax --output {self.PARSER_OUTPUT_PATH}"
+
+        run_command(extract_tokens_command)
+        check_syntax_command_output = run_command(check_syntax_command)
+
+        tokens_from_lexer = read_tokens_from_lexer_output(self.LEXER_OUTPUT_PATH)
+        tokens_from_parser = read_tokens_from_parser_output(self.PARSER_OUTPUT_PATH)
+
+        # Assert
+        try:
+            self.assertListEqual(tokens_from_lexer, tokens_from_parser)
+        except:
+            print_file(self.PARSER_OUTPUT_PATH)
+            raise AssertionError("A token is missing")
+        self.assertIn("Syntax is correct", check_syntax_command_output)
+
 
 if __name__ == '__main__':
     unittest.main()
