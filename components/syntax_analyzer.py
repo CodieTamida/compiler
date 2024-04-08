@@ -681,9 +681,11 @@ class Parser:
 
         if self.__current_token.lexeme == "-":
             self.__match(self.__current_token.lexeme)  # Move to the next token
-            text_to_print = "<Factor> -> - "            
+            text_to_print = "<Factor> -> -"            
+            if self.__current_token.lexeme != "(":
+                self.__log_current_token()
         else:
-            text_to_print = "<Factor> -> "
+            text_to_print = "<Factor> ->"
         
         primary_type = self.__r28_primary()      
 
@@ -726,7 +728,6 @@ class Parser:
             self.__r25a_expression()
             self.__log_current_token()
             self.__match(")")  # Match and Move to the next token
-            self.__log("<Primary Prime> -> ( <Expression> )")
         # Handle error: The current token does not match any expected types
         else:
             raise ValueError(

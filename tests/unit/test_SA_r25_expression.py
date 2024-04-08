@@ -50,6 +50,42 @@ class ExpressionTestCase(unittest.TestCase):
         # Assert
         self.assertEqual(actual_output, expected_output)
 
+    def test_negative_nested_expresions_1(self):
+        # Arrange
+        input_string = "$ $ $ a = (-xyz); $"
+        expected_output = True
+
+        # Act
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
+
+        # Assert
+        self.assertEqual(actual_output, expected_output)
+
+    def test_negative_nested_expresions_2(self):
+        # Arrange
+        input_string = "$ $ $ a = (-(xyz)); $"
+        expected_output = True
+
+        # Act
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
+
+        # Assert
+        self.assertEqual(actual_output, expected_output)
+
+    def test_negative_nested_expresions_3(self):
+        # Arrange
+        input_string = "$ $ $ a = ((-(xyz))); $"
+        expected_output = True
+
+        # Act
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
+
+        # Assert
+        self.assertEqual(actual_output, expected_output)
+
 
 if __name__ == '__main__':
     unittest.main()
