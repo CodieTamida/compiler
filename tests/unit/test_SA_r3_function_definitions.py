@@ -159,6 +159,79 @@ class FunctionDefinitionsTestCase(unittest.TestCase):
         # Assert
         self.assertEqual(actual_output, expected_output)
 
+    def test_1fn_1declaration(self):
+        # Arrange
+        input_string = """
+                    $ 
+                        function area(width real, height real)
+                        real area;
+                        {
+                            area = width * height;
+                        }
+                    $ 
+                    $
+                        num = 1;
+                    $
+                    """
+        expected_output = True
+
+        # Act
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
+
+        # Assert
+        self.assertEqual(actual_output, expected_output)
+
+    def test_1fn_2declarations(self):
+        # Arrange
+        input_string = """
+                    $ 
+                        function area(width real, height real)
+                        real area;
+                        boolean isSquare, isBig;
+                        {
+                            area = width * height;
+                        }
+                    $ 
+                    $
+                        num = 1;
+                    $
+                    """
+        expected_output = True
+
+        # Act
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
+
+        # Assert
+        self.assertEqual(actual_output, expected_output)
+
+    def test_1fn_4declarations(self):
+        # Arrange
+        input_string = """
+                    $ 
+                        function area(width real, height real)
+                        real area;
+                        boolean isSquare;
+                        boolean isBig;
+                        boolean isVeryBig;
+                        {
+                            area = width * height;
+                        }
+                    $ 
+                    $
+                        num = 1;
+                    $
+                    """
+        expected_output = True
+
+        # Act
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
+
+        # Assert
+        self.assertEqual(actual_output, expected_output)
+
     def test_missing_function_name(self):
         # Arrange
         input_string = "$ function () $ $ $"
