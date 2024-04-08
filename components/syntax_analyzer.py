@@ -681,9 +681,10 @@ class Parser:
 
         if self.__current_token.lexeme == "-":
             self.__match(self.__current_token.lexeme)  # Move to the next token
-            text_to_print = "<Factor> -> - "            
+            text_to_print = "<Factor> -> -"            
+            self.__log_current_token()
         else:
-            text_to_print = "<Factor> -> "
+            text_to_print = "<Factor> ->"
         
         primary_type = self.__r28_primary()      
 
