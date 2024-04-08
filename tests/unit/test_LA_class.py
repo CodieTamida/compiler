@@ -58,7 +58,7 @@ class LexerTestCase(unittest.TestCase):
             file.write(input_string)
 
         expected_tokens = [
-            Token("print", TokenType.KEYWORD),
+            Token("scan", TokenType.KEYWORD),
             Token("(", TokenType.SEPARATOR),
             Token("message1", TokenType.IDENTIFIER),
             Token(",", TokenType.SEPARATOR),
