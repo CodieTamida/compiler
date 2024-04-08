@@ -43,6 +43,48 @@ class LexerTestCase(unittest.TestCase):
         # Assert
         self.assertListEqual(actual_tokens, expected_tokens)
 
+    def test_file_indented_with_tabs(self):
+        # Arrange
+        input_string = """
+			print (message1     , 		num);
+	
+			if 		(num != 0)
+				print (message1);
+			endif
+			
+        """
+
+        with open(self.SAMPLE_FILE_PATH, 'w') as file:
+            file.write(input_string)
+
+        expected_tokens = [
+            Token("print", TokenType.KEYWORD),
+            Token("(", TokenType.SEPARATOR),
+            Token("message1", TokenType.IDENTIFIER),
+            Token(",", TokenType.SEPARATOR),
+            Token("num", TokenType.IDENTIFIER),
+            Token(")", TokenType.SEPARATOR),
+            Token(";", TokenType.SEPARATOR),
+            Token("if", TokenType.KEYWORD),
+            Token("(", TokenType.SEPARATOR),
+            Token("num", TokenType.IDENTIFIER),
+            Token("!=", TokenType.OPERATOR),
+            Token("0", TokenType.INTEGER),
+            Token(")", TokenType.SEPARATOR),
+            Token("print", TokenType.KEYWORD),
+            Token("(", TokenType.SEPARATOR),
+            Token("message1", TokenType.IDENTIFIER),
+            Token(")", TokenType.SEPARATOR),
+            Token(";", TokenType.SEPARATOR),
+            Token("endif", TokenType.KEYWORD)
+        ]
+
+        # Act
+        lexer = Lexer(self.SAMPLE_FILE_PATH)
+        actual_tokens = lexer.tokens
+
+        # Assert
+        self.assertListEqual(actual_tokens, expected_tokens)
 
 if __name__ == '__main__':
     unittest.main()
