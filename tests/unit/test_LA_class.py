@@ -46,7 +46,7 @@ class LexerTestCase(unittest.TestCase):
     def test_file_indented_with_tabs(self):
         # Arrange
         input_string = """
-			print (message1     , 		num);
+			scan (message1     , 		num);
 	
 			if 		(num != 0)
 				print (message1);
