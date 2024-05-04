@@ -31,10 +31,10 @@ class SymbolTable:
         - int: The memory address allocated to the symbol.
 
         Raises:
-        - SyntaxError: If the identifier already exists in the symbol table.
+        - NameError: If the identifier already exists in the symbol table.
         """
         if identifier in self.__entries:
-            raise SyntaxError(
+            raise NameError(
                 f"Variable '{identifier}' has already been declared.")
 
         symbol = SymbolTable.Symbol(
@@ -66,13 +66,13 @@ class SymbolTable:
         - int: The memory address of the symbol.
 
         Raises:
-        - ReferenceError: If the variable is not defined in the symbol table.
+        - NameError: If the variable is not defined in the symbol table.
         """
         try:
             symbol = self.__entries.get(identifier)
             return symbol.address
         except:
-            raise ReferenceError(f"Variable '{identifier}' is not defined.")
+            raise NameError(f"Variable '{identifier}' is not defined.")
 
     def print_table(self):
         """
