@@ -92,8 +92,6 @@ class AssignTestCase(unittest.TestCase):
         # Assert
         self.assertEqual(actual_output, expected_output)
 
-    
-
     def test_multiplication_2(self):
         # Arrange
         input_string = """
@@ -165,40 +163,6 @@ class AssignTestCase(unittest.TestCase):
         # Act
         write_to_file(self.SAMPLE_FILE_PATH, input_string)
         actual_output = get_result_from_code_generator(self.SAMPLE_FILE_PATH)
-
-        # Assert
-        self.assertEqual(actual_output, expected_output)
-
-
-    
-
-    @unittest.skip
-    def test_1(self):
-        # Arrange
-        input_string = """
-            [* this is comment for this sample code for assignment 3 *]
-            $
-            [* NO function definitions *]
-            $
-                integer i, max, sum; [* declarations *]
-                real average;
-            $
-                sum = 0;
-                i = 1;
-                scan (max);
-                while (i < max) {
-                    sum = sum + i;
-                    i = i + 1;
-                }
-                endwhile
-                print (sum + max);
-            $
-        """
-        expected_output = True
-
-        # Act
-        write_to_file(self.SAMPLE_FILE_PATH, input_string)
-        actual_output = get_result_from_parser(self.SAMPLE_FILE_PATH)
 
         # Assert
         self.assertEqual(actual_output, expected_output)
