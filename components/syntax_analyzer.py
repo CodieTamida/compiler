@@ -1,5 +1,8 @@
-from common.enums import TokenType
+from common.enums import TokenType, Operation
 from components.lexcical_analyzer import Lexer, Token
+from components.symbol_table import SymbolTable
+from components.instruction_table import InstructionTable
+from components.semantic_checker import SemanticChecker
 
 
 class Parser:
@@ -15,6 +18,13 @@ class Parser:
         self.__current_token = None  # Used to store extracted token from the Lexer
         self.__debug_print = debug_print
         self.__message_logs = list()
+        self.__code_generation_enabled = False
+
+    def enable_code_generation(self, symbol_table: SymbolTable, instruction_table: InstructionTable) -> bool:
+        self.__code_generation_enabled = True
+        self.__symbol_table = symbol_table
+        self.__instruction_table = instruction_table
+        self.__semantic_checker = SemanticChecker(symbol_table)
 
     def parse(self):
         """
@@ -43,13 +53,15 @@ class Parser:
                 self.__log_current_token()
                 raise SyntaxError(
                     f"Expected End Of File, but found {self.__current_token.lexeme}")
-        except Exception as err:
+        except SyntaxError as err:
             self.__log('-' * 50)
             print("\033[91m", end="")  # Print ANSI escape code for red color
             self.__log(f"Error: {err}\nParsing failed")
             print("\033[0m", end="")  # Print ANSI escape code to reset
-        finally:
-            return parsing_result
+        except:
+            raise
+        
+        return parsing_result
 
     def get_logs(self):
         """
@@ -264,15 +276,20 @@ class Parser:
         self.__r8_qualifier()
 
     def __r8_qualifier(self):
+        qualifier = TokenType.UNKNOWN
+
         self.__log_current_token()
         if (self.__current_token.lexeme == "integer" or self.__current_token.lexeme == "boolean"  or 
         self.__current_token.lexeme == "real"):
+            qualifier = TokenType[self.__current_token.lexeme.upper()]
             self.__log(f"<Qualifier> -> {self.__current_token.lexeme}")
             self.__match(self.__current_token.lexeme)
         else:
             text1 = f"Qualifier is missing."
             text2 = f"Expected token integer, real, or boolean, but found {self.__current_token.lexeme}"
             raise SyntaxError(f"{text1}\n{text2}")
+        
+        return qualifier
 
     def __r9_body(self):
         self.__log_current_token()
@@ -324,19 +341,31 @@ class Parser:
         <Declaration> -> <Qualifier > <IDs>
         """
         self.__log("<Declaration> -> <Qualifier> <IDs>")
-        self.__r8_qualifier()
-        self.__r13_ids()
+        
+        # Apply grammar rule 8 to get the qualifier
+        qualifier = self.__r8_qualifier()
+
+        # Apply grammar rule 13 to get the IDs
+        ids = self.__r13_ids()
+
+        # Add symbols to the intermediate code generator
+        if self.__code_generation_enabled:
+            for item in ids:
+                self.__symbol_table.add(item, qualifier)
 
     def __r13_ids(self):
         """
         Applies the production rule 13a: 
         <IDs> -> <Identifier> <IDs Prime>
         """
+        ids = list()
         self.__log_current_token()
         if self.__current_token.token_type == TokenType.IDENTIFIER:
+            ids.append(self.__current_token.lexeme)
             self.__log("<IDs> -> <Identifier> <IDs Prime>")
             self.__match(self.__current_token.lexeme)
-            self.__r13b_ids_prime()
+            ids.extend(self.__r13b_ids_prime())
+            return ids
         else:
             raise SyntaxError(
                 f"Expected an Identifier, but found {self.__current_token.token_type}")
@@ -350,9 +379,10 @@ class Parser:
             self.__log_current_token()
             self.__log("<IDs Prime> -> , <IDs>")
             self.__match(self.__current_token.lexeme)  # Move to the next token
-            self.__r13_ids()
+            return self.__r13_ids()
         else:
             self.__log("<IDs Prime> -> ε")
+            return []
 
     def __r14a_statement_list(self):
         """
@@ -392,9 +422,6 @@ class Parser:
             self.__r16_compound()
         # Check if the current token is an identifier for an assignment statement
         elif self.__current_token.token_type == TokenType.IDENTIFIER:
-            self.__log_current_token()
-            self.__log("<Statement> -> <Assign>")
-            self.__match(self.__current_token.lexeme)  # Move to the next token
             self.__r17_assign()
         # Check if the current token is the "if" keyword for an if statement
         elif lexeme == "if":
@@ -430,12 +457,24 @@ class Parser:
         Applies the grammar rule 17:
         <Assign> -> <Identifier> = <Expression> ;
         """
+        if self.__current_token.token_type == TokenType.IDENTIFIER:
+            save = self.__current_token.lexeme
+
+        self.__log_current_token()
+        self.__log("<Statement> -> <Assign>")
+        self.__match(self.__current_token.lexeme)  # Move to the next token
+        
         self.__log("<Assign> -> <Identifier> = <Expression> ;")
 
         if self.__current_token.lexeme == "=":
             self.__log_current_token()
             self.__match(self.__current_token.lexeme)  # Move to the next token
             self.__r25a_expression()
+
+            # Generate instructions
+            if self.__code_generation_enabled:
+                address = self.__symbol_table.get_address(save)
+                self.__instruction_table.generate_instruction(Operation.POPM, address)
 
             # Match the end of <Assign>, indicated by a semicolon ";".
             self.__log_current_token()
@@ -616,16 +655,21 @@ class Parser:
 
         self.__log("<Expression> -> <Term> <Expression Prime>")
 
-        self.__r26a_term()
-        self.__r25b_expression_prime()
+        term = self.__r26a_term()
+        self.__r25b_expression_prime(term)
 
-    def __r25b_expression_prime(self):
+    def __r25b_expression_prime(self, prev_term):
         """
         Applies the production rule 25b: 
         <Expression Prime> -> + <Term> <Expression Prime> | - <Term> <Expression Prime> | ε
         """
         # Check for '+' or '-' case
         if self.__current_token.lexeme == "+" or self.__current_token.lexeme == "-":
+            if self.__current_token.lexeme == "+":
+                operation = Operation.A 
+            else:
+                operation = Operation.S
+            
             self.__log_current_token()
             self.__log(
                 f"<Expression Prime> -> {self.__current_token.lexeme} <Term> <Expression Prime>")
@@ -636,8 +680,11 @@ class Parser:
             if self.__current_token.lexeme != "(":
                 self.__log_current_token()
 
-            self.__r26a_term()
-            self.__r25b_expression_prime()
+            term = self.__r26a_term()
+            if self.__code_generation_enabled:
+                self.__semantic_checker.validate_arithmetic_operation(prev_term, term)
+                self.__instruction_table.generate_instruction(operation)
+            self.__r25b_expression_prime(term)
         # Handle Epsilon case
         else:
             self.__log("<Expression Prime> -> ε")
@@ -649,16 +696,25 @@ class Parser:
         """
         self.__log("<Term> -> <Factor> <Term Prime>")
 
-        self.__r27_factor()
-        self.__r26b_term_prime()
+        factor = self.__r27_factor()
+        self.__r26b_term_prime(factor)
 
-    def __r26b_term_prime(self):
+        # TODO: Right now, we cannot return an expression like this: 8 * 5
+        # Maybe in order to do it, we might need to build an AST tree.
+        return factor
+
+    def __r26b_term_prime(self, prev_factor):
         """
         Applies the production rule 26b:
         <Term Prime> -> * <Factor> <Term Prime> | / <Factor> <Term Prime> | ε
         """
         # Check for '*' or '/' case
         if self.__current_token.lexeme == "*" or self.__current_token.lexeme == "/":
+            if self.__current_token.lexeme == "*":
+                operation = Operation.M 
+            else:
+                operation = Operation.D
+
             self.__log_current_token()
 
             # Generate and print production rule text
@@ -672,9 +728,14 @@ class Parser:
             if self.__current_token.lexeme != "(":
                 self.__log_current_token()
 
+            
+            factor = self.__r27_factor()
+            if self.__code_generation_enabled:
+                self.__semantic_checker.validate_arithmetic_operation(prev_factor, factor)
+                self.__instruction_table.generate_instruction(operation)
+
             # Apply production rules for Factor and Term Prime recursively
-            self.__r27_factor()
-            self.__r26b_term_prime()
+            self.__r26b_term_prime(factor)
         # Handle Epsilon case
         else:
             self.__log("<Term Prime> -> ε")
@@ -684,9 +745,11 @@ class Parser:
         Applies the grammar rule 27:
         <Factor> -> - <Primary> | <Primary>
         """
+        save = ""
         text_to_print = ""
 
         if self.__current_token.lexeme == "-":
+            save = "-"
             self.__match(self.__current_token.lexeme)  # Move to the next token
             text_to_print = "<Factor> -> -"            
             if self.__current_token.lexeme != "(":
@@ -694,11 +757,24 @@ class Parser:
         else:
             text_to_print = "<Factor> ->"
         
-        primary_type = self.__r28_primary()      
+        text, token = self.__r28_primary()
 
-        if primary_type:
-            text_to_print = f"{text_to_print} {primary_type}"
+        if text:
+            text_to_print = f"{text_to_print} {text}"
             self.__log(text_to_print)
+
+        # Generate instructions
+        if self.__code_generation_enabled:
+            if token.token_type == TokenType.INTEGER:
+                self.__instruction_table.generate_instruction(Operation.PUSHI, save + token.lexeme)
+            elif token.token_type == TokenType.BOOLEAN:
+                int_value = 1 if token.lexeme == "true" else 0
+                self.__instruction_table.generate_instruction(Operation.PUSHI, int_value)
+            elif token.token_type == TokenType.IDENTIFIER:
+                address = self.__symbol_table.get_address(token.lexeme)
+                self.__instruction_table.generate_instruction(Operation.PUSHM, address)
+        
+        return token
 
     def __r28_primary(self):
         """
@@ -711,6 +787,7 @@ class Parser:
             str: The text representing the parsed primary token
         """
         text = ""
+        token = self.__current_token
 
         # Case 1: IDENTIFIER
         if self.__current_token.token_type == TokenType.IDENTIFIER:
@@ -725,6 +802,7 @@ class Parser:
             self.__match(self.__current_token.lexeme)  # Move to the next token
         # Case 3: "true" or "false"
         elif (self.__current_token.lexeme == "true" or self.__current_token.lexeme == "false"):
+            token.token_type = TokenType.BOOLEAN
             text = self.__current_token.lexeme
             self.__match(self.__current_token.lexeme)  # Move to the next token
         # Case 4: ( <Expression> )
@@ -740,7 +818,7 @@ class Parser:
             raise SyntaxError(
                 f'Expected `ID, Number, (Expression), boolean`, but found {self.__current_token.token_type}')
 
-        return text
+        return text, token
 
     def __r28b_primary_prime(self):
         """
