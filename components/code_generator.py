@@ -13,19 +13,19 @@ class CodeGenerator:
         """
         self.__symbol_table = SymbolTable(initial_memory_address)
         self.__instruction_table = InstructionTable(initial_address=1)
-        
         self.__parser = Parser(lexer=lexer, debug_print=False)
-        self.__parser.generate_code(self.__symbol_table,
-                                    self.__instruction_table)
 
-    def get_assembly_code(self):
+    def generate_assembly_code(self):
         """
         Get the generated code.
 
         Returns:
         - str: The generated code as a string.
         """
-        return self.__instruction_table.get_assembly_code()
+        self.__parser.enable_code_generation(symbol_table=self.__symbol_table,
+                                             instruction_table=self.__instruction_table)
+        self.__parser.parse()
+        return self.__instruction_table.get_generated_code()
 
     def print_symbol_table(self):
         """
