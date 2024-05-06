@@ -20,8 +20,12 @@ The Rat24S compiler has many options for reading input from a file, writing outp
 graph LR
 START:::hidden -- source code--> LA[Lexical Analyzer]
 LA--tokens-->SA[Syntax Analyzer]
-SA-->T((Correct))
-SA-->F((Error))
+SA-.-ST[Symbol Table]
+SA-.-IT[Instruction Table]
+ST-.-CG[Code Generator]
+SA-->CG
+IT-.-CG
+CG-->SC((Assembly Code))
 classDef hidden display: none;
 ```
 #### Grammar Rules
