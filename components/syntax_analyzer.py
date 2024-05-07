@@ -574,8 +574,6 @@ class Parser:
         self.__log(f"<Scan> -> scan ( <IDs> );")
         self.__log_current_token()
         self.__match("(")
-        # self.__r13_ids()
-        
         list_of_ids = self.__r13_ids()
         if self.__code_generation_enabled:
             for i in list_of_ids:
