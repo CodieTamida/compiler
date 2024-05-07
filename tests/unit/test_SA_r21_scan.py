@@ -1,6 +1,6 @@
 import unittest
 import os
-from tests.unit.helpers import write_to_file, get_result_from_parser
+from tests.unit.helpers import write_to_file, get_result_from_parser, get_result_from_code_generator
 
 class PrintTestCase(unittest.TestCase):
     SAMPLE_FILE_PATH = "tests/sample1.txt"
