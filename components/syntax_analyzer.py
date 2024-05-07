@@ -574,7 +574,12 @@ class Parser:
         self.__log(f"<Scan> -> scan ( <IDs> );")
         self.__log_current_token()
         self.__match("(")
-        self.__r13_ids()
+        list_of_ids = self.__r13_ids()
+        if self.__code_generation_enabled:
+            for i in list_of_ids:
+                address = self.__symbol_table.get_address(i)
+                self.__instruction_table.generate_instruction(Operation.SIN)
+                self.__instruction_table.generate_instruction(Operation.POPM, address)
         self.__log_current_token()
         self.__match(')')
         self.__log_current_token()
