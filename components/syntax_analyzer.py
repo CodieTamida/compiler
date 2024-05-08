@@ -20,10 +20,10 @@ class Parser:
         self.__message_logs = list()
         self.__code_generation_enabled = False
 
-    def enable_code_generation(self, symbol_table: SymbolTable, instruction_table: InstructionTable) -> bool:
+    def enable_code_generation(self, symbol_table: SymbolTable) -> bool:
         self.__code_generation_enabled = True
         self.__symbol_table = symbol_table
-        self.__instruction_table = instruction_table
+        self.__instruction_table = InstructionTable()
         self.__semantic_checker = SemanticChecker(symbol_table)
 
     def parse(self):
@@ -62,6 +62,15 @@ class Parser:
             raise
         
         return parsing_result
+
+    def get_instruction_table(self) -> InstructionTable:
+        """
+        Retrieves the instruction table
+
+        Returns:
+            InstructionTable: the instruction table
+        """
+        return self.__instruction_table
 
     def get_logs(self):
         """

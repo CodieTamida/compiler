@@ -1,31 +1,41 @@
+from io import StringIO
+from dataclasses import dataclass
 from components.lexcical_analyzer import Lexer
 from components.syntax_analyzer import Parser
 from components.symbol_table import SymbolTable
 from components.instruction_table import InstructionTable
-from dataclasses import dataclass
 
 
 class CodeGenerator:
 
     def __init__(self, lexer: Lexer, initial_memory_address=5000):
         """
-        Initializes the IntermediateCodeGenerator object.
+        Initializes the Code Generator object.
         """
         self.__symbol_table = SymbolTable(initial_memory_address)
-        self.__instruction_table = InstructionTable(initial_address=1)
         self.__parser = Parser(lexer=lexer, debug_print=False)
 
-    def generate_assembly_code(self):
+    def generate_assembly_code(self) -> str:
         """
-        Get the generated code.
+        Generate assembly code
 
         Returns:
         - str: The generated code as a string.
         """
-        self.__parser.enable_code_generation(symbol_table=self.__symbol_table,
-                                             instruction_table=self.__instruction_table)
+        self.__parser.enable_code_generation(symbol_table=self.__symbol_table)
         self.__parser.parse()
-        return self.__instruction_table.get_generated_code()
+
+        table = self.__parser.get_instruction_table()
+
+        string_builder = StringIO()
+
+        for e in table.get_instructions().values():
+            if e.operand:
+                string_builder.write(f"{e.operation} {e.operand}\n")
+            else:
+                string_builder.write(f"{e.operation}\n")
+
+        return string_builder.getvalue()
 
     def print_symbol_table(self):
         """
@@ -37,4 +47,5 @@ class CodeGenerator:
         """
         Prints the instruction table.
         """
-        self.__instruction_table.print_table()
+        table = self.__parser.get_instruction_table()
+        table.print_table()
