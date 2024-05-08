@@ -499,9 +499,9 @@ class Parser:
         self.__log_current_token()
         self.__match(")")
         self.__r15_statement()
-        self.__r18b_if()
+        self.__r18b_if_prime()
         
-    def __r18b_if(self):
+    def __r18b_if_prime(self):
         """
         Applies grammar rule 18b:
         <If Prime> -> endif | else <Statement> endif
