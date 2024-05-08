@@ -492,7 +492,7 @@ class Parser:
         self.__log_current_token()
         self.__log("<Statement> -> <If>")
         self.__match("if")
-        self.__log(f"<If> if ( <Condition> ) <Statement> <If Prime>")
+        self.__log(f"<If> -> if ( <Condition> ) <Statement> <If Prime>")
         self.__log_current_token()
         self.__match("(")
         self.__r23_condition()
