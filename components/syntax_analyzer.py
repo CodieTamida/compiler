@@ -558,6 +558,8 @@ class Parser:
         self.__log_current_token()
         self.__match('(')
         self.__r25a_expression()
+        if self.__code_generation_enabled:
+            self.__instruction_table.generate_instruction(Operation.SOUT)
         self.__log_current_token()
         self.__match(')')
         self.__log_current_token()
