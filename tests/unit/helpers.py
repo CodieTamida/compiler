@@ -33,9 +33,11 @@ def get_result_from_parser(filename):
     # Parser: Call parse() method
     parser = Parser(lexer, debug_print=True)
     print("\n")
-    result = parser.parse()
-    
-    return result
+    try:
+        parser.parse()
+        return True
+    except:
+        return False
 
 
 def get_result_from_code_generator(filename):
