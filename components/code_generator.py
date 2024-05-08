@@ -23,13 +23,11 @@ class CodeGenerator:
         - str: The generated code as a string.
         """
         self.__parser.enable_code_generation(symbol_table=self.__symbol_table)
-        self.__parser.parse()
-
-        table = self.__parser.get_instruction_table()
+        instruction_table = self.__parser.parse()
 
         string_builder = StringIO()
 
-        for e in table.get_instructions().values():
+        for e in instruction_table.get_instructions().values():
             if e.operand:
                 string_builder.write(f"{e.operation} {e.operand}\n")
             else:

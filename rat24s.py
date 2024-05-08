@@ -37,7 +37,12 @@ def syntax_analyze(input_file, output_file, verbose):
     lexer = lexical_analyze(input_file, output_file, False)
 
     parser = Parser(lexer, debug_print=False)
-    parsing_success = parser.parse()
+
+    try:
+        parser.parse()
+        parsing_success = True
+    except:
+        parsing_success = False
 
     if verbose:
         for text in parser.get_logs():

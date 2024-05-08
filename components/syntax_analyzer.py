@@ -31,9 +31,11 @@ class Parser:
         Parses the input by tokenizing it with the lexer and applying grammar rules.
 
         Returns:
-            bool: True if parsing is successful, False otherwise.
+        - InstructionTable: Indicates whether parsing was successful.
+        
+        Raises:
+        - SyntaxError: Error occurs during parsing.
         """
-        parsing_result = False  # Initialize parsing result to False
 
         try:
             # Get the first token
@@ -44,24 +46,20 @@ class Parser:
             # Apply the entry point rule, <Rat24S>
             self.__r1_Rat24S()
 
-            # Set parsing_result to True, indicating that the parsing process was successful
-            #  and there are no more tokens to be processed.
-            # Otherwise, raise a ValueError
-            if self.__current_token is None:
-                parsing_result = True  # Parsing successful
-            else:
+            # If the end of the file is not reached, raise a Syntax Error.
+            if self.__current_token != None:
                 self.__log_current_token()
                 raise SyntaxError(
                     f"Expected End Of File, but found {self.__current_token.lexeme}")
-        except SyntaxError as err:
+        except Exception as err:
             self.__log('-' * 50)
             print("\033[91m", end="")  # Print ANSI escape code for red color
             self.__log(f"Error: {err}\nParsing failed")
             print("\033[0m", end="")  # Print ANSI escape code to reset
-        except:
             raise
-        
-        return parsing_result
+
+        if self.__code_generation_enabled:
+            return self.__instruction_table
 
     def get_instruction_table(self) -> InstructionTable:
         """
