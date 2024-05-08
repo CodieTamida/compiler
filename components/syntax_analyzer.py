@@ -484,7 +484,7 @@ class Parser:
             text_2 = f"Expected `=`, but found {self.__current_token.lexeme}"
             raise SyntaxError(f"{text_1}\n{text_2}")
 
-   def __r18a_if(self):
+    def __r18a_if(self):
         """
         Applies grammar rule 18a:
         <if> -> if ( <Condition> ) <statement> <if Prime>
