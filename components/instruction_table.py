@@ -20,7 +20,7 @@ class InstructionTable:
         self.__entries = dict()
         self.__current_address = initial_address
 
-    def get_instructions(self) -> dict[Instruction]:
+    def get_instructions(self) -> dict[int, Instruction]:
         return self.__entries
 
     def generate_instruction(self, operation: Operation, operand: str = None) -> int:
