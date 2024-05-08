@@ -1,4 +1,3 @@
-from io import StringIO
 from typing import Optional
 from dataclasses import dataclass
 from common.enums import Operation
@@ -53,23 +52,6 @@ class InstructionTable:
         - int: The address of the back-patched instruction.
         """
         raise NotImplementedError("This function hasn't been implemented yet.")
-
-    def get_generated_code(self) -> str:
-        """
-        Get the generated code.
-
-        Returns:
-        - str: The generated code as a string.
-        """
-        string_builder = StringIO()
-
-        for e in self.__entries.values():
-            if e.operand:
-                string_builder.write(f"{e.operation} {e.operand}\n")
-            else:
-                string_builder.write(f"{e.operation}\n")
-
-        return string_builder.getvalue()
 
     def print_table(self):
         """
