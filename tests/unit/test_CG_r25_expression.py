@@ -372,7 +372,7 @@ class ExpressionTestCase(unittest.TestCase):
             $
                 a = 1;
                 b = 2;
-                sum = a * (9 / 3 * (a - b)) - 2);
+                sum = a * (9 / 3 * (a - b)) - 2;
             $
         """
 
