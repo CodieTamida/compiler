@@ -291,6 +291,117 @@ class ExpressionTestCase(unittest.TestCase):
         # Assert
         self.assertEqual(actual_output, expected_output)
 
+    def test_2ids_2integers(self):
+        # Arrange
+        input_string = """
+            $
+            $
+                integer a, b, sum;
+            $
+                a = 1;
+                b = 2;
+                sum = a * b * 8 * 2;
+            $
+        """
+
+        string_builder = StringIO()
+        string_builder.write("PUSHI 1\n")
+        string_builder.write("POPM 5000\n")
+        string_builder.write("PUSHI 2\n")
+        string_builder.write("POPM 5001\n")
+        string_builder.write("PUSHM 5000\n")
+        string_builder.write("PUSHM 5001\n")
+        string_builder.write("M\n")
+        string_builder.write("PUSHI 8\n")
+        string_builder.write("M\n")
+        string_builder.write("PUSHI 2\n")
+        string_builder.write("M\n")
+        string_builder.write("POPM 5002\n")
+        expected_output = string_builder.getvalue()
+
+        # Act
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_code_generator(self.SAMPLE_FILE_PATH)
+
+        # Assert
+        self.assertEqual(actual_output, expected_output)
+
+    def test_many_expressions(self):
+        # Arrange
+        input_string = """
+            $
+            $
+                integer a, b, sum;
+            $
+                a = 1;
+                b = 2;
+                sum = a * (b + 8) / (2 - a);
+            $
+        """
+
+        string_builder = StringIO()
+        string_builder.write("PUSHI 1\n")
+        string_builder.write("POPM 5000\n")
+        string_builder.write("PUSHI 2\n")
+        string_builder.write("POPM 5001\n")
+        string_builder.write("PUSHM 5000\n")
+        string_builder.write("PUSHM 5001\n")
+        string_builder.write("PUSHI 8\n")
+        string_builder.write("A\n")
+        string_builder.write("M\n")
+        string_builder.write("PUSHI 2\n")
+        string_builder.write("PUSHM 5000\n")
+        string_builder.write("S\n")
+        string_builder.write("D\n")
+        string_builder.write("POPM 5002\n")
+        expected_output = string_builder.getvalue()
+
+        # Act
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_code_generator(self.SAMPLE_FILE_PATH)
+
+        # Assert
+        self.assertEqual(actual_output, expected_output)
+
+    def test_nested(self):
+        # Arrange
+        input_string = """
+            $
+            $
+                integer a, b, sum;
+            $
+                a = 1;
+                b = 2;
+                sum = a * (9 / 3 * (a - b)) - 2);
+            $
+        """
+
+        string_builder = StringIO()
+        string_builder.write("PUSHI 1\n")
+        string_builder.write("POPM 5000\n")
+        string_builder.write("PUSHI 2\n")
+        string_builder.write("POPM 5001\n")
+        string_builder.write("PUSHM 5000\n")
+        string_builder.write("PUSHI 9\n")
+        string_builder.write("PUSHI 3\n")
+        string_builder.write("D\n")
+        string_builder.write("PUSHM 5000\n")
+        string_builder.write("PUSHM 5001\n")
+        string_builder.write("S\n")
+        string_builder.write("M\n")
+        string_builder.write("M\n")
+        string_builder.write("PUSHI 2\n")
+        string_builder.write("S\n")
+        string_builder.write("POPM 5002\n")
+        expected_output = string_builder.getvalue()
+
+        # Act
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_code_generator(self.SAMPLE_FILE_PATH)
+
+        # Assert
+        self.assertEqual(actual_output, expected_output)
+
     def test_boolean_addition_not_allowed(self):
         # Arrange
         input_string = """
@@ -303,6 +414,40 @@ class ExpressionTestCase(unittest.TestCase):
         """
 
         expected_output = ""
+
+        # Act
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_code_generator(self.SAMPLE_FILE_PATH)
+
+        # Assert
+        self.assertEqual(actual_output, expected_output)
+
+    def test_expression_with_parenthesis(self):
+        # Arrange
+        input_string = """
+            $
+            $
+                integer a, b, sum;
+            $
+                a = 1;
+                b = 2;
+                sum = a * (b + 8);
+            $
+        """
+
+        string_builder = StringIO()
+        string_builder.write("PUSHI 1\n")
+        string_builder.write("POPM 5000\n")
+        string_builder.write("PUSHI 2\n")
+        string_builder.write("POPM 5001\n")
+        string_builder.write("PUSHM 5000\n")
+        
+        string_builder.write("PUSHM 5001\n")
+        string_builder.write("PUSHI 8\n")
+        string_builder.write("A\n")
+        string_builder.write("M\n")
+        string_builder.write("POPM 5002\n")
+        expected_output = string_builder.getvalue()
 
         # Act
         write_to_file(self.SAMPLE_FILE_PATH, input_string)
