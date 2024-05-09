@@ -1,13 +1,13 @@
 from typing import Optional
 from dataclasses import dataclass
-from common.enums import Operation
+from common.enums import Operator
 
 
 class InstructionTable:
     @dataclass
     class Instruction:
         address: int  # Address of the instruction
-        operation: str  # Operation code
+        operation: str  # Operator code
         operand: Optional[str] = None  # Operand of the instruction, optional
 
     def __init__(self, initial_address=1):
@@ -24,12 +24,12 @@ class InstructionTable:
     def get_instructions(self) -> dict[int, Instruction]:
         return self.__entries
 
-    def generate_instruction(self, operation: Operation, operand: str = None) -> int:
+    def generate_instruction(self, operation: Operator, operand: str = None) -> int:
         """
         Generates an instruction with the given operation and operand.
 
         Parameters:
-        - operation (Operation): The operation enum.
+        - operation (Operator): The operation enum.
         - operand (str, optional): The operand of the instruction. Defaults to None.
 
         Returns:
@@ -68,7 +68,7 @@ class InstructionTable:
         Prints the instruction table.
         """
         print("Instruction Table:")
-        print(f"{'Address':<10}{'Operation':<15}{'Operand':<15}")
+        print(f"{'Address':<10}{'Operator':<15}{'Operand':<15}")
         print("-" * 40)
         for e in self.__entries.values():
             formatted_operand = e.operand if e.operand else 'nil'
