@@ -506,6 +506,9 @@ class Parser:
         self.__log_current_token()
         self.__match(")")
         self.__r15_statement()
+        if self.__code_generation_enabled:
+            endif_address = self.__instruction_table.generate_instruction(Operation.LABEL)
+            self.__instruction_table.back_patch(endif_address)
         self.__r18b_if_prime()
         
     def __r18b_if_prime(self):
