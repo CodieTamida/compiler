@@ -676,7 +676,7 @@ class Parser:
             relop_code = Operation.GEQ
         else:
             text1 = f"Relational operator is missing."
-            text2 = f"Expected `{relation_operators}`, but found {self.__current_token.lexeme}"
+            text2 = f"Expected `== , != , > , < , <= , =>`, but found {self.__current_token.lexeme}"
             raise SyntaxError(f"{text1}\n{text2}")
 
         self.__log_current_token()
