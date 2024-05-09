@@ -15,7 +15,7 @@ class TokenType(Enum):
     # - Because no arithmetic operations are allowed for booleans
 
 
-class Operation(Enum):
+class Operator(Enum):
     """
     Enumeration of colors.
 
