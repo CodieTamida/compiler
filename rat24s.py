@@ -1,7 +1,7 @@
 import argparse
 from components.lexcical_analyzer import Lexer
 from components.syntax_analyzer import Parser
-
+from components.code_generator import CodeGenerator
 
 def print_tokens(lexer: Lexer):
     for token in lexer.tokens:
@@ -67,6 +67,46 @@ def syntax_analyze(input_file, output_file, verbose):
     print('-' * 50)
 
 
+def generate_assembly_code(input_file, output_file, verbose):
+    asm_code = str()
+    error_message = None
+
+    # CodeGenerator
+    try:
+        # Lexer: Load from file
+        lexer = Lexer(input_file)
+
+        # CodeGenerator
+        codegen = CodeGenerator(lexer, initial_memory_address=5000)
+        asm_code = codegen.generate_assembly_code()
+
+        # Open a file for writing
+        if output_file:
+            with open(output_file, 'w') as file:
+                file.write(asm_code)
+
+    except Exception as err:
+        error_message = f"{type(err).__name__}: {err}"
+    finally:
+        # PRINT TABLES
+        if verbose:
+            codegen.print_symbol_table()
+            print()
+            codegen.print_instruction_table()
+            print()
+        
+        # PRINT SUMMARY        
+        print('*' * 50)
+        print(f"Filename: {input_file}")
+        print(f"Number of Tokens: {len(lexer.tokens)}")
+        if error_message == None:
+            print("\033[32m", "Compilation successful", "\033[0m", sep='')
+        else:
+            print("\033[31m", error_message, "\033[0m", sep='')
+            print("\033[31m", "Compilation failed", "\033[0m", sep='')
+        print('*' * 50)
+
+
 def main(args):
     """
     Process the input file, tokenize its contents using a Lexer instance, 
@@ -83,8 +123,10 @@ def main(args):
     if args.tokens:
         lexical_analyze(args.input, args.output, args.verbose)
     # Check syntax mode
-    else:
+    elif args.syntax:
         syntax_analyze(args.input, args.output, args.verbose)
+    else:
+        generate_assembly_code(args.input, args.output, args.verbose)
 
 
 if __name__ == '__main__':
@@ -97,6 +139,8 @@ if __name__ == '__main__':
                         help="Extract tokens only, but don't do anything beyond that.")
     parser.add_argument("-s", "--syntax", action="store_true",
                         help="Check the code for syntax errors, but don't do anything beyond that.")
+    parser.add_argument("-a", "--assembly", action="store_true",
+                        help="Generate assembly code")
     parser.add_argument("-v", "--verbose", action="store_true",
                         help="Enable verbose mode")
 
