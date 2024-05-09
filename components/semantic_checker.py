@@ -1,4 +1,4 @@
-from common.enums import TokenType, Operation
+from common.enums import TokenType, Operator
 from components.lexcical_analyzer import Lexer, Token
 from components.symbol_table import SymbolTable
 from dataclasses import dataclass

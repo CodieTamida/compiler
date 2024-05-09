@@ -1,4 +1,4 @@
-from common.enums import TokenType, Operation
+from common.enums import TokenType, Operator
 from components.lexcical_analyzer import Lexer, Token
 from components.symbol_table import SymbolTable
 from components.instruction_table import InstructionTable
@@ -481,7 +481,7 @@ class Parser:
             # Generate instructions
             if self.__code_generation_enabled:
                 address = self.__symbol_table.get_address(save)
-                self.__instruction_table.generate_instruction(Operation.POPM, address)
+                self.__instruction_table.generate_instruction(Operator.POPM, address)
 
             # Match the end of <Assign>, indicated by a semicolon ";".
             self.__log_current_token()
@@ -507,7 +507,7 @@ class Parser:
         self.__match(")")
         self.__r15_statement()
         if self.__code_generation_enabled:
-            endif_address = self.__instruction_table.generate_instruction(Operation.LABEL)
+            endif_address = self.__instruction_table.generate_instruction(Operator.LABEL)
             self.__instruction_table.back_patch(endif_address)
         self.__r18b_if_prime()
         
@@ -569,7 +569,7 @@ class Parser:
         self.__match('(')
         self.__r25a_expression()
         if self.__code_generation_enabled:
-            self.__instruction_table.generate_instruction(Operation.SOUT)
+            self.__instruction_table.generate_instruction(Operator.SOUT)
         self.__log_current_token()
         self.__match(')')
         self.__log_current_token()
@@ -590,8 +590,8 @@ class Parser:
         if self.__code_generation_enabled:
             for i in list_of_ids:
                 address = self.__symbol_table.get_address(i)
-                self.__instruction_table.generate_instruction(Operation.SIN)
-                self.__instruction_table.generate_instruction(Operation.POPM, address)
+                self.__instruction_table.generate_instruction(Operator.SIN)
+                self.__instruction_table.generate_instruction(Operator.POPM, address)
         self.__log_current_token()
         self.__match(')')
         self.__log_current_token()
@@ -613,7 +613,7 @@ class Parser:
         self.__log("<While> -> while ( <Condition> ) <Statement> endwhile")
 
         if self.__code_generation_enabled:
-            while_label_address = self.__instruction_table.generate_instruction(Operation.LABEL)
+            while_label_address = self.__instruction_table.generate_instruction(Operator.LABEL)
 
         # Match the open parenthesis, indicated by "(".
         self.__log_current_token()
@@ -631,8 +631,8 @@ class Parser:
 
         # Generate instructions
         if self.__code_generation_enabled:
-            self.__instruction_table.generate_instruction(Operation.JUMP, while_label_address)
-            endwhile_label_address = self.__instruction_table.generate_instruction(Operation.LABEL)
+            self.__instruction_table.generate_instruction(Operator.JUMP, while_label_address)
+            endwhile_label_address = self.__instruction_table.generate_instruction(Operator.LABEL)
             self.__instruction_table.back_patch(endwhile_label_address)
 
          # Match the end of <While>, indicated by "endwhile".
@@ -652,10 +652,10 @@ class Parser:
         # Generate instructions
         if self.__code_generation_enabled:
             self.__instruction_table.generate_instruction(relop_code)
-            address = self.__instruction_table.generate_instruction(Operation.JUMP0)
+            address = self.__instruction_table.generate_instruction(Operator.JUMP0)
             self.__instruction_table.push_jump_stack(address)
 
-    def __r24_relop(self) -> Operation:
+    def __r24_relop(self) -> Operator:
         """
         Applies the grammar rule 24: 
         <Relop> -> == | != | > | < | <= | =>
@@ -666,17 +666,17 @@ class Parser:
         lexeme = self.__current_token.lexeme.lower()
 
         if lexeme == "<":
-            relop_code = Operation.LES
+            relop_code = Operator.LES
         elif lexeme == ">":
-            relop_code = Operation.GRT
+            relop_code = Operator.GRT
         elif lexeme == "==":
-            relop_code = Operation.EQU
+            relop_code = Operator.EQU
         elif lexeme == "!=":
-            relop_code = Operation.NEQ
+            relop_code = Operator.NEQ
         elif lexeme == "<=":
-            relop_code = Operation.LEQ
+            relop_code = Operator.LEQ
         elif lexeme == "=>":
-            relop_code = Operation.GEQ
+            relop_code = Operator.GEQ
         else:
             text1 = f"Relational operator is missing."
             text2 = f"Expected `== , != , > , < , <= , =>`, but found {self.__current_token.lexeme}"
@@ -710,9 +710,9 @@ class Parser:
         # Check for '+' or '-' case
         if self.__current_token.lexeme == "+" or self.__current_token.lexeme == "-":
             if self.__current_token.lexeme == "+":
-                operation = Operation.A 
+                operation = Operator.A 
             else:
-                operation = Operation.S
+                operation = Operator.S
             
             self.__log_current_token()
             self.__log(
@@ -755,9 +755,9 @@ class Parser:
         # Check for '*' or '/' case
         if self.__current_token.lexeme == "*" or self.__current_token.lexeme == "/":
             if self.__current_token.lexeme == "*":
-                operation = Operation.M 
+                operation = Operator.M 
             else:
-                operation = Operation.D
+                operation = Operator.D
 
             self.__log_current_token()
 
@@ -810,13 +810,13 @@ class Parser:
         # Generate instructions
         if self.__code_generation_enabled:
             if token.token_type == TokenType.INTEGER:
-                self.__instruction_table.generate_instruction(Operation.PUSHI, save + token.lexeme)
+                self.__instruction_table.generate_instruction(Operator.PUSHI, save + token.lexeme)
             elif token.token_type == TokenType.BOOLEAN:
                 int_value = 1 if token.lexeme == "true" else 0
-                self.__instruction_table.generate_instruction(Operation.PUSHI, int_value)
+                self.__instruction_table.generate_instruction(Operator.PUSHI, int_value)
             elif token.token_type == TokenType.IDENTIFIER:
                 address = self.__symbol_table.get_address(token.lexeme)
-                self.__instruction_table.generate_instruction(Operation.PUSHM, address)
+                self.__instruction_table.generate_instruction(Operator.PUSHM, address)
         
         return token
 
