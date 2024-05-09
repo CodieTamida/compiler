@@ -627,7 +627,7 @@ class Parser:
         self.__r15_statement()
 
         # Generate instructions
-        if self.__code_generation_enabled and hasattr(InstructionTable, 'push_jump_stack') and hasattr(InstructionTable, 'pop_jump_stack'):
+        if self.__code_generation_enabled:
             self.__instruction_table.generate_instruction(Operation.JUMP, while_label_address)
             endwhile_label_address = self.__instruction_table.generate_instruction(Operation.LABEL)
             self.__instruction_table.back_patch(endwhile_label_address)
@@ -647,7 +647,7 @@ class Parser:
         self.__r25a_expression()
 
         # Generate instructions
-        if self.__code_generation_enabled and hasattr(InstructionTable, 'push_jump_stack') and hasattr(InstructionTable, 'pop_jump_stack'):
+        if self.__code_generation_enabled:
             self.__instruction_table.generate_instruction(relop_code)
             address = self.__instruction_table.generate_instruction(Operation.JUMP0)
             self.__instruction_table.push_jump_stack(address)
