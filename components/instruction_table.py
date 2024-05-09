@@ -19,6 +19,7 @@ class InstructionTable:
         """
         self.__entries = dict()
         self.__current_address = initial_address
+        self.__jump_stack = list()
 
     def get_instructions(self) -> dict[int, Instruction]:
         return self.__entries
@@ -41,6 +42,12 @@ class InstructionTable:
         self.__current_address += 1
         return e.address
 
+    def push_jump_stack(self, instruction_address):
+        self.__jump_stack.append(instruction_address)
+
+    def pop_jump_stack(self):
+        return self.__jump_stack.pop()
+    
     def back_patch(self, instruction_address) -> int:
         """
         Back-patches an instruction.
@@ -51,7 +58,10 @@ class InstructionTable:
         Returns:
         - int: The address of the back-patched instruction.
         """
-        raise NotImplementedError("This function hasn't been implemented yet.")
+        address = self.pop_jump_stack()
+        self.__entries.get(address).operand = instruction_address
+        return address
+    
 
     def print_table(self):
         """
