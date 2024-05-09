@@ -609,6 +609,9 @@ class Parser:
         self.__match("while")
         self.__log("<While> -> while ( <Condition> ) <Statement> endwhile")
 
+        if self.__code_generation_enabled:
+            while_label_address = self.__instruction_table.generate_instruction(Operation.LABEL)
+
         # Match the open parenthesis, indicated by "(".
         self.__log_current_token()
         self.__match("(")
@@ -623,6 +626,12 @@ class Parser:
         # Apply rule 15 <Statement>
         self.__r15_statement()
 
+        # Generate instructions
+        if self.__code_generation_enabled and hasattr(InstructionTable, 'push_jump_stack') and hasattr(InstructionTable, 'pop_jump_stack'):
+            self.__instruction_table.generate_instruction(Operation.JUMP, while_label_address)
+            endwhile_label_address = self.__instruction_table.generate_instruction(Operation.LABEL)
+            self.__instruction_table.back_patch(endwhile_label_address)
+
          # Match the end of <While>, indicated by "endwhile".
         self.__log_current_token()
         self.__match("endwhile")
@@ -634,10 +643,16 @@ class Parser:
         """
         self.__log("<Condition> -> <Expression> <Relop> <Expression>")
         self.__r25a_expression()
-        self.__r24_relop()
+        relop_code = self.__r24_relop()
         self.__r25a_expression()
 
-    def __r24_relop(self):
+        # Generate instructions
+        if self.__code_generation_enabled and hasattr(InstructionTable, 'push_jump_stack') and hasattr(InstructionTable, 'pop_jump_stack'):
+            self.__instruction_table.generate_instruction(relop_code)
+            address = self.__instruction_table.generate_instruction(Operation.JUMP0)
+            self.__instruction_table.push_jump_stack(address)
+
+    def __r24_relop(self) -> Operation:
         """
         Applies the grammar rule 24: 
         <Relop> -> == | != | > | < | <= | =>
@@ -645,17 +660,29 @@ class Parser:
         Raises:
             SyntaxError: If the current token is not a valid relational operator.
         """
-        relation_operators = {"==", "!=", ">", "<", "<=", "=>"}
         lexeme = self.__current_token.lexeme.lower()
 
-        if lexeme in relation_operators:
-            self.__log_current_token()
-            self.__log(f"<Relop> -> {self.__current_token.lexeme}")
-            self.__match(self.__current_token.lexeme)
+        if lexeme == "<":
+            relop_code = Operation.LES
+        elif lexeme == ">":
+            relop_code = Operation.GRT
+        elif lexeme == "==":
+            relop_code = Operation.EQU
+        elif lexeme == "!=":
+            relop_code = Operation.NEQ
+        elif lexeme == "<=":
+            relop_code = Operation.LEQ
+        elif lexeme == "=>":
+            relop_code = Operation.GEQ
         else:
-            text1 = f"Relation operator is missing."
+            text1 = f"Relational operator is missing."
             text2 = f"Expected `{relation_operators}`, but found {self.__current_token.lexeme}"
             raise SyntaxError(f"{text1}\n{text2}")
+
+        self.__log_current_token()
+        self.__log(f"<Relop> -> {self.__current_token.lexeme}")
+        self.__match(self.__current_token.lexeme)
+        return relop_code
 
     def __r25a_expression(self):
         """
