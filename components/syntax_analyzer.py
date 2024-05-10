@@ -465,7 +465,7 @@ class Parser:
         <Assign> -> <Identifier> = <Expression> ;
         """
         if self.__current_token.token_type == TokenType.IDENTIFIER:
-            save = self.__current_token.lexeme
+            lhs_token = self.__current_token # The left hand side <Identifier>
 
         self.__log_current_token()
         self.__log("<Statement> -> <Assign>")
@@ -476,11 +476,19 @@ class Parser:
         if self.__current_token.lexeme == "=":
             self.__log_current_token()
             self.__match(self.__current_token.lexeme)  # Move to the next token
-            self.__r25a_expression()
+            set_of_data_types = self.__r25a_expression()
 
-            # Generate instructions
             if self.__code_generation_enabled:
-                address = self.__symbol_table.get_address(save)
+                # Check type data type match
+                lhs_datatype = self.__semantic_checker.determine_data_type(lhs_token)
+                if lhs_datatype not in set_of_data_types:
+                    result = ', '.join(str(e.name) for e in set_of_data_types)
+                    text1 = "Data types do not match"
+                    text2 = f"Cannot assign {result} to a {lhs_datatype.name} variable"
+                    raise SyntaxError(f"{text1}\n{text2}")
+
+                # Generate instructions
+                address = self.__symbol_table.get_address(lhs_token.lexeme)
                 self.__instruction_table.generate_instruction(Operator.POPM, address)
 
             # Match the end of <Assign>, indicated by a semicolon ";".
@@ -699,14 +707,22 @@ class Parser:
 
         self.__log("<Expression> -> <Term> <Expression Prime>")
 
-        term = self.__r26a_term()
-        self.__r25b_expression_prime(term)
+        set_of_data_types = set()
+        term, temp_token_types = self.__r26a_term()
+        set_of_data_types.update(temp_token_types)
+        temp_token_types = self.__r25b_expression_prime(term)
+
+        # Insert elements from set2 into set1
+        set_of_data_types.update(temp_token_types)
+        return set_of_data_types
 
     def __r25b_expression_prime(self, prev_term):
         """
         Applies the production rule 25b: 
         <Expression Prime> -> + <Term> <Expression Prime> | - <Term> <Expression Prime> | ε
         """
+        set_of_data_types = set()
+
         # Check for '+' or '-' case
         if self.__current_token.lexeme == "+" or self.__current_token.lexeme == "-":
             if self.__current_token.lexeme == "+":
@@ -724,14 +740,19 @@ class Parser:
             if self.__current_token.lexeme != "(":
                 self.__log_current_token()
 
-            term = self.__r26a_term()
+            term, temp_token_types = self.__r26a_term()
+            set_of_data_types.update(temp_token_types)
+
             if self.__code_generation_enabled:
                 self.__semantic_checker.validate_arithmetic_operation(prev_term, term)
                 self.__instruction_table.generate_instruction(operation)
-            self.__r25b_expression_prime(term)
+            temp_token_types = self.__r25b_expression_prime(term)
+            set_of_data_types.update(temp_token_types)
         # Handle Epsilon case
         else:
             self.__log("<Expression Prime> -> ε")
+        
+        return set_of_data_types
 
     def __r26a_term(self):
         """
@@ -740,18 +761,21 @@ class Parser:
         """
         self.__log("<Term> -> <Factor> <Term Prime>")
 
-        factor = self.__r27_factor()
-        self.__r26b_term_prime(factor)
+        set_of_data_types = set()
 
-        # TODO: Right now, we cannot return an expression like this: 8 * 5
-        # Maybe in order to do it, we might need to build an AST tree.
-        return factor
+        factor, temp_token_types = self.__r27_factor()
+        set_of_data_types.update(temp_token_types)
+        temp_token_types = self.__r26b_term_prime(factor)
+        set_of_data_types.update(temp_token_types)
+
+        return factor, set_of_data_types
 
     def __r26b_term_prime(self, prev_factor):
         """
         Applies the production rule 26b:
         <Term Prime> -> * <Factor> <Term Prime> | / <Factor> <Term Prime> | ε
         """
+        set_of_data_types = set()
         # Check for '*' or '/' case
         if self.__current_token.lexeme == "*" or self.__current_token.lexeme == "/":
             if self.__current_token.lexeme == "*":
@@ -773,16 +797,21 @@ class Parser:
                 self.__log_current_token()
 
             
-            factor = self.__r27_factor()
+            factor, temp_token_types = self.__r27_factor()
+            set_of_data_types.update(temp_token_types)
+
             if self.__code_generation_enabled:
                 self.__semantic_checker.validate_arithmetic_operation(prev_factor, factor)
                 self.__instruction_table.generate_instruction(operation)
 
             # Apply production rules for Factor and Term Prime recursively
-            self.__r26b_term_prime(factor)
+            temp_token_types = self.__r26b_term_prime(factor)
+            set_of_data_types.update(temp_token_types)
         # Handle Epsilon case
         else:
             self.__log("<Term Prime> -> ε")
+
+        return set_of_data_types
 
     def __r27_factor(self):
         """
@@ -801,7 +830,7 @@ class Parser:
         else:
             text_to_print = "<Factor> ->"
         
-        text, token = self.__r28_primary()
+        text, token, set_of_data_types = self.__r28_primary()
 
         if text:
             text_to_print = f"{text_to_print} {text}"
@@ -818,7 +847,7 @@ class Parser:
                 address = self.__symbol_table.get_address(token.lexeme)
                 self.__instruction_table.generate_instruction(Operator.PUSHM, address)
         
-        return token
+        return token, set_of_data_types
 
     def __r28_primary(self):
         """
@@ -831,10 +860,15 @@ class Parser:
             str: The text representing the parsed primary token
         """
         text = ""
+        set_of_data_types = set()        
         token = self.__current_token
 
         # Case 1: IDENTIFIER
         if self.__current_token.token_type == TokenType.IDENTIFIER:
+            if self.__code_generation_enabled:
+                datatype = self.__semantic_checker.determine_data_type(self.__current_token)
+
+                set_of_data_types.add(datatype)
             self.__match(self.__current_token.lexeme)  # Move to the next token
             text = self.__r28b_primary_prime()
             text = f"<Identifier> {text}"
@@ -842,10 +876,12 @@ class Parser:
         elif (self.__current_token.token_type == TokenType.INTEGER
                 or self.__current_token.token_type == TokenType.REAL
             ):
+            set_of_data_types.add(self.__current_token.token_type)
             text = f"<{self.__current_token.token_type.name}>"
             self.__match(self.__current_token.lexeme)  # Move to the next token
         # Case 3: "true" or "false"
         elif (self.__current_token.lexeme == "true" or self.__current_token.lexeme == "false"):
+            set_of_data_types.add(TokenType.BOOLEAN)
             token.token_type = TokenType.BOOLEAN
             text = self.__current_token.lexeme
             self.__match(self.__current_token.lexeme)  # Move to the next token
@@ -854,7 +890,7 @@ class Parser:
             self.__log("<Primary Prime> -> ( <Expression> )")
             self.__log_current_token()
             self.__match(self.__current_token.lexeme)  # Move to the next token
-            self.__r25a_expression()
+            set_of_data_types.update(self.__r25a_expression())
             self.__log_current_token()
             self.__match(")")  # Match and Move to the next token
         # Handle error: The current token does not match any expected types
@@ -862,7 +898,7 @@ class Parser:
             raise SyntaxError(
                 f'Expected `ID, Number, (Expression), boolean`, but found {self.__current_token.token_type}')
 
-        return text, token
+        return text, token, set_of_data_types
 
     def __r28b_primary_prime(self):
         """
