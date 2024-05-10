@@ -465,7 +465,7 @@ class Parser:
         <Assign> -> <Identifier> = <Expression> ;
         """
         if self.__current_token.token_type == TokenType.IDENTIFIER:
-            rhs_token = self.__current_token # The right hand side <Identifier>
+            lhs_token = self.__current_token # The left hand side <Identifier>
 
         self.__log_current_token()
         self.__log("<Statement> -> <Assign>")
@@ -480,15 +480,15 @@ class Parser:
 
             if self.__code_generation_enabled:
                 # Check type data type match
-                rhs_datatype = self.__semantic_checker.determine_data_type(rhs_token)
-                if rhs_datatype not in set_of_data_types:
+                lhs_datatype = self.__semantic_checker.determine_data_type(lhs_token)
+                if lhs_datatype not in set_of_data_types:
                     result = ', '.join(str(e.name) for e in set_of_data_types)
                     text1 = "Data types do not match"
-                    text2 = f"Cannot assign {result} to a {rhs_datatype.name} variable"
+                    text2 = f"Cannot assign {result} to a {lhs_datatype.name} variable"
                     raise SyntaxError(f"{text1}\n{text2}")
 
                 # Generate instructions
-                address = self.__symbol_table.get_address(rhs_token.lexeme)
+                address = self.__symbol_table.get_address(lhs_token.lexeme)
                 self.__instruction_table.generate_instruction(Operator.POPM, address)
 
             # Match the end of <Assign>, indicated by a semicolon ";".
