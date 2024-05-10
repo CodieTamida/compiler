@@ -878,19 +878,18 @@ class Parser:
             self.__match(self.__current_token.lexeme)  # Move to the next token
             text = self.__r28b_primary_prime()
             text = f"<Identifier> {text}"
+        # Special Case: No REAL type is allowed
+        # This rule only applies to Assignment 3 Code Generation
+        elif (self.__code_generation_enabled 
+            and self.__current_token.token_type == TokenType.REAL
+        ):
+            text1 = "Real number is not allowed"
+            text2 = f"Expected `ID, Integer, (Expression), boolean`, but found '{self.__current_token.lexeme}'"
+            raise SyntaxError(f"{text1}\n{text2}")
         # Case 2: INTEGER, REAL
         elif (self.__current_token.token_type == TokenType.INTEGER
                 or self.__current_token.token_type == TokenType.REAL
             ):
-            # RULE: No REAL type is allowed
-            # This rule only applies to Assignment 3 Code Generation
-            if (self.__code_generation_enabled 
-                and self.__current_token.token_type == TokenType.REAL
-            ):
-                text1 = "Real number is not allowed"
-                text2 = f"Expected `ID, Integer, (Expression), boolean`, but found '{self.__current_token.lexeme}'"
-                raise SyntaxError(f"{text1}\n{text2}")
-            
             set_of_data_types.add(self.__current_token.token_type)
             text = f"<{self.__current_token.token_type.name}>"
             self.__match(self.__current_token.lexeme)  # Move to the next token
