@@ -71,18 +71,110 @@ class AssignTestCase(unittest.TestCase):
         # Assert
         self.assertEqual(actual_output, expected_output)
 
-    def test_variable_already_defined(self):
+    def test_arithmetic_expression_to_intvar_1(self):
         # Arrange
         input_string = """
             $
             $
-                boolean success;
-                boolean success;
+                integer a;
             $
-                success = true;
+                a = (5 + 7);
             $
         """
+        string_builder = StringIO()
+        string_builder.write("PUSHI 5\n")
+        string_builder.write("PUSHI 7\n")
+        string_builder.write("A\n")
+        string_builder.write("POPM 5000\n")
+        expected_output = string_builder.getvalue()
 
+        # Act
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_code_generator(self.SAMPLE_FILE_PATH)
+
+        # Assert
+        self.assertEqual(actual_output, expected_output)
+
+    def test_arithmetic_expression_to_intvar_2(self):
+        # Arrange
+        input_string = """
+            $
+            $
+                integer a, b;                
+            $
+                a = (5 + 7) / b;
+            $
+        """
+        string_builder = StringIO()
+        string_builder.write("PUSHI 5\n")
+        string_builder.write("PUSHI 7\n")
+        string_builder.write("A\n")
+        string_builder.write("PUSHM 5001\n")
+        string_builder.write("D\n")
+        string_builder.write("POPM 5000\n")
+        expected_output = string_builder.getvalue()
+
+        # Act
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_code_generator(self.SAMPLE_FILE_PATH)
+
+        # Assert
+        self.assertEqual(actual_output, expected_output)
+
+    def test_boolvalue_in_parentheses_to_boolvar(self):
+        # Arrange
+        input_string = """
+            $
+            $
+                boolean a;
+            $
+                a = ((((true))));
+            $
+        """
+        string_builder = StringIO()
+        string_builder.write("PUSHI 1\n")
+        string_builder.write("POPM 5000\n")
+        expected_output = string_builder.getvalue()
+
+        # Act
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_code_generator(self.SAMPLE_FILE_PATH)
+
+        # Assert
+        self.assertEqual(actual_output, expected_output)
+
+    def test_intvar_to_intvar(self):
+        # Arrange
+        input_string = """
+            $
+            $
+                integer a, b;
+            $
+                a = b;
+            $
+        """
+        string_builder = StringIO()
+        string_builder.write("PUSHM 5001\n")
+        string_builder.write("POPM 5000\n")
+        expected_output = string_builder.getvalue()
+
+        # Act
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_code_generator(self.SAMPLE_FILE_PATH)
+
+        # Assert
+        self.assertEqual(actual_output, expected_output)
+
+    def test_int_to_boolvar_not_allowed(self):
+        # Arrange
+        input_string = """
+            $
+            $
+                boolean a;
+            $
+                a = 5;
+            $
+        """
         expected_output = ""
 
         # Act
@@ -92,7 +184,83 @@ class AssignTestCase(unittest.TestCase):
         # Assert
         self.assertEqual(actual_output, expected_output)
 
-   
+    def test_intvar_to_boolvar_not_allowed(self):
+        # Arrange
+        input_string = """
+            $
+            $
+                integer a;
+                boolean b;
+            $
+                b = a;
+            $
+        """
+        expected_output = ""
+
+        # Act
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_code_generator(self.SAMPLE_FILE_PATH)
+
+        # Assert
+        self.assertEqual(actual_output, expected_output)
+
+    def test_boolvar_to_intvar_not_allowed(self):
+        # Arrange
+        input_string = """
+            $
+            $
+                integer a;
+                boolean b;
+            $
+                a = b;
+            $
+        """
+        expected_output = ""
+
+        # Act
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_code_generator(self.SAMPLE_FILE_PATH)
+
+        # Assert
+        self.assertEqual(actual_output, expected_output)
+
+    def test_bool_to_intvar_not_allowed(self):
+        # Arrange
+        input_string = """
+            $
+            $
+                integer a;
+            $
+                a = true;
+            $
+        """
+        expected_output = ""
+
+        # Act
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_code_generator(self.SAMPLE_FILE_PATH)
+
+        # Assert
+        self.assertEqual(actual_output, expected_output)
+
+    def test_arithmetic_expression_to_boolvar_not_allowed(self):
+        # Arrange
+        input_string = """
+            $
+            $
+                boolean a;
+            $
+                a = (5 + 7);
+            $
+        """
+        expected_output = ""
+
+        # Act
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_code_generator(self.SAMPLE_FILE_PATH)
+
+        # Assert
+        self.assertEqual(actual_output, expected_output)
 
 
 if __name__ == '__main__':
