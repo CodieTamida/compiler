@@ -768,8 +768,6 @@ class Parser:
         temp_token_types = self.__r26b_term_prime(factor)
         set_of_data_types.update(temp_token_types)
 
-        # TODO: Right now, we cannot return an expression like this: 8 * 5
-        # Maybe in order to do it, we might need to build an AST tree.
         return factor, set_of_data_types
 
     def __r26b_term_prime(self, prev_factor):
