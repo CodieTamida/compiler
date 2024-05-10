@@ -33,23 +33,49 @@ class CodeGeneratorTestCase(unittest.TestCase):
     def test_small(self):
         # Arrange
         input_string = """
+            [* this is comment for this sample code for assignment 3 *]
             $
+            [* NO function definitions *]
             $
-                integer a, b, c;
+                integer i, max, sum; [* declarations *]
             $
-                a = 128;
-                b = -256;
-                c = 512;
+                sum = 0;
+                i = 1;
+                scan (max);
+                while (i < max) {
+                    sum = sum + i;
+                    i = i + 1;
+                }
+                endwhile
+                print (sum + max);
             $
         """
 
         string_builder = StringIO()
-        string_builder.write("PUSHI 128\n")
-        string_builder.write("POPM 5000\n")
-        string_builder.write("PUSHI -256\n")
-        string_builder.write("POPM 5001\n")
-        string_builder.write("PUSHI 512\n")
+        string_builder.write("PUSHI 0\n")
         string_builder.write("POPM 5002\n")
+        string_builder.write("PUSHI 1\n")
+        string_builder.write("POPM 5000\n")
+        string_builder.write("SIN\n")
+        string_builder.write("POPM 5001\n")
+        string_builder.write("LABEL\n")
+        string_builder.write("PUSHM 5000\n")
+        string_builder.write("PUSHM 5001\n")
+        string_builder.write("LES\n")
+        string_builder.write("JUMP0 21\n")
+        string_builder.write("PUSHM 5002\n")
+        string_builder.write("PUSHM 5000\n")
+        string_builder.write("A\n")
+        string_builder.write("POPM 5002\n")
+        string_builder.write("PUSHM 5000\n")
+        string_builder.write("PUSHI 1\n")
+        string_builder.write("A\n")
+        string_builder.write("POPM 5000\n")
+        string_builder.write("JUMP 7\n")
+        string_builder.write("PUSHM 5002\n")
+        string_builder.write("PUSHM 5001\n")
+        string_builder.write("A\n")
+        string_builder.write("SOUT\n")
         expected_output = string_builder.getvalue()
 
         # Act 1: Create a source file
