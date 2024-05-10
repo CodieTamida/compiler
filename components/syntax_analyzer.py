@@ -357,6 +357,13 @@ class Parser:
 
         # Add symbols to the intermediate code generator
         if self.__code_generation_enabled:
+            # RULE: No REAL type is allowed
+            # This rule only applies to Assignment 3 Code Generation
+            if (qualifier == TokenType.REAL):
+                text1 = "Real data type is not allowed"
+                text2 = f"Expected `ID, Integer, (Expression), boolean`, but found '{qualifier}'"
+                raise SyntaxError(f"{text1}\n{text2}")
+            
             for item in ids:
                 self.__symbol_table.add(item, qualifier)
 
@@ -875,6 +882,15 @@ class Parser:
         elif (self.__current_token.token_type == TokenType.INTEGER
                 or self.__current_token.token_type == TokenType.REAL
             ):
+            # RULE: No REAL type is allowed
+            # This rule only applies to Assignment 3 Code Generation
+            if (self.__code_generation_enabled 
+                and self.__current_token.token_type == TokenType.REAL
+            ):
+                text1 = "Real number is not allowed"
+                text2 = f"Expected `ID, Integer, (Expression), boolean`, but found '{self.__current_token.lexeme}'"
+                raise SyntaxError(f"{text1}\n{text2}")
+            
             set_of_data_types.add(self.__current_token.token_type)
             text = f"<{self.__current_token.token_type.name}>"
             self.__match(self.__current_token.lexeme)  # Move to the next token
