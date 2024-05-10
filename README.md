@@ -12,6 +12,7 @@ The Rat24S compiler has many options for reading input from a file, writing outp
 |--|--|--|
 |`-o`|`--output`|Output file path.|
 |`-t`|`--tokens`|Extract tokens only, but don't do anything beyond that.|
+|`-s`|`--syntax`|Analyze syntax only, but don't do anything beyond that.|
 |`-v`|`--verbose`|Enable verbose mode.|
 
 # Documentations
@@ -21,12 +22,13 @@ graph LR
 START:::hidden -- source code--> LA[Lexical Analyzer]
 LA--tokens-->SA[Syntax Analyzer]
 SA-.-ST[Symbol Table]
-SA-.-IT[Instruction Table]
 ST-.-CG[Code Generator]
-SA-->CG
-IT-.-CG
-CG-->SC((Assembly Code))
+SA--Instruction Table-->CG
+SA~~~CG
+CG-->END[Assembly Code]
+
 classDef hidden display: none;
+style END fill-opacity:0, stroke-opacity:0;
 ```
 #### Grammar Rules
 ```
