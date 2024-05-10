@@ -43,7 +43,7 @@ class SymbolTable:
         self.__current_address += 1
         return symbol.address
 
-    def get(self, identifier) -> Optional[Symbol]:
+    def get(self, identifier) -> Symbol:
         """
         Retrieves a symbol from the symbol table.
 
@@ -51,9 +51,15 @@ class SymbolTable:
         - identifier (str): The identifier of the symbol to retrieve.
 
         Returns:
-        - Optional[Symbol]: The Symbol object if found, or None if the symbol is not in the table.
+        - Symbol: The symbol associated with the given identifier.
+
+        Raises:
+        - NameError: If the identifier is not found in the table.
         """
-        return self.__entries.get(identifier)
+        symbol = self.__entries.get(identifier)
+        if symbol == None:
+            raise NameError(f"Variable '{identifier}' is not defined.") 
+        return symbol
 
     def get_address(self, identifier) -> int:
         """
@@ -68,11 +74,8 @@ class SymbolTable:
         Raises:
         - NameError: If the variable is not defined in the symbol table.
         """
-        try:
-            symbol = self.__entries.get(identifier)
-            return symbol.address
-        except:
-            raise NameError(f"Variable '{identifier}' is not defined.")
+        symbol = self.__entries.get(identifier)
+        return symbol.address
 
     def print_table(self):
         """
