@@ -165,6 +165,25 @@ class AssignTestCase(unittest.TestCase):
         # Assert
         self.assertEqual(actual_output, expected_output)
 
+    def test_real_number_not_allowed(self):
+        # Arrange
+        input_string = """
+            $
+            $
+                integer a;
+            $
+                a = 5.5;
+            $
+        """
+        expected_output = ""
+
+        # Act
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_code_generator(self.SAMPLE_FILE_PATH)
+
+        # Assert
+        self.assertEqual(actual_output, expected_output)
+
     def test_int_to_boolvar_not_allowed(self):
         # Arrange
         input_string = """
