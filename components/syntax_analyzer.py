@@ -639,9 +639,8 @@ class Parser:
 
         # Generate instructions
         if self.__code_generation_enabled:
-            self.__instruction_table.generate_instruction(Operator.JUMP, while_label_address)
-            endwhile_label_address = self.__instruction_table.generate_instruction(Operator.LABEL)
-            self.__instruction_table.back_patch(endwhile_label_address)
+            address = self.__instruction_table.generate_instruction(Operator.JUMP, while_label_address)
+            self.__instruction_table.back_patch(address + 1)
 
          # Match the end of <While>, indicated by "endwhile".
         self.__log_current_token()
