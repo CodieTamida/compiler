@@ -1,0 +1,16 @@
+[* this is sample 1 code for assignment 3 *]
+$
+[* NO function definitions *]
+$
+integer i, max, sum; [* declarations *]
+$
+sum = 0;
+i = 1;
+scan (max);
+while (i < max) {
+sum = sum + i;
+i = i + 1;
+}
+endwhile
+print (sum + max);
+$
