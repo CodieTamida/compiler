@@ -1,0 +1,16 @@
+$
+[* This is a comment for the average program *]
+$
+integer i, n, sum, avg; [* declarations *]
+$
+sum = 0;
+i = 1;
+scan (n);
+while (i <= n) {
+sum = sum + i;
+i = i + 1;
+}
+endwhile
+avg = sum / n;
+print (avg);
+$
