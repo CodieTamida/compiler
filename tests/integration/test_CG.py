@@ -76,6 +76,16 @@ class CodeGeneratorTestCase(unittest.TestCase):
         string_builder.write("PUSHM 5001\n")
         string_builder.write("A\n")
         string_builder.write("SOUT\n")
+
+        string_builder.write("\n")
+        string_builder.write("\n")
+        string_builder.write("Symbol Table:\n")
+        string_builder.write("Identifier     Address   Type           \n")
+        string_builder.write("----------------------------------------\n")
+        string_builder.write("i              5000      INTEGER        \n")
+        string_builder.write("max            5001      INTEGER        \n")
+        string_builder.write("sum            5002      INTEGER        \n")
+
         expected_output = string_builder.getvalue()
 
         # Act 1: Create a source file
