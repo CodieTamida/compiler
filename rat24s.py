@@ -1,3 +1,4 @@
+import os
 import argparse
 from components.lexcical_analyzer import Lexer
 from components.syntax_analyzer import Parser
@@ -83,7 +84,18 @@ def generate_assembly_code(input_file, output_file, verbose):
         # Open a file for writing
         if output_file:
             with open(output_file, 'w') as file:
+                # Write Assembly code
                 file.write(asm_code)
+
+                # Write Symbol Table
+                symbol_table = codegen.get_symbol_table()
+                file.write('\n\n')
+                file.write("Symbol Table:\n")
+                file.write(f"{'Identifier':<15}{'Address':<10}{'Type':<15}\n")
+                file.write("-" * 40)
+                file.write('\n')
+                for e in symbol_table.get_values():
+                    file.write(f"{e.identifier:<15}{e.address:<10}{e.data_type.name:<15}\n")
 
     except Exception as err:
         error_message = f"{type(err).__name__}: {err}"
@@ -98,7 +110,7 @@ def generate_assembly_code(input_file, output_file, verbose):
         # PRINT SUMMARY        
         print('*' * 50)
         print(f"Filename: {input_file}")
-        print(f"Number of Tokens: {len(lexer.tokens)}")
+        # print(f"Number of Tokens: {len(lexer.tokens)}")
         if error_message == None:
             print("\033[32m", "Compilation successful", "\033[0m", sep='')
         else:
@@ -146,4 +158,9 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    main(args)
+    if not os.path.exists(args.input):
+        text1 = "ERROR: File Not Found\n"
+        text2 = f"The file {args.input} was not found."
+        print("\033[31m", text1, text2, "\033[0m", sep='')
+    else:
+        main(args)
