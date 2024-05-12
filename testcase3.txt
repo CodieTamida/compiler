@@ -1,0 +1,23 @@
+$
+$
+	integer i, j, k;
+$
+	i = 0;
+	while(i <= 10)
+	{
+		j = 20;
+		while(j => 0)
+		{
+			k = i - j; 
+			while(k != 0)
+			{
+				print(k);
+			} 
+			endwhile
+			j = j - 2;
+		}                        
+		endwhile
+		i = i + 1;
+	}                    
+	endwhile
+$

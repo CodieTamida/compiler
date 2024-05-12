@@ -56,12 +56,13 @@ class IfTestCase(unittest.TestCase):
         string_builder.write("PUSHM 5000\n")
         string_builder.write("PUSHM 5001\n")
         string_builder.write("EQU\n")
-        string_builder.write("JUMP0 7\n")
+        string_builder.write("JUMP0 8\n")
         string_builder.write("PUSHI 0\n")
         string_builder.write("POPM 5002\n")
-        string_builder.write("LABEL\n")
+        string_builder.write("JUMP 10\n")
         string_builder.write("PUSHI 85\n")
         string_builder.write("POPM 5000\n")
+        string_builder.write("LABEL\n")
  
         expected_output = string_builder.getvalue()
 
@@ -71,6 +72,64 @@ class IfTestCase(unittest.TestCase):
 
         # Assert
         self.assertEqual(actual_output, expected_output)
+
+    def test_nested_if_else(self):
+        input_string = """
+            $
+            $
+            integer a, b, c;
+            $
+            if (a == b )
+            {
+                c = 0;
+                print(c);
+            }
+            else 
+            {
+                a = 85;
+                print(a);
+                scan(a);
+                if (a < 10)
+                    print(999);
+                endif
+            }
+            endif 
+            $
+        """
+        string_builder = StringIO()
+        string_builder.write("PUSHM 5000\n")
+        string_builder.write("PUSHM 5001\n")
+        string_builder.write("EQU\n")
+        string_builder.write("JUMP0 10\n")
+        string_builder.write("PUSHI 0\n")
+        string_builder.write("POPM 5002\n")
+        string_builder.write("PUSHM 5002\n")
+        string_builder.write("SOUT\n")
+        string_builder.write("JUMP 23\n")
+        string_builder.write("PUSHI 85\n")
+        string_builder.write("POPM 5000\n")
+        string_builder.write("PUSHM 5000\n")
+        string_builder.write("SOUT\n")
+        string_builder.write("SIN\n")
+        string_builder.write("POPM 5000\n")
+        string_builder.write("PUSHM 5000\n")
+        string_builder.write("PUSHI 10\n")
+        string_builder.write("LES\n")
+        string_builder.write("JUMP0 22\n")
+        string_builder.write("PUSHI 999\n")
+        string_builder.write("SOUT\n")
+        string_builder.write("LABEL\n")
+        string_builder.write("LABEL\n")
+ 
+        expected_output = string_builder.getvalue()
+
+        # Act
+        write_to_file(self.SAMPLE_FILE_PATH, input_string)
+        actual_output = get_result_from_code_generator(self.SAMPLE_FILE_PATH)
+
+        # Assert
+        self.assertEqual(actual_output, expected_output)
+
 
 if __name__ == '__main__':
     unittest.main()

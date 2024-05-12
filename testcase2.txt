@@ -1,0 +1,41 @@
+[* This file is indented by both TABS & SPACES. *]
+$
+	[* This is a comment for the average program *]
+$
+	integer a, b, c, max;
+$
+	a = (10 + 2) * 3 / ((3 + 3) * 8);
+	b = (((a + 2) * 3) - 1) * 3;
+	c = (a - b) * (a + b) / -(-(-((((((-a/a))))))));
+
+	if (a > b) { 
+        if (a > c)
+			max = a; 
+        else 
+			max = c;
+		endif
+    }
+    else { 
+        if (b > c) 
+			max = b; 
+        else 
+			max = c;
+		endif
+    }
+	endif
+
+	if (max == b)
+		if (max == b)
+			if (max == b)
+				if (max == b)
+					print(true);
+				else {
+					print(false);
+					scan(a, b, c);
+					print(a + b + c);
+				}
+				endif
+			endif
+		endif
+	endif
+$

@@ -35,6 +35,15 @@ class CodeGenerator:
 
         return string_builder.getvalue()
 
+    def get_symbol_table(self):
+        """
+        Retrieves the symbol table.
+
+        Returns:
+        - SymbolTable: The symbol table.
+        """
+        return self.__symbol_table
+
     def print_symbol_table(self):
         """
         Prints the symbol table.

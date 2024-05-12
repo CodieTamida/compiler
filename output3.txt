@@ -1,0 +1,44 @@
+PUSHI 0
+POPM 5000
+LABEL
+PUSHM 5000
+PUSHI 10
+LEQ
+JUMP0 37
+PUSHI 20
+POPM 5001
+LABEL
+PUSHM 5001
+PUSHI 0
+GEQ
+JUMP0 32
+PUSHM 5000
+PUSHM 5001
+S
+POPM 5002
+LABEL
+PUSHM 5002
+PUSHI 0
+NEQ
+JUMP0 27
+PUSHM 5002
+SOUT
+JUMP 19
+PUSHM 5001
+PUSHI 2
+S
+POPM 5001
+JUMP 10
+PUSHM 5000
+PUSHI 1
+A
+POPM 5000
+JUMP 3
+
+
+Symbol Table:
+Identifier     Address   Type           
+----------------------------------------
+i              5000      INTEGER        
+j              5001      INTEGER        
+k              5002      INTEGER        
