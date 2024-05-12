@@ -77,6 +77,15 @@ class SymbolTable:
         symbol = self.__entries.get(identifier)
         return symbol.address
 
+    def get_values(self):
+        """
+        Retrieves all symbol entries from the symbol table.
+
+        Returns:
+        - dict: The values of the symbol entries.
+        """
+        return self.__entries.values()
+
     def print_table(self):
         """
         Prints the contents of the symbol table.
