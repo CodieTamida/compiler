@@ -521,9 +521,6 @@ class Parser:
         self.__log_current_token()
         self.__match(")")
         self.__r15_statement()
-        if self.__code_generation_enabled:
-            endif_address = self.__instruction_table.generate_instruction(Operator.LABEL)
-            self.__instruction_table.back_patch(endif_address)
         self.__r18b_if_prime()
         
     def __r18b_if_prime(self):
@@ -535,13 +532,34 @@ class Parser:
             self.__log_current_token()
             self.__log(f"<If Prime> -> endif")
             self.__match(self.__current_token.lexeme)
+
+            # Code Generation: ENDIF
+            if self.__code_generation_enabled:
+                endif_address = self.__instruction_table.generate_instruction(Operator.LABEL)
+                self.__instruction_table.back_patch(endif_address)
         elif self.__current_token.lexeme == "else":
             self.__log_current_token()
             self.__log(f"<If Prime> -> else <Statement> endif")
             self.__match(self.__current_token.lexeme)
+
+            # Code Generation: ELSE
+            if self.__code_generation_enabled:
+                # jump_address: 
+                #   When the statements (in case the IF condition is true) are executed,
+                #   the program must jump to ENDIF
+                #   The goal is to get out of the If_Else.
+                jump_address = self.__instruction_table.generate_instruction(Operator.JUMP)
+                else_begin_address = jump_address + 1
+                self.__instruction_table.back_patch(else_begin_address)
+                self.__instruction_table.push_jump_stack(jump_address)
             self.__r15_statement()
             self.__log_current_token()
             self.__match("endif")
+
+            # Code Generation: ENDIF
+            if self.__code_generation_enabled:
+                endif_address = self.__instruction_table.generate_instruction(Operator.LABEL)
+                self.__instruction_table.back_patch(endif_address)
         else:
             text1 = f'A keyword is missing.'
             text2 = f'Expected "else" or "endif", but found {self.__current_token.lexeme}'
