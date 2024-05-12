@@ -19,4 +19,14 @@ A
 POPM 5000
 JUMP 7
 PUSHM 5002
+PUSHM 5001
+A
 SOUT
+
+
+Symbol Table:
+Identifier     Address   Type           
+----------------------------------------
+i              5000      INTEGER        
+max            5001      INTEGER        
+sum            5002      INTEGER        

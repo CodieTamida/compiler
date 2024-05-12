@@ -1,5 +1,6 @@
+[* this is comment for this sample code for assignment 3 *]
 $
-[* This is a comment for the sum_of_numbers program *]
+[* NO function definitions *]
 $
 integer i, max, sum; [* declarations *]
 $
@@ -11,5 +12,5 @@ sum = sum + i;
 i = i + 1;
 }
 endwhile
-print (sum);
+print (sum + max);
 $
